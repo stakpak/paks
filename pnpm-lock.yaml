@@ -37,7 +37,9 @@ importers:
         specifier: ^5
         version: 5.9.3
 
-  apps/fumadocs:
+  apps/cli: {}
+
+  apps/docs:
     dependencies:
       '@tanstack/react-router':
         specifier: 1.136.18
@@ -211,6 +213,8 @@ importers:
         version: 5.1.0
 
   packages/config: {}
+
+  packages/core: {}
 
 packages:
 
