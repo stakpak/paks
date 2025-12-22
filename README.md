@@ -1,6 +1,6 @@
 <div align="center">
 
-# 📦 paks
+# 📦 Paks
 
 **The package manager for AI Agent Skills**
 
@@ -17,7 +17,7 @@ Create, install, publish, and share skills across AI coding agents.
 
 ## What is Paks?
 
-Paks is a CLI-first package manager for [Agent Skills](https://agentskills.io) — reusable instruction sets that enhance AI coding agents like Claude Code, Cursor, GitHub Copilot, Goose, and more.
+Paks is a CLI-first package manager for [Agent Skills](https://agentskills.io) — reusable instruction sets that enhance AI coding agents like Stakpak, Claude Code, Cursor, OpenCode, GitHub Copilot, Goose, and more.
 
 **The CLI** is your primary interface for:
 - 🛠️ **Creating** new skills with proper structure
