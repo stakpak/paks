@@ -20,11 +20,8 @@ pub async fn run(cmd: AgentCommand) -> Result<()> {
         AgentCommand::List => {
             println!("Configured agents:\n");
 
-            // Sort agents for consistent output
-            let mut agents: Vec<_> = config.agents.iter().collect();
-            agents.sort_by_key(|(id, _)| *id);
-
-            for (id, agent) in agents {
+            // Preserve insertion order (stakpak first)
+            for (id, agent) in &config.agents {
                 let default_marker = if config.default_agent.as_ref() == Some(id) {
                     " (default)"
                 } else {
@@ -99,12 +96,11 @@ pub async fn run(cmd: AgentCommand) -> Result<()> {
                 bail!("Agent '{}' not found", name);
             }
 
-            config.agents.remove(&name);
+            config.agents.shift_remove(&name);
 
             // Clear default if it was this agent
             if config.default_agent.as_ref() == Some(&name) {
-                config.default_agent = Some("stakpak".to_string());
-                println!("  Default agent reset to 'stakpak'");
+                config.default_agent = None;
             }
 
             config.save()?;
@@ -152,11 +148,8 @@ pub async fn run(cmd: AgentCommand) -> Result<()> {
                     bail!("Agent '{}' not found", agent_name);
                 }
             } else {
-                // Show all agents with details
-                let mut agents: Vec<_> = config.agents.iter().collect();
-                agents.sort_by_key(|(id, _)| *id);
-
-                for (id, agent) in agents {
+                // Show all agents with details (preserve insertion order)
+                for (id, agent) in &config.agents {
                     let is_default = config.default_agent.as_ref() == Some(id);
                     println!("{}{}:", id, if is_default { " (default)" } else { "" });
                     println!("  Name: {}", agent.name);

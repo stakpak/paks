@@ -13,6 +13,7 @@ tokio.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 anyhow.workspace = true
+indexmap.workspace = true
 toml = "0.8"
 dirs = "6"
 serde_yaml_ng = "0.10"  # For parsing SKILL.md frontmatter (Agent Skills spec compatibility)

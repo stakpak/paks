@@ -3,8 +3,8 @@
 //! Config file location: ~/.config/paks/config.toml
 
 use anyhow::{Context, Result};
+use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::path::PathBuf;
 
 /// Main configuration structure
@@ -18,13 +18,13 @@ pub struct Config {
     #[serde(default)]
     pub default_registry: Option<String>,
 
-    /// Configured agents with their skills directories
+    /// Configured agents with their skills directories (ordered, stakpak first)
     #[serde(default)]
-    pub agents: HashMap<String, AgentConfig>,
+    pub agents: IndexMap<String, AgentConfig>,
 
     /// Configured registries
     #[serde(default)]
-    pub registries: HashMap<String, RegistryConfig>,
+    pub registries: IndexMap<String, RegistryConfig>,
 }
 
 /// Agent configuration
@@ -102,11 +102,11 @@ impl Config {
         Ok(())
     }
 
-    /// Get built-in agent configurations
-    fn builtin_agents() -> HashMap<String, AgentConfig> {
-        let mut agents = HashMap::new();
+    /// Get built-in agent configurations (stakpak first, then alphabetical)
+    fn builtin_agents() -> IndexMap<String, AgentConfig> {
+        let mut agents = IndexMap::new();
 
-        // Stakpak agent
+        // Stakpak agent - MUST be first
         agents.insert(
             "stakpak".to_string(),
             AgentConfig {
@@ -195,13 +195,13 @@ impl Config {
             .unwrap_or_else(|| PathBuf::from("~/.paks/skills"))
     }
 
-    /// Create default config with built-in agents
+    /// Create default config with built-in agents (no default agent until user sets one)
     fn default_with_builtin_agents() -> Self {
         Self {
-            default_agent: Some("stakpak".to_string()),
+            default_agent: None,
             default_registry: None,
             agents: Self::builtin_agents(),
-            registries: HashMap::new(),
+            registries: IndexMap::new(),
         }
     }
 
