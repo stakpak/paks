@@ -8,6 +8,11 @@ dist
 build
 *.tsbuildinfo
 
+# Rust/Cargo
+target/
+Cargo.lock
+**/*.rs.bk
+
 # Environment variables
 .env
 .env*.local
@@ -48,3 +53,6 @@ coverage
 .cache
 tmp
 temp
+
+# Stakpak session files
+.stakpak/session*

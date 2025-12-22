@@ -10,6 +10,11 @@
     "check": "oxlint && oxfmt --write",
     "dev": "turbo dev",
     "build": "turbo build",
+    "build:all": "turbo build cargo:build",
+    "test:all": "turbo test cargo:test",
+    "lint:all": "turbo lint cargo:lint",
+    "fmt:all": "turbo fmt cargo:fmt",
+    "check:all": "turbo check cargo:check",
     "check-types": "turbo check-types",
     "dev:native": "turbo -F native dev",
     "dev:web": "turbo -F web dev"

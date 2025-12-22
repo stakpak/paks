@@ -1,0 +1,77 @@
+---
+title: Agent Configuration
+description: Configure target AI agents for skill installation
+---
+
+Paks supports multiple AI coding agents out of the box. Each agent has a designated skills directory where skills are installed.
+
+## Built-in Agents
+
+| Agent | Skills Directory | Description |
+| ----- | ---------------- | ----------- |
+| `stakpak` | `~/.stakpak/skills` | Stakpak AI agent (default) |
+| `claude-code` | `~/.claude/skills` | Anthropic Claude Code |
+| `cursor` | `~/.cursor/skills` | Cursor IDE |
+| `vscode` | `~/.vscode/skills` | VS Code with AI extensions |
+| `copilot` | `~/.copilot/skills` | GitHub Copilot |
+| `goose` | `~/.goose/skills` | Goose AI agent |
+| `opencode` | `~/.opencode/skills` | OpenCode agent |
+
+## Managing Agents
+
+### List All Agents
+
+```bash
+paks agent list
+```
+
+Shows all configured agents (built-in and custom) with their skills directories.
+
+### Add Custom Agent
+
+```bash
+paks agent add my-agent --dir ~/.my-agent/skills
+```
+
+Register a custom agent with a specific skills directory.
+
+### Remove Custom Agent
+
+```bash
+paks agent remove my-agent
+```
+
+Only custom agents can be removed. Built-in agents are permanent.
+
+### Set Default Agent
+
+```bash
+paks agent default claude-code
+```
+
+Set which agent is used when `--agent` flag is not specified.
+
+### Show Agent Details
+
+```bash
+paks agent show stakpak
+```
+
+Display configuration details for a specific agent.
+
+## Configuration File
+
+Agent configurations are stored in `~/.config/paks/config.toml`:
+
+```toml
+default_agent = "stakpak"
+
+[agents.my-custom-agent]
+skills_dir = "~/.my-custom-agent/skills"
+```
+
+## Default Behavior
+
+- When no `--agent` flag is provided, the default agent is used
+- Default agent is `stakpak` unless changed with `paks agent default`
+- If no agent is configured, skills install to `~/.paks/skills`

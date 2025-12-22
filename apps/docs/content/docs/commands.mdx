@@ -1,0 +1,125 @@
+---
+title: Commands Reference
+description: Complete CLI command documentation
+---
+
+## create
+
+Scaffold a new skill from templates.
+
+```bash
+paks create <name> [options]
+
+# Options
+--with-scripts    Include example scripts directory
+--dir <path>      Output directory (default: current)
+```
+
+**Example:**
+```bash
+paks create my-devops-skill --with-scripts
+```
+
+---
+
+## validate
+
+Validate skill structure and SKILL.md format.
+
+```bash
+paks validate <path>
+```
+
+Checks:
+- SKILL.md exists and has valid YAML frontmatter
+- Required fields: `name`, `description`
+- Optional fields validated if present
+
+---
+
+## info
+
+Display detailed skill information.
+
+```bash
+paks info <path>
+```
+
+Shows name, description, version, authors, keywords, and license.
+
+---
+
+## list
+
+List installed skills.
+
+```bash
+paks list [options]
+
+# Options
+--agent <name>    Target agent (default: stakpak)
+--format <fmt>    Output format: table, json, yaml
+```
+
+---
+
+## remove
+
+Remove an installed skill.
+
+```bash
+paks remove <name> [options]
+
+# Options
+--agent <name>    Target agent
+--force           Skip confirmation
+```
+
+---
+
+## publish
+
+Publish a skill to the registry.
+
+```bash
+paks publish <path> [options]
+
+# Options
+--dry-run         Validate without publishing
+--bump <level>    Version bump: patch, minor, major
+```
+
+---
+
+## agent
+
+Manage agent configurations.
+
+```bash
+# List all agents
+paks agent list
+
+# Add custom agent
+paks agent add <name> --dir <skills-directory>
+
+# Remove custom agent
+paks agent remove <name>
+
+# Set default agent
+paks agent default <name>
+
+# Show agent details
+paks agent show <name>
+```
+
+### Built-in Agents
+
+| Agent | Skills Directory |
+| ----- | ---------------- |
+| stakpak | `~/.stakpak/skills` |
+| claude-code | `~/.claude/skills` |
+| cursor | `~/.cursor/skills` |
+| vscode | `~/.vscode/skills` |
+| copilot | `~/.copilot/skills` |
+| goose | `~/.goose/skills` |
+| opencode | `~/.opencode/skills` |

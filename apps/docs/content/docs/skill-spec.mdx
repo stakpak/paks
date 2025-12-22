@@ -1,0 +1,146 @@
+---
+title: SKILL.md Specification
+description: Skill manifest format and structure
+---
+
+Skills are defined by a single `SKILL.md` file with YAML frontmatter. This format is compatible with the [Agent Skills](https://agentskills.io) specification.
+
+## File Structure
+
+```markdown
+---
+name: my-skill
+description: A skill that does something useful
+version: 0.1.0
+license: MIT
+authors:
+  - Your Name
+keywords:
+  - devops
+  - automation
+---
+
+# My Skill
+
+## When to use this skill
+
+Describe when the AI agent should activate this skill.
+
+## Instructions
+
+Step-by-step instructions for the AI agent.
+```
+
+## Frontmatter Fields
+
+### Required Fields
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `name` | string | Skill identifier (lowercase, hyphens allowed) |
+| `description` | string | Brief description of the skill |
+
+### Optional Fields
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `version` | string | Semantic version (e.g., `0.1.0`) |
+| `license` | string | SPDX license identifier |
+| `authors` | string[] | List of author names |
+| `keywords` | string[] | Searchable tags |
+| `repository` | string | Git repository URL |
+| `dependencies` | string[] | Other skills this depends on |
+
+## Markdown Body
+
+The markdown content after the frontmatter contains instructions for the AI agent:
+
+### Recommended Sections
+
+1. **When to use this skill** - Trigger conditions
+2. **Instructions** - Step-by-step guidance
+3. **Examples** - Usage examples
+4. **Constraints** - Limitations or warnings
+
+## Directory Structure
+
+A complete skill package:
+
+```
+my-skill/
+├── SKILL.md           # Required: Skill manifest
+├── scripts/           # Optional: Helper scripts
+│   ├── setup.sh
+│   └── validate.py
+└── templates/         # Optional: File templates
+    └── config.yaml
+```
+
+## Validation
+
+Validate your skill structure:
+
+```bash
+paks validate ./my-skill
+```
+
+Checks performed:
+- ✓ SKILL.md exists
+- ✓ Valid YAML frontmatter
+- ✓ Required fields present
+- ✓ Field types correct
+- ✓ Name format valid
+
+## Example Skills
+
+### DevOps Skill
+
+```markdown
+---
+name: kubernetes-deploy
+description: Deploy applications to Kubernetes clusters
+version: 1.0.0
+keywords:
+  - kubernetes
+  - deployment
+  - devops
+---
+
+# Kubernetes Deploy
+
+## When to use this skill
+
+Use when the user asks to deploy an application to Kubernetes.
+
+## Instructions
+
+1. Check for existing deployment manifests
+2. Validate YAML syntax
+3. Apply with kubectl
+4. Verify rollout status
+```
+
+### Code Review Skill
+
+```markdown
+---
+name: code-review
+description: Perform thorough code reviews
+version: 0.2.0
+authors:
+  - DevOps Team
+---
+
+# Code Review
+
+## When to use this skill
+
+Activate when reviewing pull requests or code changes.
+
+## Instructions
+
+1. Check for security vulnerabilities
+2. Verify coding standards
+3. Suggest improvements
+4. Validate test coverage
+```

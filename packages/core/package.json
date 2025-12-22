@@ -1,0 +1,12 @@
+{
+  "name": "@paks/core",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "cargo:build": "cargo build --release",
+    "cargo:check": "cargo check",
+    "cargo:test": "cargo test",
+    "cargo:lint": "cargo clippy -- -D warnings",
+    "cargo:fmt": "cargo fmt"
+  }
+}

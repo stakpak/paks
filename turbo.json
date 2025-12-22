@@ -1,14 +1,46 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "ui": "tui",
+  "ui": "stream",
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**", ".output/**"]
+    },
+    "cargo:build": {
+      "dependsOn": ["^cargo:build"],
+      "inputs": ["Cargo.toml", "src/**/*.rs"],
+      "outputs": [],
+      "cache": false
+    },
+    "cargo:check": {
+      "dependsOn": ["^cargo:check"],
+      "inputs": ["Cargo.toml", "src/**/*.rs"]
+    },
+    "cargo:test": {
+      "dependsOn": ["^cargo:test"],
+      "inputs": ["Cargo.toml", "src/**/*.rs"]
+    },
+    "cargo:lint": {
+      "dependsOn": ["^cargo:lint"],
+      "inputs": ["Cargo.toml", "src/**/*.rs"]
+    },
+    "cargo:fmt": {
+      "dependsOn": ["^cargo:fmt"],
+      "inputs": ["Cargo.toml", "src/**/*.rs"]
+    },
+    "fmt": {
+      "dependsOn": ["^fmt"],
+      "inputs": ["$TURBO_DEFAULT$"]
     },
     "lint": {
       "dependsOn": ["^lint"]
+    },
+    "check": {
+      "dependsOn": ["^check"]
+    },
+    "test": {
+      "dependsOn": ["^test"]
     },
     "check-types": {
       "dependsOn": ["^check-types"]

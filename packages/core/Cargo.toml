@@ -1,0 +1,13 @@
+[package]
+name = "paks-core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"

@@ -1,0 +1,69 @@
+---
+title: Paks CLI
+description: Agent Skills package manager for AI coding agents
+icon: Package
+---
+
+**Paks** is a CLI tool for scaffolding, installing, publishing, and managing agent skills across different AI coding agents including Claude Code, Cursor, VS Code, Goose, OpenCode, and Stakpak.
+
+## Quick Start
+
+```bash
+# Create a new skill
+paks create my-skill
+
+# Validate skill structure
+paks validate ./my-skill
+
+# View skill details
+paks info ./my-skill
+
+# List installed skills
+paks list
+
+# Publish (dry-run)
+paks publish ./my-skill --dry-run
+```
+
+<Cards>
+  <Card
+    title="Commands Reference"
+    href="/docs/commands"
+    description="Complete CLI command documentation"
+  />
+  <Card
+    title="Agent Configuration"
+    href="/docs/agents"
+    description="Configure target AI agents"
+  />
+  <Card
+    title="SKILL.md Spec"
+    href="/docs/skill-spec"
+    description="Skill manifest format"
+  />
+</Cards>
+
+## Installation
+
+```bash
+# Build from source
+cargo build -p paks-cli --release
+
+# Binary location
+./target/release/paks
+```
+
+## Features
+
+| Feature | Status | Description |
+| ------- | ------ | ----------- |
+| `create` | ✅ | Scaffold new skills from templates |
+| `validate` | ✅ | Validate skill structure |
+| `info` | ✅ | Show skill details |
+| `list` | ✅ | List installed skills |
+| `remove` | ✅ | Remove installed skills |
+| `publish` | ✅ | Publish skills (validation + dry-run) |
+| `agent` | ✅ | Manage agent configurations |
+| `install` | 🚧 | Install from registry (needs API) |
+| `search` | 🚧 | Search registry (needs API) |
+| `login` | 🚧 | Registry authentication (needs API) |
