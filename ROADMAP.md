@@ -231,9 +231,10 @@ Publishing is **git-based**. The registry doesn't store skill files directly—i
     Description: A skill that does awesome things
     Published: 2024-01-15T10:30:00Z"
     ```
-  - [ ] Support custom tag prefix via `--tag-prefix` (default: `v`)
-    - `--tag-prefix ""` → `1.2.3`
-    - `--tag-prefix "release-"` → `release-1.2.3`
+  - [ ] Only support semantic versioning with `v` prefix (e.g., `v1.2.3`)
+    - No custom tag prefixes - standardized format only
+    - Version must follow semver: `vMAJOR.MINOR.PATCH[-PRERELEASE]`
+    - Prerelease suffixes allowed: `-alpha`, `-beta`, `-rc.N` (e.g., `v1.2.3-beta`, `v2.0.0-rc.1`)
   - [ ] Support lightweight tags via `--lightweight` flag (not recommended)
 
 - [ ] **Git Operations Workflow**
@@ -259,9 +260,16 @@ Publishing is **git-based**. The registry doesn't store skill files directly—i
     {
       "repository": "https://github.com/user/skill-repo",
       "tag": "v1.2.3",
+      "commit_hash": "abc123def456...",  // idempotency key
       "skill_path": "."  // or subdirectory for monorepos
     }
     ```
+  - [ ] **Idempotent publishing**: Use commit hash as idempotency key
+    - If version+commit already published, exit gracefully with message:
+      ```
+      ✓ Version v1.2.3 already published (commit abc123d)
+      ```
+    - No error, no retry - just inform and exit 0
   - [ ] Registry fetches skill data from the git tag
   - [ ] Handle registry errors gracefully (tag is already pushed, so skill is "published" even if registry fails)
   - [ ] Retry logic for transient failures
@@ -410,8 +418,8 @@ Install skills from multiple sources: the paks registry, git repositories, or lo
   - [ ] Get available versions: `GET /api/skills/{name}/versions`
   - [ ] Resolve version:
     - `--version 1.2.3`: Exact version
-    - `--version ^1.2.0`: Semver range (latest compatible)
     - No flag: Latest stable version
+    - No semver ranges supported (exact or latest only)
   - [ ] Get git repository URL from registry metadata
   - [ ] Clone/fetch from git at the resolved version tag
   - [ ] Extract skill to target directory
