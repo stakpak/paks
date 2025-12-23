@@ -710,7 +710,7 @@ checksum = "04744f49eae99ab78e0d5c0b603ab218f515ea8cfe5a456d7629ad883a3b6e7d"
 
 [[package]]
 name = "paks-api"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "chrono",
  "paks-api-schema",
@@ -726,7 +726,7 @@ dependencies = [
 
 [[package]]
 name = "paks-api-schema"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "chrono",
  "schemars",
@@ -737,7 +737,7 @@ dependencies = [
 
 [[package]]
 name = "paks-cli"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "clap",
@@ -755,7 +755,7 @@ dependencies = [
 
 [[package]]
 name = "paks-core"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "serde",
  "serde_json",
