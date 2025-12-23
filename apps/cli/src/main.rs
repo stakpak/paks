@@ -9,7 +9,7 @@ use commands::{
     install::InstallArgs,
     list::{ListArgs, OutputFormat},
     login::LoginArgs,
-    publish::{BumpLevel, PublishArgs},
+    publish::PublishArgs,
     remove::RemoveArgs,
     search::SearchArgs,
     validate::ValidateArgs,
@@ -87,17 +87,29 @@ enum Commands {
         #[arg(default_value = ".")]
         path: String,
 
-        /// Publish as a new version (auto-increment patch)
-        #[arg(long)]
-        bump: Option<CliBumpLevel>,
-
         /// Skip validation before publishing
         #[arg(long)]
         skip_validation: bool,
 
-        /// Dry run - validate and show what would be published
+        /// Show what would happen (non-interactive)
         #[arg(long)]
         dry_run: bool,
+
+        /// Create tag without pushing
+        #[arg(long)]
+        no_push: bool,
+
+        /// Custom tag message - prompts interactively if not provided
+        #[arg(long, short)]
+        message: Option<String>,
+
+        /// Branch to push to (defaults to current branch)
+        #[arg(long)]
+        branch: Option<String>,
+
+        /// Skip all interactive prompts (use defaults)
+        #[arg(long, short = 'y')]
+        yes: bool,
     },
 
     /// List installed skills
@@ -304,19 +316,21 @@ async fn main() -> anyhow::Result<()> {
 
         Commands::Publish {
             path,
-            bump,
             skip_validation,
             dry_run,
+            no_push,
+            message,
+            branch,
+            yes,
         } => {
             commands::publish::run(PublishArgs {
                 path,
-                bump: bump.map(|b| match b {
-                    CliBumpLevel::Patch => BumpLevel::Patch,
-                    CliBumpLevel::Minor => BumpLevel::Minor,
-                    CliBumpLevel::Major => BumpLevel::Major,
-                }),
                 skip_validation,
                 dry_run,
+                no_push,
+                message,
+                branch,
+                yes,
             })
             .await?;
         }

@@ -8,3 +8,6 @@ pub mod error;
 
 pub use client::PaksClient;
 pub use error::ApiError;
+
+// Re-export schema types for convenience
+pub use paks_api_schema::*;
