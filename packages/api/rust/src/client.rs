@@ -181,16 +181,26 @@ impl PaksClient {
     // Publish Endpoints
     // ========================================================================
 
-    /// Notify the registry to index a new pak version
-    pub async fn notify_publish(
+    /// Publish a pak to the registry
+    ///
+    /// The server will:
+    /// 1. Validate tag format (vMAJOR.MINOR.PATCH with optional prerelease)
+    /// 2. Validate tag exists in the repository
+    /// 3. Validate branch exists in the repository
+    /// 4. Fetch and parse SKILL.md from the tag at the specified path
+    /// 5. Validate SKILL.md frontmatter (name, description, metadata.version)
+    /// 6. Validate pak name format (lowercase, alphanumeric, hyphens)
+    /// 7. Validate version in SKILL.md matches tag
+    /// 8. Create pak (if new) or add version (if exists)
+    pub async fn publish_pak(
         &self,
-        request: NotifyPublishRequest,
-    ) -> Result<NotifyPublishResponse, ApiError> {
+        request: PublishPakRequest,
+    ) -> Result<PublishPakResponse, ApiError> {
         if !self.is_authenticated() {
             return Err(ApiError::AuthRequired);
         }
 
-        let url = self.build_url("/v1/paks/index")?;
+        let url = self.build_url("/v1/paks/publish")?;
         let response = self
             .http_client
             .post(url)

@@ -216,6 +216,53 @@ impl Config {
             .as_ref()
             .and_then(|name| self.agents.get(name))
     }
+
+    /// Get the auth token for the default registry
+    pub fn get_auth_token(&self) -> Option<&str> {
+        // First check default registry
+        if let Some(default_reg) = &self.default_registry
+            && let Some(reg) = self.registries.get(default_reg)
+            && reg.token.is_some()
+        {
+            return reg.token.as_deref();
+        }
+        // Fall back to "stakpak" registry
+        self.registries
+            .get("stakpak")
+            .and_then(|r| r.token.as_deref())
+    }
+
+    /// Set the auth token for the default registry
+    pub fn set_auth_token(&mut self, token: String) {
+        let registry_name = self
+            .default_registry
+            .clone()
+            .unwrap_or_else(|| "stakpak".to_string());
+
+        if let Some(reg) = self.registries.get_mut(&registry_name) {
+            reg.token = Some(token);
+        } else {
+            self.registries.insert(
+                registry_name,
+                RegistryConfig {
+                    url: "https://apiv2.stakpak.dev".to_string(),
+                    token: Some(token),
+                },
+            );
+        }
+    }
+
+    /// Clear the auth token for the default registry
+    pub fn clear_auth_token(&mut self) {
+        let registry_name = self
+            .default_registry
+            .clone()
+            .unwrap_or_else(|| "stakpak".to_string());
+
+        if let Some(reg) = self.registries.get_mut(&registry_name) {
+            reg.token = None;
+        }
+    }
 }
 
 #[cfg(test)]

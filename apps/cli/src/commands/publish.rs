@@ -1,120 +1,172 @@
 //! Publish command - publish a skill to the registry
 
 use anyhow::{Result, bail};
+use dialoguer::{Confirm, Input};
+use paks_api::{PaksClient, PublishPakRequest};
 use std::path::Path;
 
+use super::core::config::Config;
+use super::core::git;
 use super::core::skill::Skill;
-
-#[derive(Clone, Copy)]
-pub enum BumpLevel {
-    Patch,
-    Minor,
-    Major,
-}
 
 pub struct PublishArgs {
     pub path: String,
-    pub bump: Option<BumpLevel>,
     pub skip_validation: bool,
     pub dry_run: bool,
+    pub no_push: bool,
+    pub message: Option<String>,
+    pub branch: Option<String>,
+    pub yes: bool,
+}
+
+/// Prompt for confirmation before publishing
+fn prompt_confirm_publish(pak_name: &str, version: &str, tag: &str, branch: &str) -> Result<bool> {
+    Confirm::new()
+        .with_prompt(format!(
+            "Publish {}@{} (tag: {} on branch: {})?",
+            pak_name, version, tag, branch
+        ))
+        .default(true)
+        .interact()
+        .map_err(Into::into)
+}
+
+/// Prompt for custom tag message
+fn prompt_tag_message(default: &str) -> Result<String> {
+    Input::new()
+        .with_prompt("Tag message")
+        .default(default.to_string())
+        .interact_text()
+        .map_err(Into::into)
 }
 
 pub async fn run(args: PublishArgs) -> Result<()> {
     let skill_path = Path::new(&args.path);
 
     // Load the skill
-    let mut skill = Skill::load(skill_path)?;
+    let skill = Skill::load(skill_path)?;
 
-    println!("Publishing skill: {} v{}", skill.name(), skill.version());
+    println!("Publishing skill: {}", skill.name());
 
     // Validate unless skipped
     if !args.skip_validation {
+        print!("  Validating... ");
         let warnings = skill.frontmatter.validate()?;
+        println!("✓");
         for warning in &warnings {
             println!("  ⚠ {}", warning);
         }
     }
 
     // Check required fields for publishing
-    if skill.frontmatter.version.is_none() {
-        bail!("Version is required for publishing. Add 'version' to SKILL.md frontmatter.");
+    let version = skill
+        .frontmatter
+        .version
+        .as_ref()
+        .ok_or_else(|| anyhow::anyhow!("Version is required for publishing. Add 'version' to SKILL.md frontmatter."))?;
+
+    // Git checks
+    if !git::is_git_repo(skill_path) {
+        bail!("Not a git repository.");
     }
 
-    // Bump version if requested
-    if let Some(level) = args.bump {
-        let current = skill.frontmatter.version.as_deref().unwrap_or("0.1.0");
-        let new_version = bump_version(current, level)?;
-        println!("  Bumping version: {} → {}", current, new_version);
-        skill.frontmatter.version = Some(new_version);
+    let remote = "origin";
+    let repo_url = git::get_remote_url(skill_path, remote)?;
+    let branch = args
+        .branch
+        .clone()
+        .or_else(|| git::get_current_branch(skill_path).ok())
+        .ok_or_else(|| anyhow::anyhow!("Could not determine current branch"))?;
 
-        if !args.dry_run {
-            skill.save()?;
-        }
+    let tag = format!("v{}", version);
+
+    // Check tag doesn't exist
+    if git::tag_exists(skill_path, &tag) {
+        bail!("Tag {} already exists. Bump the version in SKILL.md first.", tag);
     }
 
-    if args.dry_run {
-        println!("\n[Dry run] Would publish:");
-        println!("  Name: {}", skill.name());
-        println!("  Version: {}", skill.version());
-        println!("  Description: {}", skill.frontmatter.description);
-        if let Some(license) = &skill.frontmatter.license {
-            println!("  License: {}", license);
-        }
-        if !skill.frontmatter.keywords.is_empty() {
-            println!("  Keywords: {}", skill.frontmatter.keywords.join(", "));
-        }
-
-        // List files that would be included
-        println!("\n  Files:");
-        println!("    SKILL.md");
-        if skill.has_scripts() {
-            println!("    scripts/");
-        }
-        if skill.has_references() {
-            println!("    references/");
-        }
-        if skill.has_assets() {
-            println!("    assets/");
-        }
-
-        println!("\n✓ Dry run complete. Use without --dry-run to publish.");
+    // Get tag message - prompt if not provided and not dry-run and not --yes
+    let tag_msg = if let Some(msg) = args.message.clone() {
+        msg
+    } else if !args.dry_run && !args.yes {
+        prompt_tag_message(&format!("Release {}", tag))?
     } else {
-        // TODO: Implement actual registry upload
-        // 1. Check authentication (login token)
-        // 2. Package skill files
-        // 3. Upload to registry API
-        println!("\n⚠ Registry upload not yet implemented.");
-        println!("  Skill validated and ready for publishing.");
-    }
-
-    Ok(())
-}
-
-/// Bump a semantic version string
-fn bump_version(version: &str, level: BumpLevel) -> Result<String> {
-    let parts: Vec<&str> = version.split('.').collect();
-    if parts.len() != 3 {
-        bail!(
-            "Invalid version format '{}'. Expected MAJOR.MINOR.PATCH",
-            version
-        );
-    }
-
-    let major: u32 = parts[0]
-        .parse()
-        .map_err(|_| anyhow::anyhow!("Invalid major version"))?;
-    let minor: u32 = parts[1]
-        .parse()
-        .map_err(|_| anyhow::anyhow!("Invalid minor version"))?;
-    let patch: u32 = parts[2]
-        .parse()
-        .map_err(|_| anyhow::anyhow!("Invalid patch version"))?;
-
-    let (new_major, new_minor, new_patch) = match level {
-        BumpLevel::Major => (major + 1, 0, 0),
-        BumpLevel::Minor => (major, minor + 1, 0),
-        BumpLevel::Patch => (major, minor, patch + 1),
+        format!("Release {}", tag)
     };
 
-    Ok(format!("{}.{}.{}", new_major, new_minor, new_patch))
+    // Dry run
+    if args.dry_run {
+        println!();
+        println!("[Dry run] Would execute:");
+        println!("  1. git tag -a {} -m \"{}\"", tag, tag_msg);
+        if !args.no_push {
+            println!("  2. git push {} {}", remote, tag);
+            println!("  3. POST /v1/paks/publish");
+        }
+        println!();
+        println!("✓ Dry run complete.");
+        return Ok(());
+    }
+
+    // Confirm before publishing (unless --yes)
+    if !args.yes {
+        println!();
+        if !prompt_confirm_publish(skill.name(), version, &tag, &branch)? {
+            println!("Aborted.");
+            return Ok(());
+        }
+    }
+
+    // Execute
+    println!();
+
+    // Create tag
+    print!("  Creating tag {}... ", tag);
+    git::create_tag(skill_path, &tag, &tag_msg)?;
+    println!("✓");
+
+    if args.no_push {
+        println!();
+        println!("✓ Tag created locally. Push manually when ready:");
+        println!("  git push {} {}", remote, tag);
+        return Ok(());
+    }
+
+    // Push tag
+    print!("  Pushing tag... ");
+    git::push_tag(skill_path, remote, &tag)?;
+    println!("✓");
+
+    // Notify registry
+    print!("  Registering with registry... ");
+
+    let config = Config::load()?;
+    let token = config
+        .get_auth_token()
+        .ok_or_else(|| anyhow::anyhow!("Not authenticated. Run 'paks login' first."))?;
+
+    // Determine pak path relative to repo root
+    let pak_path_in_repo = git::get_pak_path_in_repo(skill_path)?;
+
+    let mut client = PaksClient::new()?;
+    client.set_token(token);
+
+    let request = PublishPakRequest {
+        repository: repo_url,
+        path: if pak_path_in_repo == "." {
+            None
+        } else {
+            Some(pak_path_in_repo)
+        },
+        branch,
+        tag: tag.clone(),
+    };
+
+    client.publish_pak(request).await?;
+    println!("✓");
+
+    println!();
+    println!("✓ Published {}@{}", skill.name(), version);
+
+    Ok(())
 }
