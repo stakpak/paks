@@ -21,14 +21,14 @@ export function InstallCommand({ uri }: InstallCommandProps) {
 
   return (
     <div className="glass border border-border/30 hover:border-primary/30 transition-colors group animate-border-glow">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border/20">
+      <div className="flex items-center justify-between px-4 py-3 pb-0 border-b border-border/20">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Terminal className="w-3.5 h-3.5" />
           <span>Install</span>
         </div>
       </div>
       
-      <div className="flex items-center gap-3 px-4 py-4">
+      <div className="flex items-center gap-3 px-4 py-4 pt-2">
         {/* Command Display */}
         <div className="flex-1 flex items-center gap-3 overflow-x-auto scrollbar-thin">
           <span className="text-primary/60 select-none">$</span>

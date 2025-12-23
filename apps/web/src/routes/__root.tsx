@@ -57,7 +57,7 @@ function RootDocument() {
       <body className="min-h-screen bg-background text-foreground">
         <QueryClientProvider client={queryClient}>
           <Navbar />
-          <main className="pt-16">
+          <main className="pt-28 min-[550px]:pt-16">
             <Outlet />
           </main>
           <Toaster richColors />

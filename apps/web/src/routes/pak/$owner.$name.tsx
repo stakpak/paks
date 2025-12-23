@@ -59,11 +59,11 @@ function PakDetailPage() {
     staleTime: 60000,
   });
 
-  // Fetch pak content (README and files)
+  // Fetch pak content (README and files) using full_uri from pak data
   const { data: contentData, isLoading: contentLoading } = useQuery({
-    queryKey: ["pakContent", owner, name],
-    queryFn: () => client.getPakContent(`${owner}/${name}`),
-    enabled: !!pakData,
+    queryKey: ["pakContent", pakData?.full_uri],
+    queryFn: () => client.getPakContent(encodeURIComponent(pakData!.full_uri)),
+    enabled: !!pakData?.full_uri,
     staleTime: 60000,
   });
 
@@ -137,7 +137,7 @@ function PakDetailPage() {
               </div>
               {latestVersion && (
                 <span className="px-2 py-1 text-xs bg-primary/10 text-primary border border-primary/20 font-medium">
-                  v{latestVersion.version}
+                  {latestVersion.version}
                 </span>
               )}
             </div>
@@ -165,10 +165,6 @@ function PakDetailPage() {
             )}
           </header>
 
-          {/* Install Command - Prominent */}
-          <div className="mb-8">
-            <InstallCommand uri={`${owner}/${name}`} />
-          </div>
 
           {/* Tabs */}
           <div className="flex gap-1 mb-6 border-b border-border/30">
@@ -192,8 +188,8 @@ function PakDetailPage() {
             ))}
           </div>
 
-          {/* Content Layout: Main + Sidebar */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr,320px] gap-8">
+          {/* Content Layout: Main + Sidebar (70/30 split) */}
+          <div className="grid grid-cols-1 lg:grid-cols-[7fr_3fr] gap-8">
             {/* Main Content */}
             <div className="min-w-0">
               {activeTab === "readme" && (
@@ -218,7 +214,11 @@ function PakDetailPage() {
             </div>
 
             {/* Sidebar */}
-            <aside className="lg:sticky lg:top-24 lg:self-start">
+            <aside className="lg:sticky lg:top-24 lg:self-start space-y-4">
+              {/* Install Command - Most Prominent */}
+              <InstallCommand uri={`${owner}/${name}`} />
+              
+              {/* Metadata */}
               <PakSidebar pak={pak} latestVersion={latestVersion} />
             </aside>
           </div>

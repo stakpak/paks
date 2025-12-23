@@ -75,12 +75,14 @@ export function PakCard({ pak }: PakCardProps) {
       {pak.tags && pak.tags.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-4">
           {pak.tags.slice(0, 5).map((tag: string) => (
-            <span
+            <a
               key={tag}
-              className="px-2 py-0.5 text-[10px] bg-accent/50 text-accent-foreground border border-border/30 hover:border-primary/30 hover:bg-primary/10 transition-colors cursor-pointer"
+              href={`/search?query=${encodeURIComponent(tag)}`}
+              className="px-2 py-0.5 text-[10px] bg-accent/50 text-accent-foreground border border-border/30 hover:border-primary/30 hover:bg-primary/10 transition-colors"
+              onClick={(e) => e.stopPropagation()}
             >
               {tag}
-            </span>
+            </a>
           ))}
           {pak.tags.length > 5 && (
             <span className="px-2 py-0.5 text-[10px] text-muted-foreground">

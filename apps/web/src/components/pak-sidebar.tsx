@@ -4,7 +4,8 @@ import {
   Calendar, 
   Scale,
   ExternalLink,
-  TrendingUp
+  TrendingUp,
+  User
 } from "lucide-react";
 import type { PakWithLatestVersion, Pak, PakVersion } from "@paks/api";
 
@@ -62,8 +63,8 @@ export function PakSidebar({ pak, latestVersion }: PakSidebarProps) {
             <span className="text-xs text-muted-foreground">all time</span>
           </div>
           
-          {/* Animated Download Bar */}
-          <div className="h-2 bg-muted/50 overflow-hidden">
+          {/* Download Bar - empty track is visible */}
+          <div className="h-2 bg-muted/80 overflow-hidden rounded-sm">
             <div 
               className="h-full bg-gradient-to-r from-primary/60 via-primary to-primary/60 animate-gradient-shift"
               style={{ 
@@ -89,7 +90,7 @@ export function PakSidebar({ pak, latestVersion }: PakSidebarProps) {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-lg font-semibold text-foreground">
-                v{latestVersion.version}
+                {latestVersion.version}
               </span>
               <span className="px-1.5 py-0.5 text-[10px] bg-green-500/20 text-green-400 border border-green-500/30">
                 latest
@@ -121,6 +122,17 @@ export function PakSidebar({ pak, latestVersion }: PakSidebarProps) {
           <Scale className="w-4 h-4 text-muted-foreground" />
           <span className="text-sm text-foreground">MIT</span>
         </div>
+      </SidebarCard>
+
+      {/* Author */}
+      <SidebarCard title="Author">
+        <a
+          href={`/search?query=${encodeURIComponent(pak.owner_name)}`}
+          className="flex items-center gap-2 text-sm text-foreground hover:text-primary transition-colors group"
+        >
+          <User className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+          <span>{pak.owner_name}</span>
+        </a>
       </SidebarCard>
     </div>
   );

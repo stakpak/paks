@@ -75,7 +75,7 @@ export function VersionList({ pak, latestVersion }: VersionListProps) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-lg font-semibold text-foreground">
-                    v{version.version}
+                    {version.version}
                   </span>
                   {index === 0 && (
                     <span className="px-1.5 py-0.5 text-[10px] bg-green-500/20 text-green-400 border border-green-500/30">

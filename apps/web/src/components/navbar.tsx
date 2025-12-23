@@ -1,12 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate, useSearch, useLocation } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export function Navbar() {
   const navigate = useNavigate();
-  const location = useLocation();
   
   // Get query from URL if on search page
   const searchParams = useSearch({ strict: false }) as { query?: string } | undefined;
@@ -14,12 +13,10 @@ export function Navbar() {
   
   const [searchValue, setSearchValue] = useState(urlQuery);
 
-  // Sync input with URL query when it changes
+  // Sync input with URL query when it changes (e.g., clicking a tag)
   useEffect(() => {
-    if (location.pathname === "/search") {
-      setSearchValue(urlQuery);
-    }
-  }, [urlQuery, location.pathname]);
+    setSearchValue(urlQuery);
+  }, [urlQuery]);
 
   const handleSearch = useCallback(() => {
     const trimmed = searchValue.trim();
@@ -45,7 +42,8 @@ export function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-strong">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between gap-4">
+        {/* Main row: Logo + Auth (always visible) + Search (hidden on small) */}
+        <div className="flex h-16 items-center justify-between gap-4 flex-wrap">
           {/* Logo */}
           <a href="/" className="flex-shrink-0 flex items-center gap-2">
             <img src="/icon-2.svg" alt="Paks" className="w-7 h-7" />
@@ -54,9 +52,9 @@ export function Navbar() {
             </span>
           </a>
 
-          {/* Search Bar - Centered */}
-          <div className="flex-1 max-w-xl mx-4">
-            <div className="relative group">
+          {/* Search Bar - Hidden on small, centered on larger */}
+          <div className="hidden min-[550px]:flex flex-1 max-w-xl mx-4">
+            <div className="relative group w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
               <Input
                 type="search"
@@ -89,6 +87,21 @@ export function Navbar() {
             >
               Sign Up
             </Button>
+          </div>
+        </div>
+
+        {/* Search Bar - Full width row on small screens only */}
+        <div className="min-[550px]:hidden pb-3">
+          <div className="relative group w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
+            <Input
+              type="search"
+              placeholder="Search packages..."
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="w-full pl-10 pr-4 h-10 bg-background/50 border-border/50 focus:border-primary/50 focus:bg-background/80 transition-all placeholder:text-muted-foreground/70"
+            />
           </div>
         </div>
       </div>
