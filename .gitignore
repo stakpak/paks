@@ -56,3 +56,9 @@ temp
 
 # Stakpak session files
 .stakpak/session*
+
+# Secrets
+github_token
+
+# Plans
+CD-SETUP-PLAN.md
