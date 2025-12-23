@@ -1,10 +1,21 @@
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { Toaster } from "@/components/ui/sonner";
+import { Navbar } from "@/components/navbar";
 
-import Header from "../components/header";
 import appCss from "../index.css?url";
+
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000, // 1 minute
+      retry: 1,
+    },
+  },
+});
 
 export interface RouterAppContext {}
 
@@ -19,7 +30,11 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "My App",
+        title: "Paks - AI Agent Skills Package Manager",
+      },
+      {
+        name: "description",
+        content: "Create, install, publish, and share reusable skills for AI coding agents like Claude Code, Cursor, and GitHub Copilot.",
       },
     ],
     links: [
@@ -39,12 +54,14 @@ function RootDocument() {
       <head>
         <HeadContent />
       </head>
-      <body>
-        <div className="grid h-svh grid-rows-[auto_1fr]">
-          <Header />
-          <Outlet />
-        </div>
-        <Toaster richColors />
+      <body className="min-h-screen bg-background text-foreground">
+        <QueryClientProvider client={queryClient}>
+          <Navbar />
+          <main className="pt-16">
+            <Outlet />
+          </main>
+          <Toaster richColors />
+        </QueryClientProvider>
         <TanStackRouterDevtools position="bottom-left" />
         <Scripts />
       </body>
