@@ -20,6 +20,7 @@ serde_yaml_ng = "0.10"  # For parsing SKILL.md frontmatter (Agent Skills spec co
 shellexpand = "3.1.1"
 paks-api = { path = "../../packages/api/rust" }
 tempfile = "3"
+dialoguer = "0.11"  # Interactive prompts
 
 [lints.clippy]
 unwrap_used = "deny"

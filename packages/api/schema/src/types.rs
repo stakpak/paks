@@ -369,32 +369,23 @@ pub struct VerifyTokenResponse {
 // Publish Models
 // ============================================================================
 
-/// Request to notify registry of a new publish
+/// Request body for POST /v1/paks/publish
 #[derive(Serialize, Deserialize, Debug, Clone, JsonSchema)]
-pub struct NotifyPublishRequest {
-    /// Git repository URL
+pub struct PublishPakRequest {
+    /// Git clone URL (HTTPS) - must be a GitHub URL
     pub repository: String,
-    /// Git tag (e.g., v1.0.0)
-    pub tag: String,
-    /// Commit hash (idempotency key)
-    pub commit_hash: String,
-    /// Path within repository (for monorepos)
+    /// Path to pak within repo ("." for root, "paks/my-pak" for monorepo)
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub pak_path: Option<String>,
+    pub path: Option<String>,
+    /// Branch the tag was created from
+    pub branch: String,
+    /// Git tag name (must start with `v` and follow semver)
+    pub tag: String,
 }
 
-/// Response from publish notification
-#[derive(Serialize, Deserialize, Debug, Clone, JsonSchema)]
-pub struct NotifyPublishResponse {
-    /// Whether indexing was successful
-    pub success: bool,
-    /// Status message
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub message: Option<String>,
-    /// URL to the published pak
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub pak_url: Option<String>,
-}
+/// Response from publish endpoint (empty on success - 200 OK)
+#[derive(Serialize, Deserialize, Debug, Clone, Default, JsonSchema)]
+pub struct PublishPakResponse {}
 
 // ============================================================================
 // Install Models
@@ -523,8 +514,8 @@ pub struct PaksApiSchema {
     pub verify_token_response: VerifyTokenResponse,
 
     // Publish models
-    pub notify_publish_request: NotifyPublishRequest,
-    pub notify_publish_response: NotifyPublishResponse,
+    pub publish_pak_request: PublishPakRequest,
+    pub publish_pak_response: PublishPakResponse,
 
     // Install models
     pub install_pak_info: InstallPakInfo,
