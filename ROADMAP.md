@@ -22,7 +22,7 @@
 | `remove` | ✅ | Fully implemented |
 | `agent` | ✅ | Fully implemented |
 | `info` | 🚧 | Local only - registry lookup missing |
-| `install` | 🚧 | Stub only - core logic missing |
+| `install` | ✅ | Registry, git, and local installation |
 | `search` | ❌ | Stub only |
 | `publish` | 🚧 | Validation works, git tag flow missing |
 | `login` | ❌ | Stub only |
@@ -254,26 +254,10 @@ Publishing is **git-based**. The registry doesn't store skill files directly—i
   5. [ ] **Registry notification**
      - POST to registry API to trigger indexing
 
-- [ ] **Registry Notification**
-  - [ ] After successful push, notify registry: `POST /api/skills/index`
-    ```json
-    {
-      "repository": "https://github.com/user/skill-repo",
-      "tag": "v1.2.3",
-      "commit_hash": "abc123def456...",  // idempotency key
-      "skill_path": "."  // or subdirectory for monorepos
-    }
-    ```
-  - [ ] **Idempotent publishing**: Use commit hash as idempotency key
-    - If version+commit already published, exit gracefully with message:
-      ```
-      ✓ Version v1.2.3 already published (commit abc123d)
-      ```
-    - No error, no retry - just inform and exit 0
-  - [ ] Registry fetches skill data from the git tag
-  - [ ] Handle registry errors gracefully (tag is already pushed, so skill is "published" even if registry fails)
-  - [ ] Retry logic for transient failures
-  - [ ] Show registry URL where skill will be available
+- [ ] **Registry Notification** (handled via GitHub App webhook - no CLI action needed)
+  - [ ] Registry automatically indexes new tags via GitHub webhook
+  - [ ] CLI just needs to push the tag; registry picks it up
+  - [ ] Show registry URL where skill will be available after indexing
 
 - [ ] **Pre-publish Validation**
   - [ ] Validate `SKILL.md` exists and has valid frontmatter
@@ -360,7 +344,7 @@ Registry:
 ### 3. Skill Installation
 
 **Priority:** High  
-**Status:** 🚧 Partial  
+**Status:** ✅ Complete  
 **Files:** `apps/cli/src/commands/install.rs`
 
 #### Overview
@@ -371,93 +355,86 @@ Install skills from multiple sources: the paks registry, git repositories, or lo
 #### Completed
 - [x] Target directory resolution (agent-based or custom)
 - [x] CLI argument parsing
+- [x] SkillRef parsing with version support (`account/skill[@version]`)
+- [x] Source type auto-detection (registry, git URL, local path)
+- [x] Registry installation via paks-api client
+- [x] Git installation with tag/branch/commit support
+- [x] Local path installation with recursive copy
+- [x] Flat directory naming (`owner--skill`) for agent compatibility
+- [x] Force reinstall with `--force` flag
 
 #### Tasks
 
-- [ ] **Namespaced Skill Names**
-  - [ ] Skills are identified as `account_name/skill_name`
+- [x] **Namespaced Skill Names**
+  - [x] Skills are identified as `account_name/skill_name`
     - Examples: `stakpak/kubernetes-deploy`, `johndoe/terraform-aws`
-  - [ ] Parse namespace from skill identifier:
+  - [x] Parse namespace from skill identifier:
     ```rust
     struct SkillRef {
         account: String,    // "stakpak"
         name: String,       // "kubernetes-deploy"
-    }
-    
-    fn parse_skill_ref(input: &str) -> Result<SkillRef> {
-        // "stakpak/kubernetes-deploy" -> SkillRef { account: "stakpak", name: "kubernetes-deploy" }
+        version: Option<String>,  // "1.2.3"
     }
     ```
-  - [ ] Validate namespace format:
-    - Format: `{account}/{skill}` (no `@` prefix)
+  - [x] Validate namespace format:
+    - Format: `{account}/{skill}[@version]`
     - Account name: lowercase alphanumeric + hyphens, 1-39 chars
     - Skill name: lowercase alphanumeric + hyphens, 1-64 chars
-  - [ ] Registry API uses namespaced paths: `GET /api/skills/{account}/{name}`
-  - [ ] Install directory structure: `~/.stakpak/skills/stakpak/kubernetes-deploy/`
-  - [ ] Handle collisions: same skill name under different accounts is allowed
+  - [x] Registry API uses namespaced paths: `GET /v1/paks/install/{account}/{name}`
+  - [x] Install directory structure: `~/.paks/skills/owner--skill/` (flat, agent-friendly)
+  - [x] Handle collisions: same skill name under different accounts is allowed (via `owner--skill` naming)
 
-- [ ] **Source Detection & Parsing**
-  - [ ] **Registry name**: Namespaced identifier like `stakpak/kubernetes-deploy`
-    - Format: `{account}/{skill}` (contains exactly one `/`)
-    - Query registry API: `GET /api/skills/{account}/{name}`
-  - [ ] **Git URL**: Full repository URL
+- [x] **Source Detection & Parsing**
+  - [x] **Registry name**: Namespaced identifier like `stakpak/kubernetes-deploy`
+    - Format: `{account}/{skill}[@version]` (contains exactly one `/`)
+    - Query registry API: `GET /v1/paks/install/{account}/{name}`
+  - [x] **Git URL**: Full repository URL
     - HTTPS: `https://github.com/user/skill-repo.git`
     - SSH: `git@github.com:user/skill-repo.git`
-    - With subdirectory: `https://github.com/user/monorepo.git#path=skills/my-skill`
-    - With ref: `https://github.com/user/repo.git#tag=v1.2.3`
-  - [ ] **Local path**: Filesystem path
+    - With subdirectory: `url#path=skills/my-skill`
+    - With ref: `url#ref=v1.2.3` or `url#tag=v1.2.3` or `url#branch=main`
+  - [x] **Local path**: Filesystem path
     - Relative: `./my-skill`, `../other-skill`
     - Absolute: `/home/user/skills/my-skill`
-  - [ ] Auto-detect source type from input string:
-    - Contains single `/` and no protocol → Registry (namespaced): `stakpak/kubernetes-deploy`
-    - Starts with `https://` or `git@` → Git URL
-    - Starts with `./`, `../`, or `/` → Local path
+  - [x] Auto-detect source type from input string
 
-- [ ] **Registry Installation**
-  - [ ] Fetch skill metadata: `GET /api/skills/{name}`
-  - [ ] Get available versions: `GET /api/skills/{name}/versions`
-  - [ ] Resolve version:
-    - `--version 1.2.3`: Exact version
-    - No flag: Latest stable version
-    - No semver ranges supported (exact or latest only)
-  - [ ] Get git repository URL from registry metadata
-  - [ ] Clone/fetch from git at the resolved version tag
-  - [ ] Extract skill to target directory
+- [x] **Registry Installation**
+  - [x] Use install API: `GET /v1/paks/install/{owner}/{pak_name}[@version]`
+  - [x] API returns all metadata needed for installation
+  - [x] API automatically records download event (no separate tracking needed)
+  - [x] Resolve version (inline syntax or latest)
+  - [x] Clone from `repository.clone_url` at `version.tag`
+  - [x] Extract `install.path` to target directory
 
-- [ ] **Git Installation**
-  - [ ] Clone repository to temporary directory
-  - [ ] Checkout specific ref:
-    - Tag: `--version v1.2.3` or `--tag v1.2.3`
-    - Branch: `--branch main`
-    - Commit: `--commit abc123`
-  - [ ] Handle monorepo structure:
-    - Parse `#path=` fragment from URL
-    - Support `--path` flag: `paks install https://github.com/org/monorepo.git --path skills/my-skill`
-  - [ ] Validate skill structure after checkout
-  - [ ] Copy skill directory to target location
-  - [ ] Clean up temporary clone
+- [x] **Git Installation**
+  - [x] Clone repository to temporary directory (shallow clone)
+  - [x] Checkout specific ref via URL fragment (`#ref=`, `#tag=`, `#branch=`)
+  - [x] Handle monorepo structure via `#path=` fragment
+  - [x] Validate skill structure after checkout
+  - [x] Copy skill directory to target location
+  - [x] Clean up temporary clone
 
-- [ ] **Local Installation**
-  - [ ] Validate source path exists
-  - [ ] Validate it's a valid skill (has SKILL.md)
-  - [ ] Copy directory recursively to target
-  - [ ] Preserve file permissions
-  - [ ] Handle symlinks (copy target or preserve link)
+- [x] **Local Installation**
+  - [x] Validate source path exists
+  - [x] Validate it's a valid skill (has SKILL.md)
+  - [x] Copy directory recursively to target
+  - [x] Handle symlinks (copy as symlinks on Unix)
 
-- [ ] **Installation Behavior**
-  - [ ] **Default**: Skip if skill already installed (same version)
-  - [ ] **`--force`**: Remove existing and reinstall
-  - [ ] **`--upgrade`**: Install only if newer version available
-  - [ ] Check installed version from existing SKILL.md
-  - [ ] Show diff of versions when upgrading
+- [x] **Installation Behavior**
+  - [x] **Default**: Error if skill already installed
+  - [x] **`--force`**: Remove existing and reinstall
+  - [ ] **`--upgrade`**: Install only if newer version available (future)
+  - [x] Check installed version from existing SKILL.md
+  - [x] Show version comparison when upgrading
 
 - [ ] **Post-install Hooks** (optional, future)
   - [ ] Run `scripts/post-install.sh` if exists
   - [ ] Support `post_install` field in frontmatter
   - [ ] Sandbox script execution for security
 
-- [ ] **Progress & Output**
-  - [ ] Show download/clone progress
+- [ ] **Progress & Output** (future enhancement)
+  - [ ] Show download/clone progress with progress bar (indicatif crate)
+  - [ ] Spinner for operations without known size (git clone, API calls)
   - [ ] List files being installed
   - [ ] Show final installation path
   - [ ] Warn about overwritten files
@@ -469,7 +446,7 @@ Install skills from multiple sources: the paks registry, git repositories, or lo
 paks install stakpak/kubernetes-deploy
 
 # Install specific version
-paks install stakpak/kubernetes-deploy --version 1.2.3
+paks install stakpak/kubernetes-deploy@1.2.3
 
 # Install for specific agent
 paks install stakpak/kubernetes-deploy --agent claude-code
@@ -753,7 +730,121 @@ Shared HTTP client for all registry interactions. Handles authentication, retrie
 
 ---
 
-### 8. Additional Features (Nice to Have)
+### 8. Installation Lockfile
+
+**Priority:** Medium  
+**Status:** ❌ Not Started  
+**Files:** `apps/cli/src/commands/core/lockfile.rs`
+
+#### Overview
+Track all installed skills across multiple agents in a global lockfile. This enables:
+- Knowing where each skill is installed (which agent/directory)
+- Tracking installation source (registry, git, local)
+- Version tracking for updates
+- Supporting `paks list --all` across all agents
+
+#### Lockfile Location
+`~/.config/paks/paks-lock.toml`
+
+#### Lockfile Structure
+```toml
+# Global lockfile for tracking all installed skills
+# Auto-generated by paks - do not edit manually
+
+[[installations]]
+skill = "stakpak/kubernetes-deploy"
+version = "1.2.3"
+source = "registry"                    # registry | git | local
+source_uri = "stakpak/kubernetes-deploy@1.2.3"
+installed_at = "2024-01-15T10:30:00Z"
+agent = "claude-code"                  # agent name or null for custom dir
+install_dir = "/Users/user/.claude/skills/stakpak/kubernetes-deploy"
+
+[[installations]]
+skill = "my-local-skill"
+version = "0.1.0"
+source = "local"
+source_uri = "/path/to/my-local-skill"
+installed_at = "2024-01-16T14:00:00Z"
+agent = "stakpak"
+install_dir = "/Users/user/.stakpak/skills/my-local-skill"
+
+[[installations]]
+skill = "custom-skill"
+version = "2.0.0"
+source = "git"
+source_uri = "https://github.com/user/skill-repo.git#tag=v2.0.0"
+installed_at = "2024-01-17T09:15:00Z"
+agent = null                           # custom directory, no agent
+install_dir = "/custom/path/skills/custom-skill"
+```
+
+#### Tasks
+
+- [ ] **Lockfile Data Structure**
+  ```rust
+  #[derive(Serialize, Deserialize)]
+  pub struct Lockfile {
+      pub installations: Vec<Installation>,
+  }
+  
+  #[derive(Serialize, Deserialize)]
+  pub struct Installation {
+      pub skill: String,           // skill name or account/skill
+      pub version: String,
+      pub source: InstallSource,   // Registry, Git, Local
+      pub source_uri: String,      // original source reference
+      pub installed_at: DateTime<Utc>,
+      pub agent: Option<String>,   // agent name or None for custom
+      pub install_dir: PathBuf,
+  }
+  
+  #[derive(Serialize, Deserialize)]
+  pub enum InstallSource {
+      Registry,
+      Git,
+      Local,
+  }
+  ```
+
+- [ ] **Lockfile Operations**
+  - [ ] `Lockfile::load()` - Load from disk or create empty
+  - [ ] `Lockfile::save()` - Write to disk atomically
+  - [ ] `Lockfile::add_installation()` - Record new installation
+  - [ ] `Lockfile::remove_installation()` - Remove on uninstall
+  - [ ] `Lockfile::find_by_skill()` - Find all installations of a skill
+  - [ ] `Lockfile::find_by_agent()` - List skills for an agent
+  - [ ] `Lockfile::find_by_dir()` - Find installation by directory
+
+- [ ] **Integration with Install Command**
+  - [ ] Record installation in lockfile after successful install
+  - [ ] Check lockfile before install to detect existing installations
+  - [ ] Update lockfile entry on `--force` reinstall
+
+- [ ] **Integration with Remove Command**
+  - [ ] Remove entry from lockfile when skill is uninstalled
+  - [ ] Use lockfile to find skill location if not specified
+
+- [ ] **Integration with List Command**
+  - [ ] Use lockfile for `paks list --all` (faster than scanning dirs)
+  - [ ] Show source info (registry/git/local) in listing
+  - [ ] Cross-reference lockfile with actual directories (detect orphans)
+
+- [ ] **Lockfile Maintenance**
+  - [ ] `paks lock sync` - Reconcile lockfile with actual installations
+  - [ ] Detect and report orphaned entries (lockfile entry but no dir)
+  - [ ] Detect and report untracked skills (dir exists but no lockfile entry)
+  - [ ] Auto-repair option to fix inconsistencies
+
+- [ ] **Edge Cases**
+  - [ ] Handle concurrent access (file locking)
+  - [ ] Graceful handling of corrupted lockfile
+  - [ ] Migration from older lockfile versions
+  - [ ] Handle moved/renamed directories
+
+---
+
+### 9. Additional Features (Nice to Have)
 
 **Priority:** Low  
 **Status:** ❌ Not Started

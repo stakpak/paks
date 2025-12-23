@@ -1,0 +1,35 @@
+{
+  "name": "@paks/api",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for the Paks Registry API - generated from JSON Schema",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "generate:schema": "pnpm --filter @paks/api-schema generate && json2ts -i ../schema/schema.json -o src/types.ts --style.singleQuote --no-additionalProperties",
+    "build": "tsc",
+    "prepublishOnly": "pnpm run generate && pnpm run build"
+  },
+  "devDependencies": {
+    "json-schema-to-typescript": "^15.0.4",
+    "typescript": "^5.9.3"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "paks",
+    "stakpak",
+    "api",
+    "sdk",
+    "typescript"
+  ],
+  "license": "MIT"
+}

@@ -18,6 +18,8 @@ toml = "0.8"
 dirs = "6"
 serde_yaml_ng = "0.10"  # For parsing SKILL.md frontmatter (Agent Skills spec compatibility)
 shellexpand = "3.1.1"
+paks-api = { path = "../../packages/api/rust" }
+tempfile = "3"
 
 [lints.clippy]
 unwrap_used = "deny"

@@ -65,6 +65,7 @@ enum Commands {
     /// Install a skill to your agent's skills directory
     Install {
         /// Skill source (registry name, git URL, or local path)
+        /// Use account/skill@version for specific versions
         source: String,
 
         /// Target agent to install for
@@ -74,10 +75,6 @@ enum Commands {
         /// Custom install directory (overrides agent default)
         #[arg(short, long)]
         dir: Option<String>,
-
-        /// Specific version to install
-        #[arg(short, long)]
-        version: Option<String>,
 
         /// Force reinstall if already exists
         #[arg(short, long)]
@@ -294,14 +291,12 @@ async fn main() -> anyhow::Result<()> {
             source,
             agent,
             dir,
-            version,
             force,
         } => {
             commands::install::run(InstallArgs {
                 source,
                 agent: agent.map(|a| a.to_string()),
                 dir,
-                version,
                 force,
             })
             .await?;

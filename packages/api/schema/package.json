@@ -1,0 +1,13 @@
+{
+  "name": "@paks/api-schema",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "cargo:build": "cargo build --package paks-api --release",
+    "cargo:check": "cargo check --package paks-api",
+    "cargo:test": "cargo test --package paks-api",
+    "cargo:lint": "cargo clippy --package paks-api -- -D warnings",
+    "cargo:fmt": "cargo fmt --package paks-api",
+    "generate:schema": "cargo run --bin generate-schema 2>/dev/null > schema.json"
+  }
+}

@@ -1,0 +1,20 @@
+[package]
+name = "paks-api-schema"
+version.workspace = true
+edition.workspace = true
+description = "Paks Registry API types with JSON Schema generation"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+chrono.workspace = true
+uuid.workspace = true
+schemars.workspace = true
+
+[[bin]]
+name = "generate-schema"
+path = "src/bin/generate_schema.rs"
+
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"

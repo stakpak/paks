@@ -1,0 +1,1147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PaksApiSchema",
+  "description": "Root schema containing all API types Used for JSON Schema generation",
+  "type": "object",
+  "required": [
+    "content_item",
+    "content_item_type",
+    "error_detail",
+    "error_response",
+    "install_pak_info",
+    "install_path_info",
+    "install_repository_info",
+    "install_version_info",
+    "list_paks_query",
+    "list_paks_response",
+    "notify_publish_request",
+    "notify_publish_response",
+    "pak",
+    "pak_content",
+    "pak_content_response",
+    "pak_install_response",
+    "pak_sort_by",
+    "pak_status",
+    "pak_time_window",
+    "pak_version",
+    "pak_version_status",
+    "pak_version_with_pak_and_path",
+    "pak_visibility",
+    "pak_with_latest_version",
+    "search_paks_query",
+    "search_paks_response",
+    "user_info",
+    "verify_token_response"
+  ],
+  "properties": {
+    "content_item": {
+      "$ref": "#/definitions/ContentItem"
+    },
+    "content_item_type": {
+      "$ref": "#/definitions/ContentItemType"
+    },
+    "error_detail": {
+      "$ref": "#/definitions/ErrorDetail"
+    },
+    "error_response": {
+      "$ref": "#/definitions/ErrorResponse"
+    },
+    "install_pak_info": {
+      "$ref": "#/definitions/InstallPakInfo"
+    },
+    "install_path_info": {
+      "$ref": "#/definitions/InstallPathInfo"
+    },
+    "install_repository_info": {
+      "$ref": "#/definitions/InstallRepositoryInfo"
+    },
+    "install_version_info": {
+      "$ref": "#/definitions/InstallVersionInfo"
+    },
+    "list_paks_query": {
+      "$ref": "#/definitions/ListPaksQuery"
+    },
+    "list_paks_response": {
+      "$ref": "#/definitions/ListPaksResponse"
+    },
+    "notify_publish_request": {
+      "$ref": "#/definitions/NotifyPublishRequest"
+    },
+    "notify_publish_response": {
+      "$ref": "#/definitions/NotifyPublishResponse"
+    },
+    "pak": {
+      "$ref": "#/definitions/Pak"
+    },
+    "pak_content": {
+      "$ref": "#/definitions/PakContent"
+    },
+    "pak_content_response": {
+      "$ref": "#/definitions/PakContentResponse"
+    },
+    "pak_install_response": {
+      "$ref": "#/definitions/PakInstallResponse"
+    },
+    "pak_sort_by": {
+      "$ref": "#/definitions/PakSortBy"
+    },
+    "pak_status": {
+      "$ref": "#/definitions/PakStatus"
+    },
+    "pak_time_window": {
+      "$ref": "#/definitions/PakTimeWindow"
+    },
+    "pak_version": {
+      "$ref": "#/definitions/PakVersion"
+    },
+    "pak_version_status": {
+      "$ref": "#/definitions/PakVersionStatus"
+    },
+    "pak_version_with_pak_and_path": {
+      "$ref": "#/definitions/PakVersionWithPakAndPath"
+    },
+    "pak_visibility": {
+      "$ref": "#/definitions/PakVisibility"
+    },
+    "pak_with_latest_version": {
+      "$ref": "#/definitions/PakWithLatestVersion"
+    },
+    "search_paks_query": {
+      "$ref": "#/definitions/SearchPaksQuery"
+    },
+    "search_paks_response": {
+      "$ref": "#/definitions/SearchPaksResponse"
+    },
+    "user_info": {
+      "$ref": "#/definitions/UserInfo"
+    },
+    "verify_token_response": {
+      "$ref": "#/definitions/VerifyTokenResponse"
+    }
+  },
+  "definitions": {
+    "ContentItem": {
+      "description": "Content item in a directory listing",
+      "type": "object",
+      "required": [
+        "name",
+        "type",
+        "uri"
+      ],
+      "properties": {
+        "content": {
+          "description": "File content (if pre-fetched)",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "description": "File or directory name",
+          "type": "string"
+        },
+        "size": {
+          "description": "Size in bytes (for files)",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64"
+        },
+        "type": {
+          "description": "Type of item",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ContentItemType"
+            }
+          ]
+        },
+        "uri": {
+          "description": "Full URI to this item",
+          "type": "string"
+        }
+      }
+    },
+    "ContentItemType": {
+      "description": "Type of content item",
+      "type": "string",
+      "enum": [
+        "file",
+        "dir"
+      ]
+    },
+    "ErrorDetail": {
+      "description": "Error detail",
+      "type": "object",
+      "required": [
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "description": "Error code",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "message": {
+          "description": "Error message",
+          "type": "string"
+        }
+      }
+    },
+    "ErrorResponse": {
+      "description": "API error response",
+      "type": "object",
+      "required": [
+        "error"
+      ],
+      "properties": {
+        "error": {
+          "description": "Error details",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ErrorDetail"
+            }
+          ]
+        }
+      }
+    },
+    "InstallPakInfo": {
+      "description": "Pak info for installation",
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "owner",
+        "visibility"
+      ],
+      "properties": {
+        "description": {
+          "description": "Pak description",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "id": {
+          "description": "Unique pak identifier",
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "description": "Pak name",
+          "type": "string"
+        },
+        "owner": {
+          "description": "Owner/account name",
+          "type": "string"
+        },
+        "visibility": {
+          "description": "Visibility level",
+          "allOf": [
+            {
+              "$ref": "#/definitions/PakVisibility"
+            }
+          ]
+        }
+      }
+    },
+    "InstallPathInfo": {
+      "description": "Install path info",
+      "type": "object",
+      "required": [
+        "files",
+        "path"
+      ],
+      "properties": {
+        "files": {
+          "description": "List of files/directories in the pak",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "path": {
+          "description": "Path within repo (for monorepos), \".\" for root",
+          "type": "string"
+        }
+      }
+    },
+    "InstallRepositoryInfo": {
+      "description": "Repository info for installation",
+      "type": "object",
+      "required": [
+        "clone_url",
+        "default_branch",
+        "ssh_url",
+        "url"
+      ],
+      "properties": {
+        "clone_url": {
+          "description": "HTTPS clone URL",
+          "type": "string"
+        },
+        "default_branch": {
+          "description": "Default branch name",
+          "type": "string"
+        },
+        "ssh_url": {
+          "description": "SSH clone URL",
+          "type": "string"
+        },
+        "url": {
+          "description": "Repository URL",
+          "type": "string"
+        }
+      }
+    },
+    "InstallVersionInfo": {
+      "description": "Version info for installation",
+      "type": "object",
+      "required": [
+        "commit_hash",
+        "published_at",
+        "tag",
+        "version"
+      ],
+      "properties": {
+        "commit_hash": {
+          "description": "Full commit SHA",
+          "type": "string"
+        },
+        "published_at": {
+          "description": "Publication timestamp",
+          "type": "string",
+          "format": "date-time"
+        },
+        "tag": {
+          "description": "Git tag (e.g., v1.2.3)",
+          "type": "string"
+        },
+        "version": {
+          "description": "Semantic version (e.g., 1.2.3)",
+          "type": "string"
+        }
+      }
+    },
+    "ListPaksQuery": {
+      "description": "Query parameters for listing paks",
+      "type": "object",
+      "properties": {
+        "limit": {
+          "description": "Maximum number of results",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "offset": {
+          "description": "Pagination offset",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "sort_by": {
+          "description": "Sort order: TRENDING, MOST_POPULAR, or RECENT",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/PakSortBy"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "time_window": {
+          "description": "Time window for download counts",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/PakTimeWindow"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "ListPaksResponse": {
+      "description": "Response from listing paks",
+      "type": "object",
+      "required": [
+        "results"
+      ],
+      "properties": {
+        "results": {
+          "description": "List of paks with their latest versions",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PakWithLatestVersion"
+          }
+        }
+      }
+    },
+    "NotifyPublishRequest": {
+      "description": "Request to notify registry of a new publish",
+      "type": "object",
+      "required": [
+        "commit_hash",
+        "repository",
+        "tag"
+      ],
+      "properties": {
+        "commit_hash": {
+          "description": "Commit hash (idempotency key)",
+          "type": "string"
+        },
+        "pak_path": {
+          "description": "Path within repository (for monorepos)",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "repository": {
+          "description": "Git repository URL",
+          "type": "string"
+        },
+        "tag": {
+          "description": "Git tag (e.g., v1.0.0)",
+          "type": "string"
+        }
+      }
+    },
+    "NotifyPublishResponse": {
+      "description": "Response from publish notification",
+      "type": "object",
+      "required": [
+        "success"
+      ],
+      "properties": {
+        "message": {
+          "description": "Status message",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "pak_url": {
+          "description": "URL to the published pak",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "success": {
+          "description": "Whether indexing was successful",
+          "type": "boolean"
+        }
+      }
+    },
+    "Pak": {
+      "description": "A pak (knowledge package) in the registry",
+      "type": "object",
+      "required": [
+        "created_at",
+        "download_count",
+        "full_uri",
+        "id",
+        "name",
+        "owner_name",
+        "repository_url",
+        "status",
+        "tags",
+        "total_downloads",
+        "total_usages",
+        "updated_at",
+        "uri",
+        "usage_count",
+        "visibility"
+      ],
+      "properties": {
+        "created_at": {
+          "description": "Creation timestamp",
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "description": "Pak description",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "download_count": {
+          "description": "Downloads in current time window",
+          "type": "integer",
+          "format": "int64"
+        },
+        "full_uri": {
+          "description": "Full URI with protocol (stakpak://owner/name)",
+          "type": "string"
+        },
+        "id": {
+          "description": "Unique identifier",
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "description": "Pak name",
+          "type": "string"
+        },
+        "owner_name": {
+          "description": "Owner/account name",
+          "type": "string"
+        },
+        "path": {
+          "description": "Path within repository (for monorepos)",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "repository_url": {
+          "description": "Git repository URL",
+          "type": "string"
+        },
+        "status": {
+          "description": "Status",
+          "allOf": [
+            {
+              "$ref": "#/definitions/PakStatus"
+            }
+          ]
+        },
+        "tags": {
+          "description": "Tags/keywords",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "total_downloads": {
+          "description": "Total downloads all time",
+          "type": "integer",
+          "format": "int64"
+        },
+        "total_usages": {
+          "description": "Total usages all time",
+          "type": "integer",
+          "format": "int64"
+        },
+        "updated_at": {
+          "description": "Last update timestamp",
+          "type": "string",
+          "format": "date-time"
+        },
+        "uri": {
+          "description": "Short URI (owner/name)",
+          "type": "string"
+        },
+        "usage_count": {
+          "description": "Usages in current time window",
+          "type": "integer",
+          "format": "int64"
+        },
+        "visibility": {
+          "description": "Visibility level",
+          "allOf": [
+            {
+              "$ref": "#/definitions/PakVisibility"
+            }
+          ]
+        }
+      }
+    },
+    "PakContent": {
+      "description": "Content of a pak - either a file or directory",
+      "oneOf": [
+        {
+          "description": "File content",
+          "type": "object",
+          "required": [
+            "content",
+            "type"
+          ],
+          "properties": {
+            "content": {
+              "description": "The file content",
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "File"
+              ]
+            }
+          }
+        },
+        {
+          "description": "Directory listing",
+          "type": "object",
+          "required": [
+            "items",
+            "type"
+          ],
+          "properties": {
+            "items": {
+              "description": "Directory contents",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ContentItem"
+              }
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Directory"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "PakContentResponse": {
+      "description": "Response from the content endpoint",
+      "type": "object",
+      "required": [
+        "content",
+        "uri"
+      ],
+      "properties": {
+        "content": {
+          "description": "Content (file or directory)",
+          "allOf": [
+            {
+              "$ref": "#/definitions/PakContent"
+            }
+          ]
+        },
+        "uri": {
+          "description": "Requested URI",
+          "type": "string"
+        }
+      }
+    },
+    "PakInstallResponse": {
+      "description": "Response from the install endpoint",
+      "type": "object",
+      "required": [
+        "install",
+        "pak",
+        "repository",
+        "version"
+      ],
+      "properties": {
+        "install": {
+          "description": "Installation path info",
+          "allOf": [
+            {
+              "$ref": "#/definitions/InstallPathInfo"
+            }
+          ]
+        },
+        "pak": {
+          "description": "Pak information",
+          "allOf": [
+            {
+              "$ref": "#/definitions/InstallPakInfo"
+            }
+          ]
+        },
+        "repository": {
+          "description": "Repository information",
+          "allOf": [
+            {
+              "$ref": "#/definitions/InstallRepositoryInfo"
+            }
+          ]
+        },
+        "version": {
+          "description": "Version information",
+          "allOf": [
+            {
+              "$ref": "#/definitions/InstallVersionInfo"
+            }
+          ]
+        }
+      }
+    },
+    "PakSortBy": {
+      "description": "Sort order for listing paks",
+      "type": "string",
+      "enum": [
+        "TRENDING",
+        "MOST_POPULAR",
+        "RECENT"
+      ]
+    },
+    "PakStatus": {
+      "description": "Pak status",
+      "type": "string",
+      "enum": [
+        "ACTIVE",
+        "DEPRECATED"
+      ]
+    },
+    "PakTimeWindow": {
+      "description": "Time window for download/usage counts",
+      "type": "string",
+      "enum": [
+        "DAILY",
+        "WEEKLY",
+        "MONTHLY",
+        "ALL_TIME"
+      ]
+    },
+    "PakVersion": {
+      "description": "A specific version of a pak",
+      "type": "object",
+      "required": [
+        "checksum",
+        "created_at",
+        "downloads",
+        "git_tag",
+        "id",
+        "manifest",
+        "published_at",
+        "status",
+        "updated_at",
+        "usages",
+        "version"
+      ],
+      "properties": {
+        "checksum": {
+          "description": "Content checksum",
+          "type": "string"
+        },
+        "created_at": {
+          "description": "Creation timestamp",
+          "type": "string",
+          "format": "date-time"
+        },
+        "downloads": {
+          "description": "Download count for this version",
+          "type": "integer",
+          "format": "int64"
+        },
+        "git_tag": {
+          "description": "Git tag (e.g., v1.0.0)",
+          "type": "string"
+        },
+        "id": {
+          "description": "Unique identifier",
+          "type": "string",
+          "format": "uuid"
+        },
+        "manifest": {
+          "description": "pak.toml manifest content",
+          "type": "string"
+        },
+        "published_at": {
+          "description": "Publication timestamp",
+          "type": "string",
+          "format": "date-time"
+        },
+        "size_bytes": {
+          "description": "Size in bytes",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64"
+        },
+        "status": {
+          "description": "Review status",
+          "allOf": [
+            {
+              "$ref": "#/definitions/PakVersionStatus"
+            }
+          ]
+        },
+        "updated_at": {
+          "description": "Last update timestamp",
+          "type": "string",
+          "format": "date-time"
+        },
+        "usages": {
+          "description": "Usage count for this version",
+          "type": "integer",
+          "format": "int64"
+        },
+        "version": {
+          "description": "Semantic version (e.g., 1.0.0)",
+          "type": "string"
+        }
+      }
+    },
+    "PakVersionStatus": {
+      "description": "Pak version review status",
+      "type": "string",
+      "enum": [
+        "SUBMITTED",
+        "APPROVED",
+        "REJECTED"
+      ]
+    },
+    "PakVersionWithPakAndPath": {
+      "description": "Pak version with full pak info and optional path",
+      "type": "object",
+      "required": [
+        "checksum",
+        "created_at",
+        "downloads",
+        "git_tag",
+        "id",
+        "manifest",
+        "pak",
+        "published_at",
+        "status",
+        "updated_at",
+        "usages",
+        "version"
+      ],
+      "properties": {
+        "checksum": {
+          "description": "Content checksum",
+          "type": "string"
+        },
+        "created_at": {
+          "description": "Creation timestamp",
+          "type": "string",
+          "format": "date-time"
+        },
+        "downloads": {
+          "description": "Download count",
+          "type": "integer",
+          "format": "int64"
+        },
+        "git_tag": {
+          "description": "Git tag",
+          "type": "string"
+        },
+        "id": {
+          "description": "Unique identifier",
+          "type": "string",
+          "format": "uuid"
+        },
+        "manifest": {
+          "description": "pak.toml manifest content",
+          "type": "string"
+        },
+        "pak": {
+          "description": "The pak",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Pak"
+            }
+          ]
+        },
+        "path": {
+          "description": "Requested path within pak",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "published_at": {
+          "description": "Publication timestamp",
+          "type": "string",
+          "format": "date-time"
+        },
+        "size_bytes": {
+          "description": "Size in bytes",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "int64"
+        },
+        "status": {
+          "description": "Review status",
+          "allOf": [
+            {
+              "$ref": "#/definitions/PakVersionStatus"
+            }
+          ]
+        },
+        "updated_at": {
+          "description": "Last update timestamp",
+          "type": "string",
+          "format": "date-time"
+        },
+        "usages": {
+          "description": "Usage count",
+          "type": "integer",
+          "format": "int64"
+        },
+        "version": {
+          "description": "Semantic version",
+          "type": "string"
+        }
+      }
+    },
+    "PakVisibility": {
+      "description": "Pak visibility level",
+      "type": "string",
+      "enum": [
+        "PUBLIC",
+        "UNLISTED",
+        "PRIVATE"
+      ]
+    },
+    "PakWithLatestVersion": {
+      "description": "Pak with its latest version info",
+      "type": "object",
+      "required": [
+        "created_at",
+        "download_count",
+        "full_uri",
+        "id",
+        "name",
+        "owner_name",
+        "repository_url",
+        "status",
+        "tags",
+        "total_downloads",
+        "total_usages",
+        "updated_at",
+        "uri",
+        "usage_count",
+        "visibility"
+      ],
+      "properties": {
+        "created_at": {
+          "description": "Creation timestamp",
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "description": "Pak description",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "download_count": {
+          "description": "Downloads in current time window",
+          "type": "integer",
+          "format": "int64"
+        },
+        "full_uri": {
+          "description": "Full URI with protocol (stakpak://owner/name)",
+          "type": "string"
+        },
+        "id": {
+          "description": "Unique identifier",
+          "type": "string",
+          "format": "uuid"
+        },
+        "latest_version": {
+          "description": "Latest version info (null if no versions)",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/PakVersion"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "name": {
+          "description": "Pak name",
+          "type": "string"
+        },
+        "owner_name": {
+          "description": "Owner/account name",
+          "type": "string"
+        },
+        "path": {
+          "description": "Path within repository (for monorepos)",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "repository_url": {
+          "description": "Git repository URL",
+          "type": "string"
+        },
+        "status": {
+          "description": "Status",
+          "allOf": [
+            {
+              "$ref": "#/definitions/PakStatus"
+            }
+          ]
+        },
+        "tags": {
+          "description": "Tags/keywords",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "total_downloads": {
+          "description": "Total downloads all time",
+          "type": "integer",
+          "format": "int64"
+        },
+        "total_usages": {
+          "description": "Total usages all time",
+          "type": "integer",
+          "format": "int64"
+        },
+        "updated_at": {
+          "description": "Last update timestamp",
+          "type": "string",
+          "format": "date-time"
+        },
+        "uri": {
+          "description": "Short URI (owner/name)",
+          "type": "string"
+        },
+        "usage_count": {
+          "description": "Usages in current time window",
+          "type": "integer",
+          "format": "int64"
+        },
+        "visibility": {
+          "description": "Visibility level",
+          "allOf": [
+            {
+              "$ref": "#/definitions/PakVisibility"
+            }
+          ]
+        }
+      }
+    },
+    "SearchPaksQuery": {
+      "description": "Query parameters for searching paks",
+      "type": "object",
+      "properties": {
+        "limit": {
+          "description": "Maximum number of results",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "offset": {
+          "description": "Pagination offset",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0.0
+        },
+        "owner": {
+          "description": "Owner name (for identifier search)",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "pak_name": {
+          "description": "Pak name (for identifier search)",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "query": {
+          "description": "Freeform keyword query",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "SearchPaksResponse": {
+      "description": "Response from searching paks",
+      "type": "object",
+      "required": [
+        "results"
+      ],
+      "properties": {
+        "results": {
+          "description": "List of matching paks",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Pak"
+          }
+        }
+      }
+    },
+    "UserInfo": {
+      "description": "User information returned from auth endpoints",
+      "type": "object",
+      "required": [
+        "email",
+        "id",
+        "username"
+      ],
+      "properties": {
+        "avatar_url": {
+          "description": "Avatar URL",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "email": {
+          "description": "Email address",
+          "type": "string"
+        },
+        "id": {
+          "description": "User ID",
+          "type": "string"
+        },
+        "username": {
+          "description": "Username",
+          "type": "string"
+        }
+      }
+    },
+    "VerifyTokenResponse": {
+      "description": "Response from token verification",
+      "type": "object",
+      "required": [
+        "user",
+        "valid"
+      ],
+      "properties": {
+        "expires_at": {
+          "description": "Token expiration time (null if no expiry)",
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "user": {
+          "description": "User info",
+          "allOf": [
+            {
+              "$ref": "#/definitions/UserInfo"
+            }
+          ]
+        },
+        "valid": {
+          "description": "Whether the token is valid",
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
