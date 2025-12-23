@@ -188,11 +188,11 @@ impl Config {
     }
 
     /// Get the default skills directory when no agent is specified
-    /// This is ~/.paks/skills
+    /// This is ~/.agents/skills
     pub fn default_skills_dir() -> PathBuf {
         dirs::home_dir()
-            .map(|h| h.join(".paks").join("skills"))
-            .unwrap_or_else(|| PathBuf::from("~/.paks/skills"))
+            .map(|h| h.join(".agents").join("skills"))
+            .unwrap_or_else(|| PathBuf::from("~/.agents/skills"))
     }
 
     /// Create default config with built-in agents (no default agent until user sets one)

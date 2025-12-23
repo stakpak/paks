@@ -381,7 +381,7 @@ Install skills from multiple sources: the paks registry, git repositories, or lo
     - Account name: lowercase alphanumeric + hyphens, 1-39 chars
     - Skill name: lowercase alphanumeric + hyphens, 1-64 chars
   - [x] Registry API uses namespaced paths: `GET /v1/paks/install/{account}/{name}`
-  - [x] Install directory structure: `~/.paks/skills/owner--skill/` (flat, agent-friendly)
+  - [x] Install directory structure: `~/.agents/skills/owner--skill/` (flat, agent-friendly)
   - [x] Handle collisions: same skill name under different accounts is allowed (via `owner--skill` naming)
 
 - [x] **Source Detection & Parsing**
