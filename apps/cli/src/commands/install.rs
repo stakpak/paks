@@ -221,7 +221,7 @@ async fn install_from_registry(skill_ref: SkillRef, install_dir: &Path, force: b
 
     // Create API client
     let client = PaksClient::builder()
-        .base_url("http://localhost:4000")
+        .base_url("https://apiv2.stakpak.dev")
         .build()
         .context("Failed to create API client")?;
 

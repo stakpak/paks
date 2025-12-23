@@ -7,7 +7,7 @@ use std::time::Duration;
 use url::Url;
 
 /// Default API base URL
-pub const DEFAULT_BASE_URL: &str = "http://localhost:4000";
+pub const DEFAULT_BASE_URL: &str = "https://apiv2.stakpak.dev";
 
 /// Default request timeout in seconds
 const DEFAULT_TIMEOUT_SECS: u64 = 30;
