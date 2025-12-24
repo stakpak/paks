@@ -74,19 +74,18 @@ export function Navbar() {
 
           {/* Auth Buttons */}
           <div className="flex items-center gap-3 flex-shrink-0">
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="text-foreground/80 hover:text-foreground hover:bg-accent/50"
+            <a 
+              href="https://stakpak.dev/auth/signin"
+              className="inline-flex items-center justify-center h-8 px-3 text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-accent/50 transition-colors"
             >
               Sign In
-            </Button>
-            <Button 
-              size="sm"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 glow-cyan-sm transition-all hover:glow-cyan"
+            </a>
+            <a 
+              href="https://stakpak.dev/auth/signup"
+              className="inline-flex items-center justify-center h-8 px-3 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 glow-cyan-sm transition-all hover:glow-cyan"
             >
               Sign Up
-            </Button>
+            </a>
           </div>
         </div>
 

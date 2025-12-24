@@ -57,13 +57,13 @@ export function Hero() {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-          <Button 
-            size="lg" 
-            className="h-12 px-8 text-sm bg-primary text-primary-foreground hover:bg-primary/90 glow-cyan transition-all hover:glow-cyan-lg group"
+          <a 
+            href="https://stakpak.dev/auth/signin"
+            className="inline-flex items-center justify-center h-12 px-8 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 glow-cyan transition-all hover:glow-cyan-lg group"
           >
             <Zap className="w-4 h-4 mr-2 transition-transform group-hover:scale-110" />
             Get Started
-          </Button>
+          </a>
           <Button 
             variant="outline" 
             size="lg"
