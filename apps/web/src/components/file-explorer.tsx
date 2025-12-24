@@ -86,7 +86,13 @@ export function FileExplorer({ content, isLoading, pakUri, skillContent }: FileE
     return [];
   };
 
-  const fileItems = getFileItems();
+  const fileItems = getFileItems().sort((a, b) => {
+    // Directories first
+    if (a.type === "dir" && b.type !== "dir") return -1;
+    if (a.type !== "dir" && b.type === "dir") return 1;
+    // Then alphabetically by name
+    return (a.name || "").localeCompare(b.name || "");
+  });
 
   // Handle clicking on a file or directory
   const handleItemClick = (item: ContentItem) => {

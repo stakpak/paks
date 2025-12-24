@@ -6,7 +6,7 @@ import { Pagination } from "@/components/pagination";
 import { Footer } from "@/components/footer";
 import { TrendingUp, Loader2, AlertCircle, Package } from "lucide-react";
 
-const RESULTS_PER_PAGE = 20;
+const RESULTS_PER_PAGE = 10;
 
 interface TrendingParams {
   page?: number;

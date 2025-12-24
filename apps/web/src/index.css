@@ -164,6 +164,98 @@
   }
 }
 
+@keyframes sparkle-fade {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+}
+
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg) translateX(var(--orbit-radius, 60px)) rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg) translateX(var(--orbit-radius, 60px)) rotate(-360deg);
+  }
+}
+
+@keyframes explosion {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0);
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+}
+
+@keyframes aurora-shift {
+  0% {
+    opacity: 0.2;
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    opacity: 0.4;
+    filter: hue-rotate(20deg);
+  }
+  100% {
+    opacity: 0.3;
+    filter: hue-rotate(-10deg);
+  }
+}
+
+@keyframes pixel-fade {
+  0% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
+
+@keyframes float-pixel {
+  0%, 100% {
+    transform: translateY(0px);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-8px);
+    opacity: 0.6;
+  }
+}
+
+@keyframes scanlines {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(4px);
+  }
+}
+
+.animate-float-pixel {
+  animation: float-pixel 3s ease-in-out infinite;
+}
+
 @keyframes float {
   0%, 100% {
     transform: translateY(0px) rotate(0deg);
@@ -401,6 +493,25 @@
   }
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
     background: oklch(0.45 0.08 195);
+  }
+  
+  /* Global scrollbar - darker theme for all scrollbars */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: oklch(0.12 0.01 250);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: oklch(0.3 0.04 195);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.4 0.06 195);
+  }
+  ::-webkit-scrollbar-corner {
+    background: oklch(0.12 0.01 250);
   }
 }
 

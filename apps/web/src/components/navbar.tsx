@@ -61,7 +61,7 @@ export function Navbar() {
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="w-full pl-10 pr-20 h-10 bg-background/50 border-border/50 focus:border-primary/50 focus:bg-background/80 transition-all placeholder:text-muted-foreground/70"
+                className="w-full pl-10 pr-20 h-10 bg-black/40 border border-white/10 focus:border-primary/60 focus:bg-black/50 transition-all placeholder:text-muted-foreground/70"
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
                 <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-1 border border-border/50 bg-muted/50 px-1.5 text-[10px] font-medium text-muted-foreground">
@@ -71,19 +71,13 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Auth Buttons */}
-          <div className="flex items-center gap-3 flex-shrink-0">
+          {/* Auth Button */}
+          <div className="flex items-center flex-shrink-0">
             <a 
               href="https://stakpak.dev/auth/signin"
-              className="inline-flex items-center justify-center h-8 px-3 text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-accent/50 transition-colors"
+              className="inline-flex items-center justify-center h-8 px-4 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 glow-cyan-sm transition-all hover:glow-cyan"
             >
-              Sign In
-            </a>
-            <a 
-              href="https://stakpak.dev/auth/signup"
-              className="inline-flex items-center justify-center h-8 px-3 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 glow-cyan-sm transition-all hover:glow-cyan"
-            >
-              Sign Up
+              Get a free Stakpak API key
             </a>
           </div>
         </div>
