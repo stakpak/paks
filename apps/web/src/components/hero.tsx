@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, useLayoutEffect } from "react";
 import { Package, Download, Upload, Zap, Rocket, Sparkles } from "lucide-react";
 
 // ASCII characters to use (package/code themed)
@@ -98,8 +98,8 @@ export function Hero() {
     return { distance: Infinity, inTrail: false, fade: 0 };
   };
 
-  // Update dimensions on mount and resize
-  useEffect(() => {
+  // Update dimensions on mount and resize - use layoutEffect for immediate measurement
+  useLayoutEffect(() => {
     const updateDimensions = () => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
@@ -214,7 +214,7 @@ export function Hero() {
         }}
       />
 
-      {/* Floating Orbs/Circles */}
+      {/* Floating Orbs/Circles - with staggered but faster animation start */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div 
           className="absolute -top-48 -right-48 w-[600px] h-[600px] rounded-full animate-pulse-glow"
@@ -222,23 +222,23 @@ export function Hero() {
         />
         <div 
           className="absolute -bottom-32 -left-32 w-[500px] h-[500px] rounded-full animate-pulse-glow"
-          style={{ background: 'radial-gradient(circle, oklch(0.55 0.15 210 / 28%) 0%, transparent 70%)', animationDelay: '2s' }}
+          style={{ background: 'radial-gradient(circle, oklch(0.55 0.15 210 / 28%) 0%, transparent 70%)', animationDelay: '0.5s' }}
         />
         <div 
           className="absolute top-1/4 left-[10%] w-64 h-64 rounded-full animate-pulse-glow"
-          style={{ background: 'radial-gradient(circle, oklch(0.65 0.12 180 / 22%) 0%, transparent 70%)', animationDelay: '1s' }}
+          style={{ background: 'radial-gradient(circle, oklch(0.65 0.12 180 / 22%) 0%, transparent 70%)', animationDelay: '0.2s' }}
         />
         <div 
           className="absolute -top-24 left-1/4 w-72 h-72 rounded-full animate-pulse-glow"
-          style={{ background: 'radial-gradient(circle, oklch(0.7 0.18 50 / 20%) 0%, transparent 70%)', animationDelay: '3s' }}
+          style={{ background: 'radial-gradient(circle, oklch(0.7 0.18 50 / 20%) 0%, transparent 70%)', animationDelay: '0.8s' }}
         />
         <div 
           className="absolute bottom-1/4 -right-16 w-52 h-52 rounded-full animate-pulse-glow"
-          style={{ background: 'radial-gradient(circle, oklch(0.6 0.15 195 / 22%) 0%, transparent 70%)', animationDelay: '1.5s' }}
+          style={{ background: 'radial-gradient(circle, oklch(0.6 0.15 195 / 22%) 0%, transparent 70%)', animationDelay: '0.3s' }}
         />
         <div 
           className="absolute top-1/2 right-[15%] w-40 h-40 rounded-full animate-pulse-glow"
-          style={{ background: 'radial-gradient(circle, oklch(0.65 0.15 45 / 18%) 0%, transparent 70%)', animationDelay: '2.5s' }}
+          style={{ background: 'radial-gradient(circle, oklch(0.65 0.15 45 / 18%) 0%, transparent 70%)', animationDelay: '0.6s' }}
         />
       </div>
 
