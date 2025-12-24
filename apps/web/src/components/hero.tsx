@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo, useLayoutEffect } from "react";
-import { Package, Download, Upload, Zap, Rocket, Sparkles } from "lucide-react";
+import { Package, Download, Upload, Zap, Rocket, Code } from "lucide-react";
 
 // ASCII characters to use (package/code themed)
 const ASCII_CHARS = ['#', '@', '*', '+', '=', '-', '.', ':', ';', '/', '\\', '|', '{', '}', '[', ']', '<', '>', '0', '1'];
@@ -262,8 +262,16 @@ export function Hero() {
 
         {/* Subheadline */}
         <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-          Create, install, publish, and share reusable instruction sets that enhance 
-          AI coding agents like Claude Code, Cursor, and Copilot.
+          Create, install, publish, and share{" "}
+          <a 
+            href="https://agentskills.io/home" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-primary hover:text-primary/80 underline underline-offset-2 decoration-primary/50 hover:decoration-primary transition-colors"
+          >
+            reusable instruction sets
+          </a>{" "}
+          that enhance AI coding agents like Claude Code, Cursor, and Copilot.
         </p>
 
         {/* CTA Buttons */}
@@ -279,14 +287,14 @@ export function Hero() {
             Get Started
           </a>
           <a 
-            href="https://agentskills.io/home"
+            href="https://github.com/stakpak/paks"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center h-12 px-8 text-sm font-medium font-mono border-2 border-border/50 bg-background/50 hover:border-primary/50 hover:bg-accent/30 transition-colors group"
             style={{ boxShadow: '4px 4px 0 rgba(255,255,255,0.1)' }}
           >
-            <Sparkles className="w-4 h-4 mr-2" />
-            Agent Skills
+            <Code className="w-4 h-4 mr-2" />
+            View on GitHub
             <span className="ml-2 text-muted-foreground group-hover:text-foreground transition-colors">→</span>
           </a>
         </div>
