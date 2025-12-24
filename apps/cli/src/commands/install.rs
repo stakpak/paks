@@ -183,15 +183,19 @@ pub async fn run(args: InstallArgs) -> Result<()> {
     // Determine install directory
     let install_dir = if let Some(dir) = &args.dir {
         PathBuf::from(shellexpand::tilde(dir).as_ref())
-    } else if let Some(agent_name) = &args.agent {
-        let config = Config::load()?;
-        config
-            .get_agent(agent_name)
-            .map(|a| a.skills_dir.clone())
-            .unwrap_or_else(Config::default_skills_dir)
     } else {
-        // No agent specified - use ~/.paks/skills
-        Config::default_skills_dir()
+        let config = Config::load()?;
+        let agent_name = args.agent.as_ref().or(config.default_agent.as_ref());
+
+        if let Some(name) = agent_name {
+            config
+                .get_agent(name)
+                .map(|a| a.skills_dir.clone())
+                .unwrap_or_else(Config::default_skills_dir)
+        } else {
+            // No agent specified and no default - use ~/.paks/skills
+            Config::default_skills_dir()
+        }
     };
 
     // Detect source type

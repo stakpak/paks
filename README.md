@@ -298,7 +298,7 @@ paks agent show [name]       # Show agent details
 | `claude-code` | `~/.claude/skills` |
 | `cursor` | `~/.cursor/skills` |
 | `vscode` | `~/.vscode/skills` |
-| `copilot` | `~/.config/github-copilot/skills` |
+| `copilot` | `~/.copilot/skills` |
 | `goose` | `~/.config/goose/skills` |
 | `opencode` | `~/.config/opencode/skills` |
 
@@ -412,7 +412,7 @@ GET /api/skills/:name/:version
 
 ## Configuration
 
-Paks stores configuration at `~/.config/paks/config.toml`:
+Paks stores configuration at `~/.paks/config.toml`:
 
 ```toml
 # Default agent when --agent is not specified

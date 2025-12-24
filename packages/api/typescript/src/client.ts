@@ -13,8 +13,6 @@ import type {
   PakInstallResponse,
   VerifyTokenResponse,
   UserInfo,
-  NotifyPublishRequest,
-  NotifyPublishResponse,
   ErrorResponse,
 } from './types.js';
 
@@ -173,23 +171,6 @@ export class PaksClient {
     }
     const url = `${this.baseUrl}/v1/auth/me`;
     return this.request<UserInfo>(url, { requireAuth: true });
-  }
-
-  // ========================================================================
-  // Publish Endpoints
-  // ========================================================================
-
-  /** Notify the registry to index a new pak version */
-  async notifyPublish(request: NotifyPublishRequest): Promise<NotifyPublishResponse> {
-    if (!this.isAuthenticated()) {
-      throw new ApiError('AUTH_REQUIRED', 'Authentication required');
-    }
-    const url = `${this.baseUrl}/v1/paks/index`;
-    return this.request<NotifyPublishResponse>(url, {
-      method: 'POST',
-      body: request,
-      requireAuth: true,
-    });
   }
 
   // ========================================================================

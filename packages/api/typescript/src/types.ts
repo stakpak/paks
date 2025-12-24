@@ -62,8 +62,6 @@ export interface PaksApiSchema {
   install_version_info: InstallVersionInfo;
   list_paks_query: ListPaksQuery;
   list_paks_response: ListPaksResponse;
-  notify_publish_request: NotifyPublishRequest;
-  notify_publish_response: NotifyPublishResponse;
   pak: Pak;
   pak_content: PakContent;
   pak_content_response: PakContentResponse;
@@ -76,6 +74,8 @@ export interface PaksApiSchema {
   pak_version_with_pak_and_path: PakVersionWithPakAndPath;
   pak_visibility: PakVisibility;
   pak_with_latest_version: PakWithLatestVersion;
+  publish_pak_request: PublishPakRequest;
+  publish_pak_response: PublishPakResponse;
   search_paks_query: SearchPaksQuery;
   search_paks_response: SearchPaksResponse;
   user_info: UserInfo;
@@ -369,44 +369,6 @@ export interface PakVersion {
   version: string;
 }
 /**
- * Request to notify registry of a new publish
- */
-export interface NotifyPublishRequest {
-  /**
-   * Commit hash (idempotency key)
-   */
-  commit_hash: string;
-  /**
-   * Path within repository (for monorepos)
-   */
-  pak_path?: string | null;
-  /**
-   * Git repository URL
-   */
-  repository: string;
-  /**
-   * Git tag (e.g., v1.0.0)
-   */
-  tag: string;
-}
-/**
- * Response from publish notification
- */
-export interface NotifyPublishResponse {
-  /**
-   * Status message
-   */
-  message?: string | null;
-  /**
-   * URL to the published pak
-   */
-  pak_url?: string | null;
-  /**
-   * Whether indexing was successful
-   */
-  success: boolean;
-}
-/**
  * A pak (knowledge package) in the registry
  */
 export interface Pak {
@@ -575,6 +537,31 @@ export interface PakVersionWithPakAndPath {
   version: string;
 }
 /**
+ * Request body for POST /v1/paks/publish
+ */
+export interface PublishPakRequest {
+  /**
+   * Branch the tag was created from
+   */
+  branch: string;
+  /**
+   * Path to pak within repo ("." for root, "paks/my-pak" for monorepo)
+   */
+  path?: string | null;
+  /**
+   * Git clone URL (HTTPS) - must be a GitHub URL
+   */
+  repository: string;
+  /**
+   * Git tag name (must start with `v` and follow semver)
+   */
+  tag: string;
+}
+/**
+ * Response from publish endpoint (empty on success - 200 OK)
+ */
+export interface PublishPakResponse {}
+/**
  * Query parameters for searching paks
  */
 export interface SearchPaksQuery {
@@ -613,17 +600,33 @@ export interface SearchPaksResponse {
  */
 export interface UserInfo {
   /**
-   * Avatar URL
+   * Company
    */
-  avatar_url?: string | null;
+  company?: string | null;
   /**
    * Email address
    */
   email: string;
   /**
+   * First name
+   */
+  first_name?: string | null;
+  /**
    * User ID
    */
   id: string;
+  /**
+   * Job role
+   */
+  job_role?: string | null;
+  /**
+   * Last name
+   */
+  last_name?: string | null;
+  /**
+   * Profile image URL
+   */
+  profile_img_url?: string | null;
   /**
    * Username
    */

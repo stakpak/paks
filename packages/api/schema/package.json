@@ -8,6 +8,6 @@
     "cargo:test": "cargo test --package paks-api",
     "cargo:lint": "cargo clippy --package paks-api -- -D warnings",
     "cargo:fmt": "cargo fmt --package paks-api",
-    "generate:schema": "cargo run --bin generate-schema 2>/dev/null > schema.json"
+    "generate:schema": "cargo build --bin generate-schema && cargo run --bin generate-schema 2>/dev/null > schema.json"
   }
 }

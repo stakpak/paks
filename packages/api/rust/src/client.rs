@@ -166,7 +166,7 @@ impl PaksClient {
             return Err(ApiError::AuthRequired);
         }
 
-        let url = self.build_url("/v1/auth/me")?;
+        let url = self.build_url("/v1/account")?;
         let response = self
             .http_client
             .get(url)
