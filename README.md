@@ -44,6 +44,31 @@ AI coding agents are powerful, but they need context. Skills provide that contex
 
 ## Installation
 
+### Homebrew (macOS & Linux)
+
+```bash
+brew tap stakpak/stakpak
+brew install paks
+```
+
+### Download Binary
+
+Pre-built binaries are available for all major platforms on the [Releases page](https://github.com/stakpak/paks/releases):
+
+| Platform | Architecture | Download |
+|----------|--------------|----------|
+| macOS | Apple Silicon (M1/M2/M3) | `paks-darwin-aarch64.tar.gz` |
+| macOS | Intel | `paks-darwin-x86_64.tar.gz` |
+| Linux | x86_64 | `paks-linux-x86_64.tar.gz` |
+| Linux | ARM64 | `paks-linux-aarch64.tar.gz` |
+| Windows | x86_64 | `paks-windows-x86_64.zip` |
+
+```bash
+# Example: Download and install on Linux x86_64
+curl -L https://github.com/stakpak/paks/releases/latest/download/paks-linux-x86_64.tar.gz | tar xz
+sudo mv paks /usr/local/bin/
+```
+
 ### From Source (Rust)
 
 ```bash
