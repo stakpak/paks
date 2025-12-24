@@ -1,5 +1,4 @@
 import { Package, Download, Upload, Zap, Code } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export function Hero() {
   return (
@@ -58,21 +57,24 @@ export function Hero() {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
           <a 
-            href="https://stakpak.dev/auth/signin"
+            href="https://github.com/stakpak/paks?tab=readme-ov-file#installation"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center justify-center h-12 px-8 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 glow-cyan transition-all hover:glow-cyan-lg group"
           >
             <Zap className="w-4 h-4 mr-2 transition-transform group-hover:scale-110" />
             Get Started
           </a>
-          <Button 
-            variant="outline" 
-            size="lg"
-            className="h-12 px-8 text-sm border-border/50 hover:border-primary/50 hover:bg-accent/30 group"
+          <a 
+            href="https://github.com/stakpak/paks"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center h-12 px-8 text-sm font-medium border border-border/50 hover:border-primary/50 hover:bg-accent/30 transition-colors group"
           >
             <Code className="w-4 h-4 mr-2" />
             View on GitHub
             <span className="ml-2 text-muted-foreground group-hover:text-foreground transition-colors">→</span>
-          </Button>
+          </a>
         </div>
 
         {/* Stats Row */}
