@@ -34,7 +34,7 @@ export function Footer() {
               GitHub
             </a>
             <a 
-              href="https://docs.stakpak.dev" 
+              href="https://github.com/stakpak/paks?tab=readme-ov-file#-paks" 
               target="_blank" 
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group"
