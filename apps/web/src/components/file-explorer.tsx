@@ -3,7 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { PaksClient } from "@paks/api";
 import type { PakContent, ContentItem } from "@paks/api";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+// TODO: Switch back to ESM import once react-syntax-highlighter fixes their broken ESM exports
+// See: https://github.com/react-syntax-highlighter/react-syntax-highlighter/issues
+// Original: import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { 
   Folder, 
   FolderOpen,

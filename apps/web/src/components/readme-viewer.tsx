@@ -1,7 +1,10 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+// TODO: Switch back to ESM import once react-syntax-highlighter fixes their broken ESM exports
+// See: https://github.com/react-syntax-highlighter/react-syntax-highlighter/issues
+// Original: import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { FileText, Loader2 } from "lucide-react";
 
 interface ReadmeViewerProps {
