@@ -1,4 +1,4 @@
-import { Package, Download, Upload, Zap, Shield, Code } from "lucide-react";
+import { Package, Download, Upload, Zap, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function Hero() {
@@ -80,7 +80,7 @@ export function Hero() {
           <StatItem icon={<Package className="w-4 h-4" />} value="500+" label="Skills" />
           <StatItem icon={<Download className="w-4 h-4" />} value="10K+" label="Downloads" />
           <StatItem icon={<Upload className="w-4 h-4" />} value="100+" label="Publishers" />
-          <StatItem icon={<Shield className="w-4 h-4" />} value="MIT" label="Licensed" />
+          <StatItem icon={<Zap className="w-4 h-4" />} value="8" label="AGENTS" />
         </div>
       </div>
 
@@ -93,7 +93,7 @@ export function Hero() {
 function StatItem({ icon, value, label }: { icon: React.ReactNode; value: string; label: string }) {
   return (
     <div className="flex items-center gap-3 group">
-      <div className="p-2 glass text-primary group-hover:glow-cyan-sm transition-all">
+      <div className="p-2 glass text-[oklch(0.75_0.16_55)] group-hover:text-[oklch(0.82_0.14_55)] transition-all" style={{ boxShadow: '0 0 10px oklch(0.75 0.16 55 / 12%)' }}>
         {icon}
       </div>
       <div className="text-left">

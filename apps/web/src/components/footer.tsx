@@ -48,7 +48,7 @@ export function Footer() {
         {/* Copyright */}
         <div className="mt-8 pt-6 border-t border-border/20 text-center">
           <p className="text-xs text-muted-foreground/70">
-            © {new Date().getFullYear()} Stakpak. MIT License.
+            © {new Date().getFullYear()} Stakpak. Apache 2.0 License.
           </p>
         </div>
       </div>

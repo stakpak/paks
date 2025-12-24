@@ -12,6 +12,13 @@ interface SkillViewerProps {
   isLoading?: boolean;
 }
 
+// Remove YAML frontmatter from markdown content
+function stripFrontmatter(content: string): string {
+  // Match frontmatter block: starts with ---, ends with ---
+  const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n?/;
+  return content.replace(frontmatterRegex, '').trim();
+}
+
 export function SkillViewer({ content, isLoading }: SkillViewerProps) {
   if (isLoading) {
     return (
@@ -38,23 +45,33 @@ export function SkillViewer({ content, isLoading }: SkillViewerProps) {
     );
   }
 
+  // Strip frontmatter before rendering
+  const cleanContent = stripFrontmatter(content);
+
   return (
     <div className="glass border border-border/30 p-6 sm:p-8">
-      <article className="prose prose-invert prose-sm sm:prose-base max-w-none
-        prose-headings:text-foreground prose-headings:font-bold prose-headings:border-b prose-headings:border-border/30 prose-headings:pb-2 prose-headings:mb-4
-        prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg
-        prose-p:text-muted-foreground prose-p:leading-relaxed
-        prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-        prose-strong:text-foreground
-        prose-code:text-primary prose-code:bg-primary/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
-        prose-pre:bg-transparent prose-pre:p-0
-        prose-ul:text-muted-foreground prose-ol:text-muted-foreground
-        prose-li:marker:text-primary/60
-        prose-blockquote:border-l-primary prose-blockquote:bg-primary/5 prose-blockquote:pl-4 prose-blockquote:py-2 prose-blockquote:text-muted-foreground
-        prose-hr:border-border/30
-        prose-table:border prose-table:border-border/30
-        prose-th:bg-muted/30 prose-th:px-3 prose-th:py-2 prose-th:text-foreground
-        prose-td:px-3 prose-td:py-2 prose-td:border prose-td:border-border/30
+      <article className="
+        prose prose-invert max-w-none
+        prose-headings:text-foreground prose-headings:font-bold prose-headings:mt-8 prose-headings:mb-4
+        prose-h1:text-3xl prose-h1:border-b prose-h1:border-border/40 prose-h1:pb-3 prose-h1:mt-0
+        prose-h2:text-2xl prose-h2:border-b prose-h2:border-border/30 prose-h2:pb-2
+        prose-h3:text-xl prose-h3:font-semibold
+        prose-h4:text-lg
+        prose-p:text-foreground/90 prose-p:leading-7 prose-p:my-4
+        prose-a:text-primary prose-a:underline prose-a:underline-offset-2 hover:prose-a:text-primary/80
+        prose-strong:text-foreground prose-strong:font-semibold
+        prose-code:text-primary prose-code:bg-primary/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:rounded prose-code:before:content-none prose-code:after:content-none
+        prose-pre:bg-transparent prose-pre:p-0 prose-pre:my-4
+        prose-ul:my-4 prose-ul:pl-6 prose-ul:list-disc
+        prose-ol:my-4 prose-ol:pl-6 prose-ol:list-decimal
+        prose-li:text-foreground/90 prose-li:my-1 prose-li:leading-7
+        prose-li:marker:text-muted-foreground
+        prose-blockquote:border-l-4 prose-blockquote:border-primary/50 prose-blockquote:bg-muted/20 prose-blockquote:pl-4 prose-blockquote:py-1 prose-blockquote:my-4 prose-blockquote:text-foreground/80 prose-blockquote:not-italic
+        prose-hr:border-border/40 prose-hr:my-8
+        prose-table:border prose-table:border-border/30 prose-table:my-4
+        prose-th:bg-muted/40 prose-th:px-4 prose-th:py-2 prose-th:text-foreground prose-th:font-semibold prose-th:text-left
+        prose-td:px-4 prose-td:py-2 prose-td:border prose-td:border-border/30
+        prose-img:rounded prose-img:my-4
       ">
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
@@ -108,7 +125,7 @@ export function SkillViewer({ content, isLoading }: SkillViewerProps) {
             },
           }}
         >
-          {content}
+          {cleanContent}
         </ReactMarkdown>
       </article>
     </div>

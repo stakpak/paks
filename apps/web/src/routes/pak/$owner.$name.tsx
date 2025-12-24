@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { PaksClient } from "@paks/api";
-import type { PakWithLatestVersion, PakContent } from "@paks/api";
+import type { PakWithLatestVersion } from "@paks/api";
 import { InstallCommand } from "@/components/install-command";
 import { PakSidebar } from "@/components/pak-sidebar";
 import { SkillViewer } from "@/components/readme-viewer";
@@ -59,16 +59,26 @@ function PakDetailPage() {
     staleTime: 60000,
   });
 
-  // Fetch pak content (README and files) using full_uri from pak data
-  const { data: contentData, isLoading: contentLoading } = useQuery({
-    queryKey: ["pakContent", pakData?.full_uri],
-    queryFn: () => client.getPakContent(encodeURIComponent(pakData!.full_uri)),
-    enabled: !!pakData?.full_uri,
+  // Fetch SKILL.md content using uri/SKILL.md (not full_uri which includes stakpak:// protocol)
+  const { data: skillData, isLoading: skillLoading } = useQuery({
+    queryKey: ["skillContent", pakData?.uri],
+    queryFn: () => client.getPakContent(`${pakData!.uri}/SKILL.md`),
+    enabled: !!pakData?.uri,
     staleTime: 60000,
   });
 
-  // Get README content from pak content
-  const readmeContent = extractReadme(contentData?.content);
+  // Fetch pak content (files) using uri from pak data
+  const { data: contentData, isLoading: contentLoading } = useQuery({
+    queryKey: ["pakContent", pakData?.uri],
+    queryFn: () => client.getPakContent(pakData!.uri),
+    enabled: !!pakData?.uri,
+    staleTime: 60000,
+  });
+
+  // Get SKILL.md content - check if it's a file type
+  const skillContent = skillData?.content?.type === "File" 
+    ? skillData.content.content 
+    : null;
 
   const tabs: { id: TabType; label: string; icon: React.ReactNode }[] = [
     { id: "skill.md", label: "Skill.md", icon: <FileText className="w-4 h-4" /> },
@@ -136,7 +146,7 @@ function PakDetailPage() {
                 <h1 className="text-2xl sm:text-3xl font-bold gradient-text">{name}</h1>
               </div>
               {latestVersion && (
-                <span className="px-2 py-1 text-xs bg-primary/10 text-primary border border-primary/20 font-medium">
+                <span className="px-2 py-1 text-xs bg-[oklch(0.75_0.16_55/10%)] text-[oklch(0.75_0.16_55)] border border-[oklch(0.75_0.16_55/20%)] font-medium">
                   {latestVersion.version}
                 </span>
               )}
@@ -194,15 +204,16 @@ function PakDetailPage() {
             <div className="min-w-0">
               {activeTab === "skill.md" && (
                 <SkillViewer 
-                  content={readmeContent} 
-                  isLoading={contentLoading}
+                  content={skillContent} 
+                  isLoading={skillLoading}
                 />
               )}
               {activeTab === "files" && (
                 <FileExplorer 
                   content={contentData?.content}
                   isLoading={contentLoading}
-                  pakUri={`${owner}/${name}`}
+                  pakUri={pakData?.uri || `${owner}/${name}`}
+                  skillContent={skillContent}
                 />
               )}
               {activeTab === "versions" && (
@@ -214,7 +225,7 @@ function PakDetailPage() {
             </div>
 
             {/* Sidebar */}
-            <aside className="lg:sticky lg:top-24 lg:self-start space-y-4">
+            <aside className="lg:sticky lg:top-24 lg:self-start space-y-4 min-w-0 overflow-hidden">
               {/* Install Command - Most Prominent */}
               <InstallCommand uri={`${owner}/${name}`} />
               
@@ -228,26 +239,4 @@ function PakDetailPage() {
       <Footer />
     </div>
   );
-}
-
-// Helper to extract README content from pak content
-function extractReadme(content?: PakContent): string | null {
-  if (!content) return null;
-  
-  if (content.type === "File") {
-    return content.content;
-  }
-  
-  if (content.type === "Directory") {
-    // Look for README file
-    const readmeFile = content.items.find((item) => 
-      item.type === "file" && 
-      item.name.toLowerCase().startsWith("readme")
-    );
-    if (readmeFile?.content) {
-      return readmeFile.content;
-    }
-  }
-  
-  return null;
 }

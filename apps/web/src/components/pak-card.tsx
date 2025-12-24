@@ -47,7 +47,7 @@ export function PakCard({ pak }: PakCardProps) {
           {latestVersion && (
             <span className="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] bg-primary/10 text-primary border border-primary/20">
               <Tag className="w-2.5 h-2.5" />
-              v{latestVersion.version}
+              {latestVersion.version}
             </span>
           )}
         </div>

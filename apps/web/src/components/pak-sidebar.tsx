@@ -120,7 +120,7 @@ export function PakSidebar({ pak, latestVersion }: PakSidebarProps) {
       <SidebarCard title="License">
         <div className="flex items-center gap-2">
           <Scale className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm text-foreground">MIT</span>
+          <span className="text-sm text-foreground">Apache-2.0</span>
         </div>
       </SidebarCard>
 

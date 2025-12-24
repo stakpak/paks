@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/jetbrains-mono";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -88,6 +89,11 @@
   --sidebar-accent-foreground: oklch(0.95 0.01 200);
   --sidebar-border: oklch(0.30 0.04 200 / 30%);
   --sidebar-ring: oklch(0.78 0.16 195);
+
+  /* Orange Accent - Warm complementary accent */
+  --orange-accent: oklch(0.75 0.16 55);
+  --orange-accent-light: oklch(0.82 0.14 55);
+  --orange-accent-dark: oklch(0.65 0.17 55);
 }
 
 @theme inline {
@@ -307,14 +313,14 @@
 
   /* Glow Effects */
   .glow-cyan {
-    box-shadow: 0 0 20px oklch(0.78 0.16 195 / 30%),
-                0 0 40px oklch(0.78 0.16 195 / 20%),
-                0 0 60px oklch(0.78 0.16 195 / 10%);
+    box-shadow: 0 0 20px oklch(0.78 0.16 195 / 15%),
+                0 0 40px oklch(0.78 0.16 195 / 10%),
+                0 0 60px oklch(0.78 0.16 195 / 5%);
   }
 
   .glow-cyan-sm {
-    box-shadow: 0 0 10px oklch(0.78 0.16 195 / 25%),
-                0 0 20px oklch(0.78 0.16 195 / 15%);
+    box-shadow: 0 0 10px oklch(0.78 0.16 195 / 15%),
+                0 0 20px oklch(0.78 0.16 195 / 8%);
   }
 
   .glow-cyan-lg {
@@ -407,5 +413,8 @@
   }
   html {
     @apply font-sans scroll-smooth;
+  }
+  button {
+    cursor: pointer;
   }
 }
