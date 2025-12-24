@@ -13,6 +13,7 @@ import { Route as TrendingRouteImport } from './routes/trending'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PakOwnerNameRouteImport } from './routes/pak/$owner.$name'
+import { Route as ApiSitemapXmlRouteImport } from './routes/api/sitemap.xml'
 
 const TrendingRoute = TrendingRouteImport.update({
   id: '/trending',
@@ -34,17 +35,24 @@ const PakOwnerNameRoute = PakOwnerNameRouteImport.update({
   path: '/pak/$owner/$name',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSitemapXmlRoute = ApiSitemapXmlRouteImport.update({
+  id: '/api/sitemap/xml',
+  path: '/api/sitemap/xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/search': typeof SearchRoute
   '/trending': typeof TrendingRoute
+  '/api/sitemap/xml': typeof ApiSitemapXmlRoute
   '/pak/$owner/$name': typeof PakOwnerNameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/search': typeof SearchRoute
   '/trending': typeof TrendingRoute
+  '/api/sitemap/xml': typeof ApiSitemapXmlRoute
   '/pak/$owner/$name': typeof PakOwnerNameRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,33 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/search': typeof SearchRoute
   '/trending': typeof TrendingRoute
+  '/api/sitemap/xml': typeof ApiSitemapXmlRoute
   '/pak/$owner/$name': typeof PakOwnerNameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/search' | '/trending' | '/pak/$owner/$name'
+  fullPaths:
+    | '/'
+    | '/search'
+    | '/trending'
+    | '/api/sitemap/xml'
+    | '/pak/$owner/$name'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/search' | '/trending' | '/pak/$owner/$name'
-  id: '__root__' | '/' | '/search' | '/trending' | '/pak/$owner/$name'
+  to: '/' | '/search' | '/trending' | '/api/sitemap/xml' | '/pak/$owner/$name'
+  id:
+    | '__root__'
+    | '/'
+    | '/search'
+    | '/trending'
+    | '/api/sitemap/xml'
+    | '/pak/$owner/$name'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SearchRoute: typeof SearchRoute
   TrendingRoute: typeof TrendingRoute
+  ApiSitemapXmlRoute: typeof ApiSitemapXmlRoute
   PakOwnerNameRoute: typeof PakOwnerNameRoute
 }
 
@@ -99,6 +120,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PakOwnerNameRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/sitemap/xml': {
+      id: '/api/sitemap/xml'
+      path: '/api/sitemap/xml'
+      fullPath: '/api/sitemap/xml'
+      preLoaderRoute: typeof ApiSitemapXmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -106,6 +134,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SearchRoute: SearchRoute,
   TrendingRoute: TrendingRoute,
+  ApiSitemapXmlRoute: ApiSitemapXmlRoute,
   PakOwnerNameRoute: PakOwnerNameRoute,
 }
 export const routeTree = rootRouteImport
