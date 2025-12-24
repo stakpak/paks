@@ -46,7 +46,7 @@ export function Navbar() {
         <div className="flex h-16 items-center justify-between gap-4 flex-wrap">
           {/* Logo */}
           <a href="/" className="flex-shrink-0 flex items-center gap-2">
-            <img src="/icon-2.svg" alt="Paks" className="w-7 h-7" />
+            <img src="/logo.svg" alt="Paks" className="w-7 h-7" />
             <span className="text-2xl font-bold gradient-text-animated tracking-tight">
               Paks
             </span>
