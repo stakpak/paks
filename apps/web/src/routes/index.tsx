@@ -11,6 +11,15 @@ export const Route = createFileRoute("/")({
     const trendingPaks = await client.listPaks({ sort_by: "TRENDING", limit: 6 });
     return { trendingPaks };
   },
+  head: () => ({
+    meta: [
+      { title: "Paks - AI Agent Skills Package Manager" },
+      { name: "description", content: "Create, install, publish, and share reusable skills for AI coding agents like Claude Code, Cursor, and GitHub Copilot. The npm for AI agent capabilities." },
+    ],
+    links: [
+      { rel: "canonical", href: "https://paks.stakpak.dev/" },
+    ],
+  }),
   component: App,
 });
 
