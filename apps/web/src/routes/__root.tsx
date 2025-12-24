@@ -1,6 +1,9 @@
+import { useEffect } from "react";
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import posthog from "posthog-js";
+import { PostHogProvider } from "posthog-js/react";
 
 import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/navbar";
@@ -78,7 +81,20 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 });
 
 function RootDocument() {
-  return (
+  // Initialize PostHog only on paks.dev (production)
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.host === "paks.stakpak.dev") {
+      posthog.init("phc_QA5vkh1LnITsEmIhDeSZ2cE8veaBdpUKceWa3b9X3K9", {
+        api_host: "https://app.posthog.com",
+        capture_pageview: true,
+        capture_pageleave: true,
+      });
+    }
+  }, []);
+
+  const isProduction = typeof window !== "undefined" && window.location.host === "paks.stakpak.dev";
+
+  const content = (
     <html lang="en" className="dark">
       <head>
         <HeadContent />
@@ -96,4 +112,11 @@ function RootDocument() {
       </body>
     </html>
   );
+
+  // Wrap with PostHog provider only in production
+  if (isProduction) {
+    return <PostHogProvider client={posthog}>{content}</PostHogProvider>;
+  }
+
+  return content;
 }
