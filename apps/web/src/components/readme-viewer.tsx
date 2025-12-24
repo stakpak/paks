@@ -7,18 +7,18 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { FileText, Loader2 } from "lucide-react";
 
-interface ReadmeViewerProps {
+interface SkillViewerProps {
   content: string | null;
   isLoading?: boolean;
 }
 
-export function ReadmeViewer({ content, isLoading }: ReadmeViewerProps) {
+export function SkillViewer({ content, isLoading }: SkillViewerProps) {
   if (isLoading) {
     return (
       <div className="glass border border-border/30 p-8">
         <div className="flex flex-col items-center justify-center py-12">
           <Loader2 className="w-6 h-6 text-primary animate-spin mb-3" />
-          <p className="text-sm text-muted-foreground">Loading readme...</p>
+          <p className="text-sm text-muted-foreground">Loading skill.md...</p>
         </div>
       </div>
     );
@@ -29,9 +29,9 @@ export function ReadmeViewer({ content, isLoading }: ReadmeViewerProps) {
       <div className="glass border border-border/30 p-8">
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <FileText className="w-10 h-10 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium text-foreground mb-2">No README</h3>
+          <h3 className="text-lg font-medium text-foreground mb-2">No SKILL.md</h3>
           <p className="text-sm text-muted-foreground max-w-sm">
-            This package doesn't have a README file yet.
+            This package doesn't have a SKILL.md file yet.
           </p>
         </div>
       </div>

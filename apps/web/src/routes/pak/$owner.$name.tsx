@@ -5,7 +5,7 @@ import { PaksClient } from "@paks/api";
 import type { PakWithLatestVersion, PakContent } from "@paks/api";
 import { InstallCommand } from "@/components/install-command";
 import { PakSidebar } from "@/components/pak-sidebar";
-import { ReadmeViewer } from "@/components/readme-viewer";
+import { SkillViewer } from "@/components/readme-viewer";
 import { FileExplorer } from "@/components/file-explorer";
 import { VersionList } from "@/components/version-list";
 import { Footer } from "@/components/footer";
@@ -18,7 +18,7 @@ import {
   Package
 } from "lucide-react";
 
-type TabType = "readme" | "files" | "versions";
+type TabType = "skill.md" | "files" | "versions";
 
 export const Route = createFileRoute("/pak/$owner/$name")({
   component: PakDetailPage,
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/pak/$owner/$name")({
 
 function PakDetailPage() {
   const { owner, name } = Route.useParams();
-  const [activeTab, setActiveTab] = useState<TabType>("readme");
+  const [activeTab, setActiveTab] = useState<TabType>("skill.md");
   
   const client = new PaksClient();
 
@@ -71,7 +71,7 @@ function PakDetailPage() {
   const readmeContent = extractReadme(contentData?.content);
 
   const tabs: { id: TabType; label: string; icon: React.ReactNode }[] = [
-    { id: "readme", label: "Readme", icon: <FileText className="w-4 h-4" /> },
+    { id: "skill.md", label: "Skill.md", icon: <FileText className="w-4 h-4" /> },
     { id: "files", label: "Files", icon: <FolderTree className="w-4 h-4" /> },
     { id: "versions", label: "Versions", icon: <Tag className="w-4 h-4" /> },
   ];
@@ -192,8 +192,8 @@ function PakDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-[7fr_3fr] gap-8">
             {/* Main Content */}
             <div className="min-w-0">
-              {activeTab === "readme" && (
-                <ReadmeViewer 
+              {activeTab === "skill.md" && (
+                <SkillViewer 
                   content={readmeContent} 
                   isLoading={contentLoading}
                 />
