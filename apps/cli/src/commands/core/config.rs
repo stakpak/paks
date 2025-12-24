@@ -184,6 +184,28 @@ impl Config {
             },
         );
 
+        agents.insert(
+            "amp".to_string(),
+            AgentConfig {
+                name: "Amp".to_string(),
+                skills_dir: dirs::config_dir()
+                    .map(|c| c.join("agents").join("skills"))
+                    .unwrap_or_else(|| PathBuf::from("~/.config/agents/skills")),
+                description: Some("Sourcegraph's Amp coding agent".to_string()),
+            },
+        );
+
+        agents.insert(
+            "codex".to_string(),
+            AgentConfig {
+                name: "Codex".to_string(),
+                skills_dir: dirs::home_dir()
+                    .map(|h| h.join(".codex").join("skills"))
+                    .unwrap_or_else(|| PathBuf::from("~/.codex/skills")),
+                description: Some("OpenAI's Codex coding agent".to_string()),
+            },
+        );
+
         agents
     }
 
