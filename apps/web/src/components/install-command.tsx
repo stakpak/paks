@@ -6,7 +6,7 @@ interface InstallCommandProps {
 }
 
 const agents = [
-  { id: "stakpak", name: "Stakpak", flag: "stakpak" },
+  // { id: "stakpak", name: "Stakpak", flag: "stakpak" },
   { id: "claude-code", name: "Claude Code", flag: "claude-code" },
   { id: "codex", name: "Codex", flag: "codex" },
   { id: "cursor", name: "Cursor", flag: "cursor" },
@@ -20,7 +20,7 @@ type AgentId = typeof agents[number]["id"];
 
 export function InstallCommand({ uri }: InstallCommandProps) {
   const [copied, setCopied] = useState(false);
-  const [selectedAgent, setSelectedAgent] = useState<AgentId>("stakpak");
+  const [selectedAgent, setSelectedAgent] = useState<AgentId>("claude-code");
 
   const agent = agents.find((a) => a.id === selectedAgent) ?? agents[0];
   const command = `paks install ${uri} --agent ${agent.flag}`;

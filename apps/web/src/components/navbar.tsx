@@ -75,9 +75,10 @@ export function Navbar() {
           <div className="flex items-center flex-shrink-0">
             <a 
               href="https://stakpak.dev/auth/signin"
+              target="_blank"
               className="inline-flex items-center justify-center h-8 px-4 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 glow-cyan-sm transition-all hover:glow-cyan"
             >
-              Get a free Stakpak API key
+              Get an API key to publish
             </a>
           </div>
         </div>

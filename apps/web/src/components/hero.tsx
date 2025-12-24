@@ -246,24 +246,23 @@ export function Hero() {
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
         {/* Badge */}
-        <div 
+        {/* <div 
           className="inline-flex items-center gap-2 mb-8 px-4 py-2 border-2 border-primary/30 bg-background/80 backdrop-blur-sm"
           style={{ boxShadow: '4px 4px 0 rgba(0,212,255,0.2)' }}
         >
           <Package className="w-4 h-4 text-primary" />
           <span className="text-sm text-foreground/80 font-mono">The Package Manager for AI Agent Skills</span>
-        </div>
+        </div> */}
 
         {/* Main Headline */}
         <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
           <span className="block text-foreground">Discover</span>
-          <span className="block gradient-text-animated">AI Agent Skills</span>
+          <span className="block gradient-text-animated">New Agent Skills</span>
         </h1>
 
         {/* Subheadline */}
         <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-          Create, install, publish, and share reusable instruction sets that enhance 
-          AI coding agents like Claude Code, Cursor, and Copilot.
+          Publish, Find, and Install reusable instruction sets that enhance coding agents like Claude Code, Cursor, Copilot, and more...
         </p>
 
         {/* CTA Buttons */}
@@ -286,7 +285,7 @@ export function Hero() {
             style={{ boxShadow: '4px 4px 0 rgba(255,255,255,0.1)' }}
           >
             <Sparkles className="w-4 h-4 mr-2" />
-            Agent Skills
+            Agent Skills Standard
             <span className="ml-2 text-muted-foreground group-hover:text-foreground transition-colors">→</span>
           </a>
         </div>
@@ -334,7 +333,7 @@ const commands = [
     id: "search", 
     name: "Search", 
     icon: Search,
-    command: "paks search terraform",
+    command: "paks search \"aws\"",
     description: "Find skills for your agent"
   },
   { 
@@ -425,9 +424,9 @@ function QuickCommands() {
             {currentCommand.command}
           </code>
         </div>
-        <p className="mt-2 text-xs text-muted-foreground font-mono pl-6">
+        {/* <p className="mt-2 text-xs text-muted-foreground font-mono pl-6">
           {currentCommand.description}
-        </p>
+        </p> */}
       </div>
     </div>
   );
