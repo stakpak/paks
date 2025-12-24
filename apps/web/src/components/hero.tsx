@@ -262,7 +262,16 @@ export function Hero() {
 
         {/* Subheadline */}
         <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-          Publish, Find, and Install <a href="https://agentskills.io" target="_blank" rel="noopener noreferrer" className="underline">Agent Skills</a> to enhance coding agents like Claude Code, Cursor, Copilot, and more...
+          Publish, Find, and Install{" "}
+          <a 
+            href="https://agentskills.io/home" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-primary hover:text-primary/80 underline underline-offset-2 decoration-primary/50 hover:decoration-primary transition-colors"
+          >
+            Agent Skills
+          </a>{" "}
+         to enhance agents like Claude Code, Cursor, Copilot, and more...
         </p>
 
         {/* CTA Buttons */}
