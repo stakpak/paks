@@ -21,6 +21,24 @@ export const Route = createFileRoute("/search")({
       page: typeof search.page === "number" ? search.page : 1,
     };
   },
+  head: () => {
+    // Static SEO for search page - dynamic content handled client-side
+    const title = "Search Packages - Paks";
+    const description = "Search and discover AI agent skills and packages. Find the perfect tools for Claude Code, Cursor, GitHub Copilot and other coding agents.";
+    
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { name: "robots", content: "noindex, follow" }, // Search pages shouldn't be indexed
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "website" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+      ],
+    };
+  },
   component: SearchPage,
 });
 

@@ -26,6 +26,6 @@ urlencoding = "2"
 schemars = { version = "0.8", features = ["chrono", "uuid1"] }
 
 [workspace.package]
-version = "0.1.4"
+version = "0.1.6"
 edition = "2024"
 license = "MIT"
