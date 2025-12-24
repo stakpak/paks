@@ -1,0 +1,17 @@
+version: 1
+applications:
+  - frontend:
+      phases:
+        preBuild:
+          commands:
+            - nvm use 20 && node --version
+            - corepack enable && npx --yes nypm install
+        build:
+          commands:
+            - pnpm run build --filter web
+      artifacts:
+        baseDirectory: apps/web/.amplify-hosting
+        files:
+          - '**/*'
+      buildPath: /
+    appRoot: apps/web
