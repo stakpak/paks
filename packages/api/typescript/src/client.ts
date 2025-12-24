@@ -190,7 +190,6 @@ export class PaksClient {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      'User-Agent': 'paks-api-ts/0.1.0',
     };
 
     if (this.authToken && (requireAuth || this.authToken)) {
