@@ -17,7 +17,7 @@ import type {
 } from './types.js';
 
 /** Default API base URL */
-export const DEFAULT_BASE_URL = 'https://api.stakpak.dev';
+export const DEFAULT_BASE_URL = 'https://apiv2.stakpak.dev';
 
 /** Default request timeout in milliseconds */
 const DEFAULT_TIMEOUT_MS = 30_000;
