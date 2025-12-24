@@ -346,11 +346,23 @@ pub struct UserInfo {
     pub id: String,
     /// Username
     pub username: String,
+    /// First name
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub first_name: Option<String>,
+    /// Last name
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub last_name: Option<String>,
     /// Email address
     pub email: String,
-    /// Avatar URL
+    /// Profile image URL
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub avatar_url: Option<String>,
+    pub profile_img_url: Option<String>,
+    /// Job role
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub job_role: Option<String>,
+    /// Company
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub company: Option<String>,
 }
 
 /// Response from token verification

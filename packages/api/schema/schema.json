@@ -14,8 +14,6 @@
     "install_version_info",
     "list_paks_query",
     "list_paks_response",
-    "notify_publish_request",
-    "notify_publish_response",
     "pak",
     "pak_content",
     "pak_content_response",
@@ -28,6 +26,8 @@
     "pak_version_with_pak_and_path",
     "pak_visibility",
     "pak_with_latest_version",
+    "publish_pak_request",
+    "publish_pak_response",
     "search_paks_query",
     "search_paks_response",
     "user_info",
@@ -64,12 +64,6 @@
     "list_paks_response": {
       "$ref": "#/definitions/ListPaksResponse"
     },
-    "notify_publish_request": {
-      "$ref": "#/definitions/NotifyPublishRequest"
-    },
-    "notify_publish_response": {
-      "$ref": "#/definitions/NotifyPublishResponse"
-    },
     "pak": {
       "$ref": "#/definitions/Pak"
     },
@@ -105,6 +99,12 @@
     },
     "pak_with_latest_version": {
       "$ref": "#/definitions/PakWithLatestVersion"
+    },
+    "publish_pak_request": {
+      "$ref": "#/definitions/PublishPakRequest"
+    },
+    "publish_pak_response": {
+      "$ref": "#/definitions/PublishPakResponse"
     },
     "search_paks_query": {
       "$ref": "#/definitions/SearchPaksQuery"
@@ -384,63 +384,6 @@
           "items": {
             "$ref": "#/definitions/PakWithLatestVersion"
           }
-        }
-      }
-    },
-    "NotifyPublishRequest": {
-      "description": "Request to notify registry of a new publish",
-      "type": "object",
-      "required": [
-        "commit_hash",
-        "repository",
-        "tag"
-      ],
-      "properties": {
-        "commit_hash": {
-          "description": "Commit hash (idempotency key)",
-          "type": "string"
-        },
-        "pak_path": {
-          "description": "Path within repository (for monorepos)",
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "repository": {
-          "description": "Git repository URL",
-          "type": "string"
-        },
-        "tag": {
-          "description": "Git tag (e.g., v1.0.0)",
-          "type": "string"
-        }
-      }
-    },
-    "NotifyPublishResponse": {
-      "description": "Response from publish notification",
-      "type": "object",
-      "required": [
-        "success"
-      ],
-      "properties": {
-        "message": {
-          "description": "Status message",
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "pak_url": {
-          "description": "URL to the published pak",
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "success": {
-          "description": "Whether indexing was successful",
-          "type": "boolean"
         }
       }
     },
@@ -1022,6 +965,40 @@
         }
       }
     },
+    "PublishPakRequest": {
+      "description": "Request body for POST /v1/paks/publish",
+      "type": "object",
+      "required": [
+        "branch",
+        "repository",
+        "tag"
+      ],
+      "properties": {
+        "branch": {
+          "description": "Branch the tag was created from",
+          "type": "string"
+        },
+        "path": {
+          "description": "Path to pak within repo (\".\" for root, \"paks/my-pak\" for monorepo)",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "repository": {
+          "description": "Git clone URL (HTTPS) - must be a GitHub URL",
+          "type": "string"
+        },
+        "tag": {
+          "description": "Git tag name (must start with `v` and follow semver)",
+          "type": "string"
+        }
+      }
+    },
+    "PublishPakResponse": {
+      "description": "Response from publish endpoint (empty on success - 200 OK)",
+      "type": "object"
+    },
     "SearchPaksQuery": {
       "description": "Query parameters for searching paks",
       "type": "object",
@@ -1092,8 +1069,8 @@
         "username"
       ],
       "properties": {
-        "avatar_url": {
-          "description": "Avatar URL",
+        "company": {
+          "description": "Company",
           "type": [
             "string",
             "null"
@@ -1103,9 +1080,37 @@
           "description": "Email address",
           "type": "string"
         },
+        "first_name": {
+          "description": "First name",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "id": {
           "description": "User ID",
           "type": "string"
+        },
+        "job_role": {
+          "description": "Job role",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "last_name": {
+          "description": "Last name",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "profile_img_url": {
+          "description": "Profile image URL",
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "username": {
           "description": "Username",

@@ -6,10 +6,14 @@
 
 Create, install, publish, and share skills across AI coding agents.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Rust](https://img.shields.io/badge/rust-2024-orange.svg)](https://www.rust-lang.org/)
+<a href="https://discord.gg/QTZjETP7GB"><img src="https://img.shields.io/badge/Discord-Join%20Community-5865F2?logo=discord&logoColor=white&style=flat-square" /></a>
+
 
 [Installation](#installation) • [Quick Start](#quick-start) • [CLI Reference](#cli-reference) • [Registry](#registry) • [Contributing](#contributing)
+
+⭐ Help us reach more developers and grow the Paks community. Star this repo!
 
 </div>
 
@@ -298,7 +302,7 @@ paks agent show [name]       # Show agent details
 | `claude-code` | `~/.claude/skills` |
 | `cursor` | `~/.cursor/skills` |
 | `vscode` | `~/.vscode/skills` |
-| `copilot` | `~/.config/github-copilot/skills` |
+| `copilot` | `~/.copilot/skills` |
 | `goose` | `~/.config/goose/skills` |
 | `opencode` | `~/.config/opencode/skills` |
 
@@ -412,7 +416,7 @@ GET /api/skills/:name/:version
 
 ## Configuration
 
-Paks stores configuration at `~/.config/paks/config.toml`:
+Paks stores configuration at `~/.paks/config.toml`:
 
 ```toml
 # Default agent when --agent is not specified
@@ -513,6 +517,20 @@ cargo clippy
 
 ---
 
+## Need Support Creating Your First Pak?
+If this is your first time writing a Pak, you don’t have to figure it out alone.
+Our community is actively building and sharing skills, and we’re happy to help you:
+- Write your first SKILL.md
+- Review structure and metadata
+- Decide what belongs in a Pak (and what doesn’t)
+- Validate and publish with confidence
+
+Join the Stakpak Discord to ask questions, get feedback, and see how others are using Paks
+
+Join the community: https://discord.gg/QTZjETP7GB
+
+---
+
 ## Contributing
 
 We welcome contributions! Here's how to get started:
@@ -534,7 +552,7 @@ We welcome contributions! Here's how to get started:
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
+Apache 2.0 License — see [LICENSE](LICENSE) for details.
 
 ---
 

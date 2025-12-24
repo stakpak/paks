@@ -12,9 +12,12 @@
     }
   },
   "scripts": {
-    "generate:schema": "pnpm --filter @paks/api-schema generate && json2ts -i ../schema/schema.json -o src/types.ts --style.singleQuote --no-additionalProperties",
+    "generate:schema": "json2ts -i ../schema/schema.json -o src/types.ts --style.singleQuote --no-additionalProperties",
     "build": "tsc",
     "prepublishOnly": "pnpm run generate && pnpm run build"
+  },
+  "dependencies": {
+    "@paks/api-schema": "workspace:*"
   },
   "devDependencies": {
     "json-schema-to-typescript": "^15.0.4",
