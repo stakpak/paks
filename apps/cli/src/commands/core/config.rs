@@ -1,6 +1,6 @@
 //! Configuration management for paks CLI
 //!
-//! Config file location: ~/.config/paks/config.toml
+//! Config file location: ~/.paks/config.toml
 
 use anyhow::{Context, Result};
 use indexmap::IndexMap;
@@ -55,10 +55,10 @@ pub struct RegistryConfig {
 impl Config {
     /// Get the config file path
     pub fn path() -> Result<PathBuf> {
-        let config_dir = dirs::config_dir()
-            .context("Could not determine config directory")?
-            .join("paks");
-        Ok(config_dir.join("config.toml"))
+        let paks_dir = dirs::home_dir()
+            .context("Could not determine home directory")?
+            .join(".paks");
+        Ok(paks_dir.join("config.toml"))
     }
 
     /// Load config from disk, or return default if not exists
@@ -155,10 +155,10 @@ impl Config {
             "copilot".to_string(),
             AgentConfig {
                 name: "GitHub Copilot".to_string(),
-                skills_dir: dirs::config_dir()
-                    .map(|c| c.join("github-copilot").join("skills"))
-                    .unwrap_or_else(|| PathBuf::from("~/.config/github-copilot/skills")),
-                description: Some("GitHub Copilot standalone".to_string()),
+                skills_dir: dirs::home_dir()
+                    .map(|h| h.join(".copilot").join("skills"))
+                    .unwrap_or_else(|| PathBuf::from("~/.copilot/skills")),
+                description: Some("GitHub Copilot CLI".to_string()),
             },
         );
 

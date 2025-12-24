@@ -241,6 +241,10 @@ importers:
   packages/api/schema: {}
 
   packages/api/typescript:
+    dependencies:
+      '@paks/api-schema':
+        specifier: workspace:*
+        version: link:../schema
     devDependencies:
       json-schema-to-typescript:
         specifier: ^15.0.4
