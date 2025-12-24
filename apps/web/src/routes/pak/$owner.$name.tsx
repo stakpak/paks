@@ -282,6 +282,11 @@ function PakDetailPage() {
                 ))}
               </div>
             )}
+
+            {/* Install Command - Full Width */}
+            <div className="mt-6">
+              <InstallCommand uri={`${owner}/${name}`} />
+            </div>
           </header>
 
           {/* Tab Navigation */}
@@ -334,9 +339,6 @@ function PakDetailPage() {
 
             {/* Sidebar */}
             <aside className="lg:sticky lg:top-24 lg:self-start space-y-4 min-w-0 overflow-hidden">
-              {/* Install Command - Most Prominent */}
-              <InstallCommand uri={`${owner}/${name}`} />
-              
               {/* Package Info */}
               <PakSidebar pak={pak} latestVersion={latestVersion} />
             </aside>
