@@ -88,44 +88,75 @@ export const Route = createFileRoute("/pak/$owner/$name")({
     const { owner, name } = params;
     
     try {
-      // Fetch pak details
-      const results = await client.searchPaks({
-        owner,
-        pak_name: name,
-        limit: 1,
-      });
-      
-      if (results.length === 0) {
-        return { pak: null, skillContent: null, filesContent: null, error: "Pak not found" };
-      }
-      
-      // Get pak with latest version info
-      const listResults = await client.listPaks({ limit: 100 });
-      const pakWithVersion = listResults.find(
-        (p) => p.owner_name === owner && p.name === name
-      ) || results[0] as PakWithLatestVersion;
-      
-      // Fetch SKILL.md content
+      // First try to fetch SKILL.md content - if this fails, pak doesn't exist
       let skillContent: string | null = null;
+      let filesContent: PakContentResponse | null = null;
+      
       try {
         const skillData = await client.getPakContent(`${owner}/${name}/SKILL.md`);
-        if (skillData?.content?.type === "File") {
+        if (skillData?.content?.type === "File" && skillData.content.content) {
           skillContent = skillData.content.content;
         }
       } catch {
-        // SKILL.md not found, that's okay
+        // SKILL.md not found
       }
       
       // Fetch files content  
-      let filesContent: PakContentResponse | null = null;
       try {
         filesContent = await client.getPakContent(`${owner}/${name}`);
       } catch {
-        // Files not found, that's okay
+        // Files not found
+      }
+      
+      // Fetch pak details from search
+      let pakWithVersion: PakWithLatestVersion | null = null;
+      try {
+        const results = await client.searchPaks({
+          owner,
+          pak_name: name,
+          limit: 1,
+        });
+        
+        if (results.length > 0) {
+          // Get pak with latest version info
+          const listResults = await client.listPaks({ limit: 100 });
+          pakWithVersion = listResults.find(
+            (p) => p.owner_name === owner && p.name === name
+          ) || results[0] as PakWithLatestVersion;
+        }
+      } catch {
+        // Search failed, that's okay if we have content
+      }
+      
+      // If no pak found from search but we have content, create a minimal pak object
+      if (!pakWithVersion && (skillContent || filesContent)) {
+        pakWithVersion = {
+          id: '',
+          owner_name: owner,
+          name: name,
+          full_uri: `stakpak://${owner}/${name}`,
+          description: null,
+          latest_version: null,
+          total_downloads: 0,
+          download_count: 0,
+          version_count: 1,
+          tags: [],
+          repository_url: null,
+          documentation_url: null,
+          homepage_url: null,
+          license: null,
+          updated_at: new Date().toISOString(),
+          created_at: new Date().toISOString(),
+        } as unknown as PakWithLatestVersion;
+      }
+      
+      if (!pakWithVersion) {
+        return { pak: null, skillContent: null, filesContent: null, error: "Pak not found" };
       }
       
       return { pak: pakWithVersion, skillContent, filesContent };
     } catch (err) {
+      console.error("Loader error:", err);
       return { 
         pak: null, 
         skillContent: null, 
@@ -168,7 +199,7 @@ export const Route = createFileRoute("/pak/$owner/$name")({
     const description = pak.description 
       || (frontmatter.description as string)
       || `${pak.name} - AI Agent Skill package for coding agents`;
-    const keywords = pak.tags.length > 0 
+    const keywords = (pak.tags && pak.tags.length > 0)
       ? pak.tags.join(", ")
       : (frontmatter.tags as string[] || []).join(", ");
     const version = pak.latest_version?.version || "1.0.0";
@@ -199,6 +230,28 @@ export const Route = createFileRoute("/pak/$owner/$name")({
   },
   
   component: PakDetailPage,
+  
+  // Error boundary to catch rendering errors
+  errorComponent: ({ error }) => (
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-1 flex items-center justify-center px-4">
+        <div className="flex flex-col items-center gap-4 glass p-8 max-w-md text-center">
+          <AlertCircle className="w-12 h-12 text-destructive" />
+          <h1 className="text-xl font-bold text-foreground">Something went wrong</h1>
+          <p className="text-muted-foreground">
+            {error instanceof Error ? error.message : "An unexpected error occurred while loading this package."}
+          </p>
+          <Link 
+            to="/" 
+            className="mt-4 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+          >
+            Go Home
+          </Link>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  ),
 });
 
 function PakDetailPage() {
