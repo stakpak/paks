@@ -6,10 +6,7 @@ use std::process::Command;
 
 /// Execute a git command and return stdout
 pub fn git_cmd(args: &[&str], path: &Path) -> Result<String> {
-    let output = Command::new("git")
-        .args(args)
-        .current_dir(path)
-        .output()?;
+    let output = Command::new("git").args(args).current_dir(path).output()?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);

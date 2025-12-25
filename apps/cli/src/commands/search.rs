@@ -67,9 +67,7 @@ pub async fn run(args: SearchArgs) -> Result<()> {
         }
     }
 
-    println!(
-        "\n  \x1b[2mInstall: paks install <owner>/<skill>\x1b[0m\n"
-    );
+    println!("\n  \x1b[2mInstall: paks install <owner>/<skill>\x1b[0m\n");
 
     Ok(())
 }

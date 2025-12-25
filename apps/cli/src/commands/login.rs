@@ -1,7 +1,7 @@
 //! Login/Logout commands - authenticate with the registry
 
 use anyhow::{Result, bail};
-use dialoguer::{Input, Confirm};
+use dialoguer::{Confirm, Input};
 use paks_api::PaksClient;
 
 use super::core::config::Config;
@@ -17,15 +17,15 @@ pub async fn run_login(args: LoginArgs) -> Result<()> {
         // Verify existing token
         let mut client = PaksClient::new()?;
         client.set_token(existing_token);
-        
+
         if let Ok(user) = client.get_current_user().await {
             println!("Already logged in as: {}", user.username);
-            
+
             let overwrite = Confirm::new()
                 .with_prompt("Do you want to log in with a different account?")
                 .default(false)
                 .interact()?;
-            
+
             if !overwrite {
                 return Ok(());
             }
@@ -38,9 +38,7 @@ pub async fn run_login(args: LoginArgs) -> Result<()> {
     } else {
         println!("Get your API token from: https://stakpak.dev/settings/tokens");
         println!();
-        Input::new()
-            .with_prompt("API Token")
-            .interact_text()?
+        Input::new().with_prompt("API Token").interact_text()?
     };
 
     if token.trim().is_empty() {
