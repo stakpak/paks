@@ -17,11 +17,11 @@ use std::path::{Path, PathBuf};
 /// Optional fields (Agent Skills spec):
 /// - license: License name or reference
 /// - compatibility: Environment requirements
-/// - metadata: Arbitrary key-value pairs
+/// - metadata: Arbitrary key-value pairs (includes version for paks)
 /// - allowed-tools: Pre-approved tools (experimental)
 ///
 /// Paks extensions (for package management):
-/// - version: Semantic version for publishing
+/// - metadata.version: Semantic version for publishing (inside metadata)
 /// - authors: List of authors
 /// - repository: Source repository URL
 /// - homepage: Project homepage
@@ -59,10 +59,6 @@ pub struct SkillFrontmatter {
     pub allowed_tools: Option<String>,
 
     // === Paks package management extensions ===
-    /// Semantic version (paks extension)
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub version: Option<String>,
-
     /// Authors (paks extension)
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub authors: Vec<String>,
@@ -210,9 +206,8 @@ impl Skill {
                 description: description.to_string(),
                 license: Some("MIT".to_string()),
                 compatibility: None,
-                metadata: None,
+                metadata: Some(HashMap::from([("version".to_string(), "0.1.0".to_string())])),
                 allowed_tools: None,
-                version: Some("0.1.0".to_string()),
                 authors: Vec::new(),
                 repository: None,
                 homepage: None,
@@ -247,9 +242,23 @@ impl Skill {
         &self.frontmatter.name
     }
 
-    /// Get the skill version (defaults to "0.1.0" if not set)
+    /// Get the skill version from metadata (defaults to "0.1.0" if not set)
     pub fn version(&self) -> &str {
-        self.frontmatter.version.as_deref().unwrap_or("0.1.0")
+        self.frontmatter
+            .metadata
+            .as_ref()
+            .and_then(|m| m.get("version"))
+            .map(|s| s.as_str())
+            .unwrap_or("0.1.0")
+    }
+
+    /// Get the skill version as Option (for publish checks)
+    pub fn version_opt(&self) -> Option<&str> {
+        self.frontmatter
+            .metadata
+            .as_ref()
+            .and_then(|m| m.get("version"))
+            .map(|s| s.as_str())
     }
 }
 
@@ -296,7 +305,6 @@ mod tests {
             compatibility: None,
             metadata: None,
             allowed_tools: None,
-            version: None,
             authors: Vec::new(),
             repository: None,
             homepage: None,
@@ -313,7 +321,6 @@ mod tests {
             compatibility: None,
             metadata: None,
             allowed_tools: None,
-            version: None,
             authors: Vec::new(),
             repository: None,
             homepage: None,

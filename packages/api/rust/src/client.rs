@@ -264,7 +264,13 @@ impl PaksClient {
         match status {
             StatusCode::OK | StatusCode::CREATED => {
                 let body = response.text().await?;
-                serde_json::from_str(&body).map_err(ApiError::Parse)
+                // Handle empty response body (e.g., 200 OK with no content)
+                if body.is_empty() || body.trim().is_empty() {
+                    // Try to deserialize from empty JSON object for types that support Default
+                    serde_json::from_str("{}").map_err(ApiError::Parse)
+                } else {
+                    serde_json::from_str(&body).map_err(ApiError::Parse)
+                }
             }
             StatusCode::UNAUTHORIZED => Err(ApiError::InvalidToken),
             StatusCode::NOT_FOUND => {
