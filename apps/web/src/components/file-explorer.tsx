@@ -50,6 +50,32 @@ export function FileExplorer({ content, isLoading, pakUri, skillContent }: FileE
 
   // Helper to extract filename from URI
   const getFilenameFromUri = (uri: string) => uri.split('/').pop() || uri;
+  
+  // Get the relative path from pak root
+  const getRelativePath = (uri: string): string => {
+    // URI format: owner/pakname/path/to/file
+    const parts = uri.split('/');
+    // Remove owner/pakname prefix (first 2 parts)
+    return parts.slice(2).join('/');
+  };
+  
+  // Check if an item is a direct child of the current path
+  const isDirectChild = (itemUri: string): boolean => {
+    const relativePath = getRelativePath(itemUri);
+    const itemParts = relativePath.split('/').filter(p => p);
+    const currentParts = currentPath ? currentPath.split('/').filter(p => p) : [];
+    
+    // Item should have exactly one more path segment than current path
+    if (currentParts.length === 0) {
+      // At root, direct children have exactly 1 path segment
+      return itemParts.length === 1;
+    } else {
+      // In a subdirectory, item path should start with currentPath and have exactly 1 more segment
+      const itemPath = itemParts.join('/');
+      return itemPath.startsWith(currentPath + '/') && 
+             itemParts.length === currentParts.length + 1;
+    }
+  };
 
   // Normalize API response items
   const normalizeItem = (item: ContentItem): ContentItem => ({
@@ -63,18 +89,18 @@ export function FileExplorer({ content, isLoading, pakUri, skillContent }: FileE
     // If viewing file, return empty (we show file content instead)
     if (viewingFile) return [];
     
+    let items: ContentItem[] = [];
+    
     // Use dirContent if available
     if (dirContent?.content?.type === "Directory" && dirContent.content.items.length > 0) {
-      return dirContent.content.items.map(normalizeItem);
+      items = dirContent.content.items.map(normalizeItem);
     }
-    
     // Use initial content prop
-    if (content?.type === "Directory" && content.items.length > 0) {
-      return content.items.map(normalizeItem);
+    else if (content?.type === "Directory" && content.items.length > 0) {
+      items = content.items.map(normalizeItem);
     }
-    
     // Fallback: show SKILL.md if we have it
-    if (skillContent) {
+    else if (skillContent) {
       return [{
         name: "SKILL.md",
         type: "file" as const,
@@ -83,7 +109,8 @@ export function FileExplorer({ content, isLoading, pakUri, skillContent }: FileE
       }];
     }
     
-    return [];
+    // Filter to only show direct children of current path
+    return items.filter(item => isDirectChild(item.uri));
   };
 
   const fileItems = getFileItems().sort((a, b) => {
