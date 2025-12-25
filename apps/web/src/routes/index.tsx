@@ -8,8 +8,8 @@ import { Footer } from "@/components/footer";
 export const Route = createFileRoute("/")({
   loader: async () => {
     const client = new PaksClient();
-    const trendingPaks = await client.listPaks({ sort_by: "TRENDING", limit: 6 });
-    return { trendingPaks };
+    const response = await client.listPaks({ sort_by: "TRENDING", limit: 6 });
+    return { trendingPaks: response.items };
   },
   head: () => ({
     meta: [

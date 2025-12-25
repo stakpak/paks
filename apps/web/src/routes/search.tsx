@@ -60,18 +60,22 @@ function SearchPage() {
     queryFn: async () => {
       if (!query.trim()) {
         // If no query, list all paks (trending)
-        return client.listPaks({
+        const response = await client.listPaks({
           sort_by: "TRENDING",
           limit: RESULTS_PER_PAGE,
           offset: (page - 1) * RESULTS_PER_PAGE,
         });
+        return { items: response.items, total_count: response.total_count };
       }
-      // Search with query
-      return client.searchPaks({
+      // Search with query - returns Pak[] directly
+      const results = await client.searchPaks({
         query: query.trim(),
         limit: RESULTS_PER_PAGE,
         offset: (page - 1) * RESULTS_PER_PAGE,
       });
+      // Estimate total for search (API doesn't return total count for search)
+      const hasMore = results.length === RESULTS_PER_PAGE;
+      return { items: results, total_count: hasMore ? (page * RESULTS_PER_PAGE) + 1 : ((page - 1) * RESULTS_PER_PAGE) + results.length };
     },
     staleTime: 30000,
   });
@@ -83,9 +87,8 @@ function SearchPage() {
     });
   };
 
-  // Estimate total pages (API doesn't return total count, so we estimate)
-  const hasMore = data && data.length === RESULTS_PER_PAGE;
-  const totalPages = hasMore ? page + 1 : page;
+  // Calculate total pages from total_count
+  const totalPages = data ? Math.ceil(data.total_count / RESULTS_PER_PAGE) : 1;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -109,9 +112,9 @@ function SearchPage() {
             </div>
             {data && (
               <p className="text-sm text-muted-foreground ml-12">
-                {data.length === 0
+                {data.items.length === 0
                   ? "No packages found"
-                  : `Showing ${data.length} package${data.length !== 1 ? "s" : ""}`}
+                  : `Showing ${data.items.length} of ${data.total_count} package${data.total_count !== 1 ? "s" : ""}`}
               </p>
             )}
           </div>
@@ -136,7 +139,7 @@ function SearchPage() {
           )}
 
           {/* Empty State */}
-          {!isLoading && !isError && data && data.length === 0 && (
+          {!isLoading && !isError && data && data.items.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 glass p-8">
               <Package className="w-12 h-12 text-muted-foreground mb-4" />
               <h2 className="text-lg font-semibold text-foreground mb-2">No packages found</h2>
@@ -149,10 +152,10 @@ function SearchPage() {
           )}
 
           {/* Results Grid */}
-          {!isLoading && !isError && data && data.length > 0 && (
+          {!isLoading && !isError && data && data.items.length > 0 && (
             <>
               <div className="grid gap-4">
-                {data.map((pak) => (
+                {data.items.map((pak) => (
                   <PakCard key={pak.id} pak={pak} />
                 ))}
               </div>

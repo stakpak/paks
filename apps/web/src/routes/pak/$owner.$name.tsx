@@ -119,8 +119,8 @@ export const Route = createFileRoute("/pak/$owner/$name")({
         
         if (results.length > 0) {
           // Get pak with latest version info
-          const listResults = await client.listPaks({ limit: 100 });
-          pakWithVersion = listResults.find(
+          const listResponse = await client.listPaks({ limit: 100 });
+          pakWithVersion = listResponse.items.find(
             (p) => p.owner_name === owner && p.name === name
           ) || results[0] as PakWithLatestVersion;
         }
