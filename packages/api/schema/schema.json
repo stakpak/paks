@@ -406,7 +406,6 @@
         "owner_name",
         "repository_url",
         "status",
-        "tags",
         "total_downloads",
         "total_usages",
         "updated_at",
@@ -470,7 +469,10 @@
         },
         "tags": {
           "description": "Tags/keywords",
-          "type": "array",
+          "type": [
+            "array",
+            "null"
+          ],
           "items": {
             "type": "string"
           }
@@ -858,7 +860,6 @@
         "owner_name",
         "repository_url",
         "status",
-        "tags",
         "total_downloads",
         "total_usages",
         "updated_at",
@@ -933,7 +934,10 @@
         },
         "tags": {
           "description": "Tags/keywords",
-          "type": "array",
+          "type": [
+            "array",
+            "null"
+          ],
           "items": {
             "type": "string"
           }
