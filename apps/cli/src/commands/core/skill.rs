@@ -206,7 +206,10 @@ impl Skill {
                 description: description.to_string(),
                 license: Some("MIT".to_string()),
                 compatibility: None,
-                metadata: Some(HashMap::from([("version".to_string(), "0.1.0".to_string())])),
+                metadata: Some(HashMap::from([(
+                    "version".to_string(),
+                    "0.1.0".to_string(),
+                )])),
                 allowed_tools: None,
                 authors: Vec::new(),
                 repository: None,

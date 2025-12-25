@@ -144,7 +144,7 @@ pub struct Pak {
     /// Pak description
     pub description: Option<String>,
     /// Tags/keywords
-    pub tags: Vec<String>,
+    pub tags: Option<Vec<String>>,
     /// Visibility level
     pub visibility: PakVisibility,
     /// Status

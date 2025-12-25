@@ -293,7 +293,7 @@ export interface PakWithLatestVersion {
   /**
    * Tags/keywords
    */
-  tags: string[];
+  tags?: string[] | null;
   /**
    * Total downloads all time
    */
@@ -419,7 +419,7 @@ export interface Pak {
   /**
    * Tags/keywords
    */
-  tags: string[];
+  tags?: string[] | null;
   /**
    * Total downloads all time
    */
