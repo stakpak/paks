@@ -126,13 +126,11 @@ fn prompt_tag_selection(existing_tags: &[String], current_version: &str) -> Resu
             let tag_idx = selection - existing_start_idx;
             Ok(TagSelection::Existing(semver_tags[tag_idx].clone()))
         }
+    } else if selection == custom_idx {
+        prompt_custom_version()
     } else {
-        if selection == custom_idx {
-            prompt_custom_version()
-        } else {
-            // Existing tag
-            Ok(TagSelection::Existing(semver_tags[selection].clone()))
-        }
+        // Existing tag
+        Ok(TagSelection::Existing(semver_tags[selection].clone()))
     }
 }
 
@@ -318,9 +316,7 @@ pub async fn run(args: PublishArgs) -> Result<()> {
         .get_auth_token()
         .ok_or_else(|| anyhow::anyhow!("Not authenticated. Run 'paks login' first."))?;
 
-    let mut client = PaksClient::builder()
-        .base_url("http://localhost:4000")
-        .build()?;
+    let mut client = PaksClient::new()?;
     client.set_token(token);
 
     let request = PublishPakRequest {
