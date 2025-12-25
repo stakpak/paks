@@ -234,9 +234,13 @@ export interface ListPaksQuery {
  */
 export interface ListPaksResponse {
   /**
-   * List of paks with their latest versions
+   * List of paks for the current page
    */
-  results: PakWithLatestVersion[];
+  items: PakWithLatestVersion[];
+  /**
+   * Total number of paks matching the query (before pagination)
+   */
+  total_count: number;
 }
 /**
  * Pak with its latest version info

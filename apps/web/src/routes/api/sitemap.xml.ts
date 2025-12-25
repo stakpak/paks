@@ -12,7 +12,8 @@ export const Route = createFileRoute("/api/sitemap/xml")({
         // Fetch all paks for dynamic URLs
         let allPaks: Array<{ owner_name: string; name: string; updated_at?: string }> = [];
         try {
-          allPaks = await client.listPaks({ limit: 100, sort_by: "TRENDING" });
+          const response = await client.listPaks({ limit: 100, sort_by: "TRENDING" });
+          allPaks = response.items;
         } catch (error) {
           console.error("Failed to fetch paks for sitemap:", error);
         }

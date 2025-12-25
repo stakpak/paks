@@ -375,15 +375,22 @@
       "description": "Response from listing paks",
       "type": "object",
       "required": [
-        "results"
+        "items",
+        "total_count"
       ],
       "properties": {
-        "results": {
-          "description": "List of paks with their latest versions",
+        "items": {
+          "description": "List of paks for the current page",
           "type": "array",
           "items": {
             "$ref": "#/definitions/PakWithLatestVersion"
           }
+        },
+        "total_count": {
+          "description": "Total number of paks matching the query (before pagination)",
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
         }
       }
     },

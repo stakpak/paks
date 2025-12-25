@@ -66,9 +66,8 @@ function TrendingPage() {
     });
   };
 
-  // Estimate total pages (API doesn't return total count, so we estimate)
-  const hasMore = data && data.length === RESULTS_PER_PAGE;
-  const totalPages = hasMore ? page + 1 : page;
+  // Calculate total pages from total_count
+  const totalPages = data ? Math.ceil(data.total_count / RESULTS_PER_PAGE) : 1;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -89,9 +88,9 @@ function TrendingPage() {
             </p>
             {data && (
               <p className="text-sm text-muted-foreground ml-12 mt-1">
-                {data.length === 0
+                {data.total_count === 0
                   ? "No paks found"
-                  : `Showing ${data.length} pak${data.length !== 1 ? "s" : ""}`}
+                  : `Showing ${data.items.length} of ${data.total_count} pak${data.total_count !== 1 ? "s" : ""}`}
               </p>
             )}
           </div>
@@ -116,7 +115,7 @@ function TrendingPage() {
           )}
 
           {/* Empty State */}
-          {!isLoading && !isError && data && data.length === 0 && (
+          {!isLoading && !isError && data && data.items.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 glass p-8">
               <Package className="w-12 h-12 text-muted-foreground mb-4" />
               <h2 className="text-lg font-semibold text-foreground mb-2">No paks yet</h2>
@@ -127,10 +126,10 @@ function TrendingPage() {
           )}
 
           {/* Results Grid */}
-          {!isLoading && !isError && data && data.length > 0 && (
+          {!isLoading && !isError && data && data.items.length > 0 && (
             <>
               <div className="grid gap-4">
-                {data.map((pak) => (
+                {data.items.map((pak) => (
                   <PakCard key={pak.id} pak={pak} />
                 ))}
               </div>

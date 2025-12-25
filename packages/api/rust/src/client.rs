@@ -65,7 +65,7 @@ impl PaksClient {
             .await?;
 
         let result: ListPaksResponse = self.handle_response(response).await?;
-        Ok(result.results)
+        Ok(result.items)
     }
 
     /// Search paks by identifier (owner/pak_name) or keywords

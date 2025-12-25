@@ -6,7 +6,7 @@
 
 import type {
   ListPaksQuery,
-  PakWithLatestVersion,
+  ListPaksResponse,
   SearchPaksQuery,
   Pak,
   PakContentResponse,
@@ -88,7 +88,7 @@ export class PaksClient {
   // ========================================================================
 
   /** List paks with optional sorting, filtering, and pagination */
-  async listPaks(query: ListPaksQuery = {}): Promise<PakWithLatestVersion[]> {
+  async listPaks(query: ListPaksQuery = {}): Promise<ListPaksResponse> {
     const params = new URLSearchParams();
     if (query.sort_by) params.set('sort_by', query.sort_by);
     if (query.time_window) params.set('time_window', query.time_window);
@@ -96,8 +96,7 @@ export class PaksClient {
     if (query.offset != null) params.set('offset', String(query.offset));
 
     const url = `${this.baseUrl}/v1/paks${params.toString() ? `?${params}` : ''}`;
-    const response = await this.request<{ results: PakWithLatestVersion[] }>(url);
-    return response.results;
+    return this.request<ListPaksResponse>(url);
   }
 
   /** Search paks by identifier (owner/pak_name) or keywords */

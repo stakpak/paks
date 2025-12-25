@@ -304,8 +304,10 @@ pub struct ListPaksQuery {
 /// Response from listing paks
 #[derive(Serialize, Deserialize, Debug, Clone, JsonSchema)]
 pub struct ListPaksResponse {
-    /// List of paks with their latest versions
-    pub results: Vec<PakWithLatestVersion>,
+    /// List of paks for the current page
+    pub items: Vec<PakWithLatestVersion>,
+    /// Total number of paks matching the query (before pagination)
+    pub total_count: u64,
 }
 
 /// Query parameters for searching paks
