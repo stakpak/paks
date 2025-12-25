@@ -50,6 +50,15 @@ pub fn tag_exists(path: &Path, tag: &str) -> bool {
         .unwrap_or(false)
 }
 
+/// List all tags sorted by version (newest first)
+pub fn list_tags(path: &Path) -> Result<Vec<String>> {
+    let output = git_cmd(&["tag", "-l", "--sort=-v:refname"], path)?;
+    if output.is_empty() {
+        return Ok(vec![]);
+    }
+    Ok(output.lines().map(|s| s.to_string()).collect())
+}
+
 /// Create an annotated tag
 pub fn create_tag(path: &Path, tag: &str, message: &str) -> Result<()> {
     git_cmd(&["tag", "-a", tag, "-m", message], path)?;
@@ -74,6 +83,20 @@ pub fn get_pak_path_in_repo(pak_path: &Path) -> Result<String> {
     } else {
         Ok(rel_path.to_string_lossy().to_string())
     }
+}
+
+/// Check for uncommitted changes in a directory (staged + unstaged + untracked)
+/// Returns a list of changed files relative to the directory
+pub fn get_uncommitted_changes(path: &Path) -> Result<Vec<String>> {
+    // When running git status from within the target directory,
+    // use "." to check the current directory and its subdirectories
+    let output = git_cmd(&["status", "--porcelain", "."], path)?;
+
+    if output.is_empty() {
+        return Ok(vec![]);
+    }
+
+    Ok(output.lines().map(|s| s.to_string()).collect())
 }
 
 #[cfg(test)]

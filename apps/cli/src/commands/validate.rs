@@ -36,9 +36,9 @@ pub async fn run(args: ValidateArgs) -> Result<()> {
         }
     }
 
-    // Check for version (recommended for publishing)
-    if skill.frontmatter.version.is_none() {
-        warnings.push("No version specified - required for publishing".to_string());
+    // Check for version in metadata (recommended for publishing)
+    if skill.version_opt().is_none() {
+        warnings.push("No version specified in metadata - required for publishing".to_string());
     }
 
     // Check for license (recommended)

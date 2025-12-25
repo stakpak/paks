@@ -95,21 +95,13 @@ enum Commands {
         #[arg(long)]
         dry_run: bool,
 
-        /// Create tag without pushing
-        #[arg(long)]
-        no_push: bool,
-
-        /// Custom tag message - prompts interactively if not provided
-        #[arg(long, short)]
-        message: Option<String>,
-
-        /// Branch to push to (defaults to current branch)
-        #[arg(long)]
-        branch: Option<String>,
-
-        /// Skip all interactive prompts (use defaults)
+        /// Skip all interactive prompts (use defaults, patch bump)
         #[arg(long, short = 'y')]
         yes: bool,
+
+        /// Use an existing tag instead of creating a new one
+        #[arg(long, short)]
+        tag: Option<String>,
     },
 
     /// List installed skills
@@ -318,19 +310,15 @@ async fn main() -> anyhow::Result<()> {
             path,
             skip_validation,
             dry_run,
-            no_push,
-            message,
-            branch,
             yes,
+            tag,
         } => {
             commands::publish::run(PublishArgs {
                 path,
                 skip_validation,
                 dry_run,
-                no_push,
-                message,
-                branch,
                 yes,
+                tag,
             })
             .await?;
         }
