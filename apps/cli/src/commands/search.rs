@@ -46,16 +46,16 @@ pub async fn run(args: SearchArgs) -> Result<()> {
         );
 
         // Tags inline (up to 3)
-        if let Some(ref tags) = pak.tags {
-            if !tags.is_empty() {
-                let tags_str: String = tags
-                    .iter()
-                    .take(3)
-                    .map(|t| format!("\x1b[33m#{}\x1b[0m", t))
-                    .collect::<Vec<_>>()
-                    .join(" ");
-                print!("  {}", tags_str);
-            }
+        if let Some(ref tags) = pak.tags
+            && !tags.is_empty()
+        {
+            let tags_str: String = tags
+                .iter()
+                .take(3)
+                .map(|t| format!("\x1b[33m#{}\x1b[0m", t))
+                .collect::<Vec<_>>()
+                .join(" ");
+            print!("  {}", tags_str);
         }
         println!();
 
