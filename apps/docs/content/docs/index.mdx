@@ -1,10 +1,40 @@
 ---
-title: Paks CLI
+title: Getting Started
 description: Agent Skills package manager for AI coding agents
 icon: Package
 ---
 
-**Paks** is a CLI tool for scaffolding, installing, publishing, and managing agent skills across different AI coding agents including Claude Code, Cursor, VS Code, Goose, OpenCode, and Stakpak.
+**Paks** is a CLI tool for scaffolding, installing, publishing, and managing [Agent Skills](https://agentskills.io) across different AI coding agents including Claude Code, Cursor, VS Code, GitHub Copilot, Goose, OpenCode, and Stakpak.
+
+## Installation
+
+### Quick Install (Recommended)
+
+```bash
+curl -fsSL https://paks.stakpak.dev/install.sh | sh
+```
+
+### Build from Source
+
+```bash
+# Clone the repository
+git clone https://github.com/stakpak/paks.git
+cd paks
+
+# Build the CLI
+cargo build -p paks-cli --release
+
+# Binary will be at ./target/release/paks
+# Move to your PATH
+sudo mv ./target/release/paks /usr/local/bin/
+```
+
+### Verify Installation
+
+```bash
+paks --version
+paks --help
+```
 
 ## Quick Start
 
@@ -18,10 +48,13 @@ paks validate ./my-skill
 # View skill details
 paks info ./my-skill
 
+# Install a skill from the registry
+paks install stakpak/kubernetes-deploy
+
 # List installed skills
 paks list
 
-# Publish (dry-run)
+# Publish your skill (dry-run first)
 paks publish ./my-skill --dry-run
 ```
 
@@ -43,27 +76,47 @@ paks publish ./my-skill --dry-run
   />
 </Cards>
 
-## Installation
+## Supported Agents
 
-```bash
-# Build from source
-cargo build -p paks-cli --release
+Paks works with all major AI coding agents:
 
-# Binary location
-./target/release/paks
-```
+| Agent | Skills Directory | Description |
+| ----- | ---------------- | ----------- |
+| `stakpak` | `~/.stakpak/skills` | Stakpak AI agent (default) |
+| `claude-code` | `~/.claude/skills` | Anthropic Claude Code |
+| `cursor` | `~/.cursor/skills` | Cursor IDE |
+| `vscode` | `~/.vscode/skills` | VS Code with AI extensions |
+| `copilot` | `~/.copilot/skills` | GitHub Copilot |
+| `goose` | `~/.goose/skills` | Goose AI agent |
+| `opencode` | `~/.opencode/skills` | OpenCode agent |
 
 ## Features
 
 | Feature | Status | Description |
 | ------- | ------ | ----------- |
 | `create` | ✅ | Scaffold new skills from templates |
+| `install` | ✅ | Install from registry, git, or local path |
+| `publish` | ✅ | Publish skills to the registry |
 | `validate` | ✅ | Validate skill structure |
 | `info` | ✅ | Show skill details |
 | `list` | ✅ | List installed skills |
 | `remove` | ✅ | Remove installed skills |
-| `publish` | ✅ | Publish skills (validation + dry-run) |
+| `search` | ✅ | Search the registry |
 | `agent` | ✅ | Manage agent configurations |
-| `install` | 🚧 | Install from registry (needs API) |
-| `search` | 🚧 | Search registry (needs API) |
-| `login` | 🚧 | Registry authentication (needs API) |
+| `login` | ✅ | Registry authentication |
+
+## What are Agent Skills?
+
+Agent Skills are reusable packages of knowledge and instructions that enhance AI coding agents. They follow the [Agent Skills specification](https://agentskills.io) and consist of:
+
+- **SKILL.md** - A markdown file with YAML frontmatter containing metadata and instructions
+- **Optional assets** - Scripts, templates, references, and other supporting files
+
+Skills help AI agents understand domain-specific knowledge, coding standards, deployment procedures, and best practices that aren't part of their base training.
+
+## Next Steps
+
+1. **[Create your first skill](/docs/commands#create)** - Learn how to scaffold a new skill
+2. **[Understand the SKILL.md format](/docs/skill-spec)** - Master the skill manifest specification
+3. **[Configure your agents](/docs/agents)** - Set up skills for your preferred AI agents
+4. **[Publish to the registry](/docs/commands#publish)** - Share your skills with the community

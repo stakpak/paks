@@ -1,3 +1,429 @@
 @import "tailwindcss";
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
+@import "@fontsource-variable/jetbrains-mono";
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PAKS DOCS - Cyan/Teal Theme (matching main site)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Override fumadocs theme colors using @theme block */
+@theme {
+  /* Fonts */
+  --font-sans: 'JetBrains Mono Variable', ui-monospace, monospace;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+  
+  /* Sharp corners like main site */
+  --radius-sm: 0rem;
+  --radius-md: 0rem;
+  --radius-lg: 0rem;
+  --radius-xl: 0rem;
+  
+  /* Light mode - Paks cyan/teal theme */
+  --color-fd-background: hsl(200, 10%, 98%);
+  --color-fd-foreground: hsl(200, 10%, 10%);
+  --color-fd-muted: hsl(200, 10%, 94%);
+  --color-fd-muted-foreground: hsl(200, 5%, 45%);
+  --color-fd-popover: hsl(200, 10%, 98%);
+  --color-fd-popover-foreground: hsl(200, 10%, 15%);
+  --color-fd-card: hsl(200, 10%, 96%);
+  --color-fd-card-foreground: hsl(200, 10%, 10%);
+  --color-fd-border: hsl(195, 20%, 85%);
+  --color-fd-primary: oklch(0.55 0.15 195);
+  --color-fd-primary-foreground: hsl(0, 0%, 100%);
+  --color-fd-secondary: hsl(200, 10%, 92%);
+  --color-fd-secondary-foreground: hsl(200, 10%, 10%);
+  --color-fd-accent: hsl(195, 30%, 90%);
+  --color-fd-accent-foreground: hsl(200, 10%, 10%);
+  --color-fd-ring: oklch(0.55 0.15 195);
+}
+
+/* Dark mode overrides */
+.dark {
+  --color-fd-background: oklch(0.12 0.01 250);
+  --color-fd-foreground: oklch(0.95 0.01 200);
+  --color-fd-muted: oklch(0.20 0.01 250);
+  --color-fd-muted-foreground: oklch(0.65 0.02 200);
+  --color-fd-popover: oklch(0.16 0.01 250);
+  --color-fd-popover-foreground: oklch(0.95 0.01 200);
+  --color-fd-card: oklch(0.16 0.01 250);
+  --color-fd-card-foreground: oklch(0.95 0.01 200);
+  --color-fd-border: oklch(0.30 0.04 200 / 30%);
+  --color-fd-primary: oklch(0.78 0.16 195);
+  --color-fd-primary-foreground: oklch(0.12 0.02 200);
+  --color-fd-secondary: oklch(0.22 0.02 250);
+  --color-fd-secondary-foreground: oklch(0.95 0.01 200);
+  --color-fd-accent: oklch(0.25 0.05 200);
+  --color-fd-accent-foreground: oklch(0.95 0.01 200);
+  --color-fd-ring: oklch(0.78 0.16 195);
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NAVIGATION & HEADER
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Nav title gradient - works in both modes */
+[data-fumadocs-nav] a[href="/"] {
+  background: linear-gradient(135deg, oklch(0.55 0.15 195), oklch(0.45 0.17 200), oklch(0.50 0.14 190), oklch(0.55 0.15 195));
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 6s ease infinite;
+  font-weight: 700;
+}
+
+.dark [data-fumadocs-nav] a[href="/"] {
+  background: linear-gradient(135deg, oklch(0.88 0.15 195), oklch(0.72 0.17 200), oklch(0.82 0.14 190), oklch(0.88 0.15 195));
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Dark mode nav glass effect */
+.dark [data-fumadocs-nav] {
+  background: oklch(0.18 0.03 200 / 60%) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid oklch(0.78 0.16 195 / 30%);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SIDEBAR
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Sidebar - full width children */
+#nd-sidebar > * {
+  width: 100% !important;
+}
+
+/* Sidebar links - sharp corners */
+[data-fumadocs-sidebar] a {
+  border-radius: 0 !important;
+  transition: all 0.2s ease;
+}
+
+/* Dark mode sidebar */
+.dark [data-fumadocs-sidebar] {
+  background: oklch(0.14 0.01 250) !important;
+  border-right: 1px solid oklch(0.30 0.04 200 / 30%);
+}
+
+.dark [data-fumadocs-sidebar] a:hover {
+  background: oklch(0.25 0.05 200 / 50%) !important;
+  color: oklch(0.78 0.16 195) !important;
+}
+
+.dark [data-fumadocs-sidebar] a[data-active="true"] {
+  background: oklch(0.78 0.16 195 / 15%) !important;
+  color: oklch(0.78 0.16 195) !important;
+  border-left: 2px solid oklch(0.78 0.16 195);
+}
+
+/* Light mode sidebar active */
+[data-fumadocs-sidebar] a[data-active="true"] {
+  color: oklch(0.55 0.15 195) !important;
+  border-left: 2px solid oklch(0.55 0.15 195);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONTENT AREA
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Headings */
+[data-fumadocs-body] h1,
+[data-fumadocs-body] h2,
+[data-fumadocs-body] h3,
+[data-fumadocs-body] h4 {
+  font-weight: 600;
+}
+
+/* H1 gradient - light mode */
+[data-fumadocs-body] h1 {
+  background: linear-gradient(135deg, oklch(0.55 0.15 195), oklch(0.45 0.17 200));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* H1 gradient - dark mode */
+.dark [data-fumadocs-body] h1 {
+  background: linear-gradient(135deg, oklch(0.88 0.15 195), oklch(0.72 0.17 200));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Links - light mode */
+[data-fumadocs-body] a:not([class]) {
+  color: oklch(0.55 0.15 195);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s ease;
+}
+
+[data-fumadocs-body] a:not([class]):hover {
+  color: oklch(0.45 0.17 195);
+}
+
+/* Links - dark mode */
+.dark [data-fumadocs-body] a:not([class]) {
+  color: oklch(0.78 0.16 195);
+}
+
+.dark [data-fumadocs-body] a:not([class]):hover {
+  color: oklch(0.88 0.15 195);
+}
+
+/* Code blocks - sharp corners */
+[data-fumadocs-body] pre {
+  border-radius: 0 !important;
+}
+
+[data-fumadocs-body] code {
+  font-family: var(--font-mono);
+}
+
+[data-fumadocs-body] :not(pre) > code {
+  border-radius: 0;
+  font-size: 0.875em;
+}
+
+/* Dark mode code blocks */
+.dark [data-fumadocs-body] pre {
+  background: oklch(0.10 0.01 250) !important;
+  border: 1px solid oklch(0.30 0.04 200 / 30%);
+}
+
+.dark [data-fumadocs-body] :not(pre) > code {
+  background: oklch(0.20 0.03 200 / 50%);
+  color: oklch(0.85 0.12 195);
+}
+
+/* Tables - dark mode */
+.dark [data-fumadocs-body] table {
+  border: 1px solid oklch(0.30 0.04 200 / 30%);
+}
+
+.dark [data-fumadocs-body] th {
+  background: oklch(0.18 0.02 250);
+  color: oklch(0.78 0.16 195);
+}
+
+.dark [data-fumadocs-body] td,
+.dark [data-fumadocs-body] th {
+  border: 1px solid oklch(0.30 0.04 200 / 30%);
+}
+
+.dark [data-fumadocs-body] tr:nth-child(even) {
+  background: oklch(0.14 0.01 250);
+}
+
+/* Blockquotes */
+[data-fumadocs-body] blockquote {
+  border-left: 3px solid oklch(0.55 0.15 195);
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.dark [data-fumadocs-body] blockquote {
+  border-left-color: oklch(0.78 0.16 195);
+  background: oklch(0.16 0.01 250);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CARDS (fumadocs Cards component)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-fumadocs-card] {
+  border-radius: 0 !important;
+  transition: all 0.3s ease;
+}
+
+.dark [data-fumadocs-card] {
+  background: oklch(0.20 0.03 200 / 40%) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid oklch(0.78 0.16 195 / 20%) !important;
+}
+
+/* Card hover - light mode */
+[data-fumadocs-card]:hover {
+  border-color: oklch(0.55 0.15 195 / 50%) !important;
+  box-shadow: 0 0 20px oklch(0.55 0.15 195 / 15%);
+  transform: translateY(-2px);
+}
+
+/* Card hover - dark mode */
+.dark [data-fumadocs-card]:hover {
+  border-color: oklch(0.78 0.16 195 / 50%) !important;
+  box-shadow: 0 0 20px oklch(0.78 0.16 195 / 15%);
+}
+
+.dark [data-fumadocs-card] h3 {
+  color: oklch(0.95 0.01 200);
+}
+
+.dark [data-fumadocs-card] p {
+  color: oklch(0.65 0.02 200);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOC (Table of Contents)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-fumadocs-toc] a {
+  transition: color 0.2s ease;
+}
+
+/* Light mode TOC */
+[data-fumadocs-toc] a:hover {
+  color: oklch(0.55 0.15 195);
+}
+
+[data-fumadocs-toc] a[data-active="true"] {
+  color: oklch(0.55 0.15 195);
+  font-weight: 500;
+}
+
+/* Dark mode TOC */
+.dark [data-fumadocs-toc] {
+  border-left: 1px solid oklch(0.30 0.04 200 / 30%);
+}
+
+.dark [data-fumadocs-toc] a {
+  color: oklch(0.65 0.02 200);
+}
+
+.dark [data-fumadocs-toc] a:hover {
+  color: oklch(0.78 0.16 195);
+}
+
+.dark [data-fumadocs-toc] a[data-active="true"] {
+  color: oklch(0.78 0.16 195);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SEARCH
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-fumadocs-search] {
+  border-radius: 0 !important;
+}
+
+.dark [data-fumadocs-search] {
+  background: oklch(0.16 0.01 250) !important;
+  border: 1px solid oklch(0.30 0.04 200 / 30%) !important;
+}
+
+.dark [data-fumadocs-search] input {
+  background: transparent;
+  color: oklch(0.95 0.01 200);
+}
+
+.dark [data-fumadocs-search] input::placeholder {
+  color: oklch(0.50 0.02 200);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCROLLBAR (dark mode only)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: oklch(0.12 0.01 250);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: oklch(0.3 0.04 195);
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.4 0.06 195);
+}
+
+.dark ::-webkit-scrollbar-corner {
+  background: oklch(0.12 0.01 250);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BUTTONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+button, .fd-button {
+  border-radius: 0 !important;
+}
+
+/* Primary buttons */
+.fd-button-primary,
+button[data-primary] {
+  background: oklch(0.78 0.16 195) !important;
+  color: oklch(0.12 0.02 200) !important;
+  border: none !important;
+  box-shadow: 4px 4px 0 oklch(0.45 0.12 195 / 50%);
+  transition: all 0.2s ease;
+}
+
+.fd-button-primary:hover,
+button[data-primary]:hover {
+  background: oklch(0.72 0.15 195) !important;
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 oklch(0.45 0.12 195 / 50%);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CALLOUTS / ADMONITIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-callout] {
+  border-radius: 0 !important;
+  border-left-width: 3px;
+}
+
+[data-callout="info"] {
+  background: oklch(0.78 0.16 195 / 10%);
+  border-left-color: oklch(0.78 0.16 195);
+}
+
+[data-callout="warning"] {
+  background: oklch(0.75 0.16 55 / 10%);
+  border-left-color: oklch(0.75 0.16 55);
+}
+
+[data-callout="error"],
+[data-callout="danger"] {
+  background: oklch(0.60 0.20 25 / 10%);
+  border-left-color: oklch(0.60 0.20 25);
+}
+
+[data-callout="tip"],
+[data-callout="success"] {
+  background: oklch(0.70 0.15 145 / 10%);
+  border-left-color: oklch(0.70 0.15 145);
+}
