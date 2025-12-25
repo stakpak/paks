@@ -24,6 +24,10 @@ export default defineConfig({
     react(),
     // see https://tanstack.com/start/latest/docs/framework/react/guide/hosting for hosting config
     // we configured nitro by default
-    nitro({ preset: "aws_amplify" }),
+    nitro({ preset: "aws_amplify",
+      awsAmplify:{
+        catchAllStaticFallback: true,
+      }
+    }),
   ],
 });
