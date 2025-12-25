@@ -1,5 +1,6 @@
 version: 1
 applications:
+  # Main web app (paks.stakpak.dev)
   - frontend:
       phases:
         preBuild:
@@ -15,3 +16,20 @@ applications:
           - '**/*'
       buildPath: /
     appRoot: apps/web
+  
+  # Documentation site (docs.paks.stakpak.dev)
+  - frontend:
+      phases:
+        preBuild:
+          commands:
+            - nvm use 20 && node --version
+            - corepack enable && npx --yes nypm install
+        build:
+          commands:
+            - pnpm run build --filter docs
+      artifacts:
+        baseDirectory: apps/docs/.amplify-hosting
+        files:
+          - '**/*'
+      buildPath: /
+    appRoot: apps/docs

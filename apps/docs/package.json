@@ -12,6 +12,7 @@
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
+    "@fontsource-variable/jetbrains-mono": "catalog:",
     "@tanstack/react-router": "1.136.18",
     "@tanstack/react-router-devtools": "1.136.18",
     "@tanstack/react-start": "1.136.18",
@@ -31,7 +32,7 @@
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.2",
-    "nitro": "3.0.1-alpha.1",
+    "nitro": "catalog:",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
     "vite-tsconfig-paths": "^6.0.0"

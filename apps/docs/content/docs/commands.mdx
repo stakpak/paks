@@ -1,7 +1,10 @@
 ---
 title: Commands Reference
 description: Complete CLI command documentation
+icon: Terminal
 ---
+
+Complete reference for all Paks CLI commands.
 
 ## create
 
@@ -9,70 +12,77 @@ Scaffold a new skill from templates.
 
 ```bash
 paks create <name> [options]
-
-# Options
---with-scripts    Include example scripts directory
---dir <path>      Output directory (default: current)
 ```
 
-**Example:**
-```bash
-paks create my-devops-skill --with-scripts
-```
+### Options
 
----
+| Option | Description |
+| ------ | ----------- |
+| `-o, --output <path>` | Output directory (defaults to `./<name>`) |
+| `-t, --template <name>` | Template to use: `basic`, `devops`, `coding` (default: `basic`) |
+| `--with-scripts` | Include example scripts directory |
+| `--with-references` | Include references directory |
+| `--with-assets` | Include assets directory |
 
-## validate
-
-Validate skill structure and SKILL.md format.
-
-```bash
-paks validate <path>
-```
-
-Checks:
-- SKILL.md exists and has valid YAML frontmatter
-- Required fields: `name`, `description`
-- Optional fields validated if present
-
----
-
-## info
-
-Display detailed skill information.
+### Examples
 
 ```bash
-paks info <path>
-```
+# Create a basic skill
+paks create my-skill
 
-Shows name, description, version, authors, keywords, and license.
+# Create with all optional directories
+paks create my-devops-skill --with-scripts --with-references --with-assets
 
----
-
-## list
-
-List installed skills.
-
-```bash
-paks list [options]
-
-# Options
---agent <name>    Target agent (default: stakpak)
---format <fmt>    Output format: table, json, yaml
+# Create in a specific directory
+paks create kubernetes-deploy -o ./skills/k8s
 ```
 
 ---
 
-## remove
+## install
 
-Remove an installed skill.
+Install a skill to your agent's skills directory.
 
 ```bash
-paks remove <name> [options]
+paks install <source> [options]
+```
 
-# Options
---agent <name>    Target agent
---force           Skip confirmation
+### Source Formats
+
+| Format | Example | Description |
+| ------ | ------- | ----------- |
+| Registry | `account/skill` | Install from paks registry |
+| Registry with version | `account/skill@1.0.0` | Install specific version |
+| Git URL | `https://github.com/user/repo` | Clone from git |
+| Git with ref | `https://github.com/user/repo#ref=v1.0.0` | Clone specific tag/branch |
+| Git with path | `https://github.com/user/repo#path=skills/my-skill` | Clone subdirectory |
+| Local path | `./my-skill` | Copy from local directory |
+
+### Options
+
+| Option | Description |
+| ------ | ----------- |
+| `-a, --agent <name>` | Target agent (default: configured default) |
+| `-d, --dir <path>` | Custom install directory (overrides agent default) |
+| `-f, --force` | Force reinstall if already exists |
+
+### Examples
+
+```bash
+# Install from registry
+paks install stakpak/kubernetes-deploy
+
+# Install specific version
+paks install stakpak/kubernetes-deploy@1.2.0
+
+# Install from git
+paks install https://github.com/stakpak/skills#path=devops/k8s
+
+# Install for specific agent
+paks install stakpak/code-review --agent cursor
+
+# Force reinstall
+paks install stakpak/terraform-aws --force
 ```
 
 ---
@@ -83,10 +93,230 @@ Publish a skill to the registry.
 
 ```bash
 paks publish <path> [options]
+```
 
-# Options
---dry-run         Validate without publishing
---bump <level>    Version bump: patch, minor, major
+### Options
+
+| Option | Description |
+| ------ | ----------- |
+| `--dry-run` | Show what would happen without publishing |
+| `--skip-validation` | Skip SKILL.md validation |
+| `-y, --yes` | Skip interactive prompts (auto patch bump) |
+| `-t, --tag <tag>` | Use existing git tag instead of creating new |
+
+### Publishing Flow
+
+1. Validates SKILL.md structure
+2. Checks git repository status
+3. Prompts for version bump (patch/minor/major) or existing tag
+4. Creates and pushes git tag
+5. Registers with the paks registry
+
+### Examples
+
+```bash
+# Dry run to see what would happen
+paks publish ./my-skill --dry-run
+
+# Interactive publish (recommended)
+paks publish ./my-skill
+
+# Non-interactive with auto patch bump
+paks publish ./my-skill --yes
+
+# Publish existing tag
+paks publish ./my-skill --tag v1.2.0
+```
+
+---
+
+## validate
+
+Validate skill structure and SKILL.md format.
+
+```bash
+paks validate <path> [options]
+```
+
+### Options
+
+| Option | Description |
+| ------ | ----------- |
+| `--strict` | Treat warnings as errors |
+
+### Checks Performed
+
+- ✓ SKILL.md file exists
+- ✓ Valid YAML frontmatter
+- ✓ Required fields present (`name`, `description`)
+- ✓ Field types are correct
+- ✓ Name format is valid (lowercase, hyphens)
+- ✓ Version follows semver (if present)
+
+### Examples
+
+```bash
+# Validate current directory
+paks validate .
+
+# Validate specific skill
+paks validate ./my-skill
+
+# Strict mode for CI/CD
+paks validate ./my-skill --strict
+```
+
+---
+
+## info
+
+Display detailed skill information.
+
+```bash
+paks info <skill> [options]
+```
+
+### Options
+
+| Option | Description |
+| ------ | ----------- |
+| `--full` | Show full SKILL.md content |
+
+### Examples
+
+```bash
+# Show skill info from local path
+paks info ./my-skill
+
+# Show full content
+paks info ./my-skill --full
+```
+
+---
+
+## list
+
+List installed skills.
+
+```bash
+paks list [options]
+```
+
+### Options
+
+| Option | Description |
+| ------ | ----------- |
+| `-a, --agent <name>` | Target agent to list skills for |
+| `--all` | Show skills from all configured agents |
+| `-f, --format <fmt>` | Output format: `table`, `json`, `yaml` |
+
+### Examples
+
+```bash
+# List skills for default agent
+paks list
+
+# List for specific agent
+paks list --agent claude-code
+
+# List all agents' skills
+paks list --all
+
+# JSON output for scripting
+paks list --format json
+```
+
+---
+
+## remove
+
+Remove an installed skill.
+
+```bash
+paks remove <name> [options]
+```
+
+### Options
+
+| Option | Description |
+| ------ | ----------- |
+| `-a, --agent <name>` | Target agent to remove from |
+| `--all` | Remove from all agents |
+| `-y, --yes` | Skip confirmation prompt |
+
+### Examples
+
+```bash
+# Remove skill (with confirmation)
+paks remove kubernetes-deploy
+
+# Remove from specific agent
+paks remove kubernetes-deploy --agent cursor
+
+# Remove from all agents
+paks remove kubernetes-deploy --all --yes
+```
+
+---
+
+## search
+
+Search for skills in the registry.
+
+```bash
+paks search <query> [options]
+```
+
+### Options
+
+| Option | Description |
+| ------ | ----------- |
+| `-l, --limit <n>` | Maximum results to show (default: 10) |
+
+### Examples
+
+```bash
+# Search for kubernetes skills
+paks search kubernetes
+
+# Limit results
+paks search devops --limit 5
+```
+
+---
+
+## login
+
+Authenticate with the paks registry.
+
+```bash
+paks login [options]
+```
+
+### Options
+
+| Option | Description |
+| ------ | ----------- |
+| `-t, --token <token>` | API token (will prompt if not provided) |
+
+### Examples
+
+```bash
+# Interactive login
+paks login
+
+# Login with token
+paks login --token your-api-token
+```
+
+---
+
+## logout
+
+Log out from the registry.
+
+```bash
+paks logout
 ```
 
 ---
@@ -96,19 +326,48 @@ paks publish <path> [options]
 Manage agent configurations.
 
 ```bash
-# List all agents
+paks agent <subcommand>
+```
+
+### Subcommands
+
+#### `agent list`
+
+List all configured agents.
+
+```bash
 paks agent list
+```
 
-# Add custom agent
+#### `agent add`
+
+Add a custom agent configuration.
+
+```bash
 paks agent add <name> --dir <skills-directory>
+```
 
-# Remove custom agent
+#### `agent remove`
+
+Remove a custom agent (built-in agents cannot be removed).
+
+```bash
 paks agent remove <name>
+```
 
-# Set default agent
+#### `agent default`
+
+Set the default agent for commands.
+
+```bash
 paks agent default <name>
+```
 
-# Show agent details
+#### `agent show`
+
+Show configuration for an agent.
+
+```bash
 paks agent show <name>
 ```
 
@@ -116,10 +375,26 @@ paks agent show <name>
 
 | Agent | Skills Directory |
 | ----- | ---------------- |
-| stakpak | `~/.stakpak/skills` |
-| claude-code | `~/.claude/skills` |
-| cursor | `~/.cursor/skills` |
-| vscode | `~/.vscode/skills` |
-| copilot | `~/.copilot/skills` |
-| goose | `~/.goose/skills` |
-| opencode | `~/.opencode/skills` |
+| `stakpak` | `~/.stakpak/skills` |
+| `claude-code` | `~/.claude/skills` |
+| `cursor` | `~/.cursor/skills` |
+| `vscode` | `~/.vscode/skills` |
+| `copilot` | `~/.copilot/skills` |
+| `goose` | `~/.goose/skills` |
+| `opencode` | `~/.opencode/skills` |
+
+### Examples
+
+```bash
+# List all agents
+paks agent list
+
+# Add custom agent
+paks agent add my-agent --dir ~/.my-agent/skills
+
+# Set default
+paks agent default claude-code
+
+# Show agent config
+paks agent show stakpak
+```
