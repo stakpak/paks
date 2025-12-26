@@ -151,31 +151,179 @@ fn detect_source_type(source: &str) -> SourceType {
     SourceType::Local(PathBuf::from(source))
 }
 
-/// Parse git URL for ref and path fragments
-/// Supports: url#ref=v1.0.0 and url#path=skills/my-skill
-fn parse_git_url(url: &str) -> (String, Option<String>, Option<String>) {
-    if let Some(hash_pos) = url.find('#') {
-        let base_url = url[..hash_pos].to_string();
-        let fragment = &url[hash_pos + 1..];
+/// Parsed git URL components
+struct GitUrlParts {
+    /// Base repository URL (e.g., "https://github.com/user/repo.git")
+    url: String,
+    /// Git ref (branch, tag, or commit)
+    git_ref: Option<String>,
+    /// Path to skill within the repository
+    path: Option<String>,
+}
 
-        let mut git_ref = None;
-        let mut path = None;
+/// Convert GitHub/GitLab web URLs to git clone URLs
+/// Supports:
+/// - https://github.com/user/repo/tree/branch/path/to/skill
+/// - https://github.com/user/repo/blob/branch/path/to/file
+/// - https://gitlab.com/user/repo/-/tree/branch/path/to/skill
+fn convert_web_url_to_git(url: &str) -> Option<GitUrlParts> {
+    // Skip URLs that already have .git (these are proper clone URLs)
+    if url.contains(".git") {
+        return None;
+    }
 
-        for part in fragment.split('&') {
-            if let Some(value) = part.strip_prefix("ref=") {
-                git_ref = Some(value.to_string());
-            } else if let Some(value) = part.strip_prefix("tag=") {
-                git_ref = Some(value.to_string());
-            } else if let Some(value) = part.strip_prefix("branch=") {
-                git_ref = Some(value.to_string());
-            } else if let Some(value) = part.strip_prefix("path=") {
-                path = Some(value.to_string());
-            }
+    // GitHub: https://github.com/user/repo/tree/branch/path
+    // GitHub: https://github.com/user/repo/blob/branch/path
+    if url.starts_with("https://github.com/") {
+        let path = url.strip_prefix("https://github.com/")?;
+        let parts: Vec<&str> = path.splitn(4, '/').collect();
+
+        if parts.len() >= 4 && (parts[2] == "tree" || parts[2] == "blob") {
+            let user = parts[0];
+            let repo = parts[1];
+            let rest = parts[3]; // branch/path/to/skill
+
+            // Split rest into branch and path
+            // This is tricky because branch names can contain slashes
+            // We'll try to find the first path component that exists
+            let rest_parts: Vec<&str> = rest.splitn(2, '/').collect();
+            let (branch, skill_path) = if rest_parts.len() == 2 {
+                (rest_parts[0], Some(rest_parts[1].to_string()))
+            } else {
+                (rest_parts[0], None)
+            };
+
+            return Some(GitUrlParts {
+                url: format!("https://github.com/{}/{}.git", user, repo),
+                git_ref: Some(branch.to_string()),
+                path: skill_path,
+            });
         }
 
-        (base_url, git_ref, path)
+        // Simple repo URL: https://github.com/user/repo
+        if parts.len() >= 2
+            && (parts.len() == 2 || (parts.len() > 2 && parts[2] != "tree" && parts[2] != "blob"))
+        {
+            let user = parts[0];
+            let repo = parts[1];
+            return Some(GitUrlParts {
+                url: format!("https://github.com/{}/{}.git", user, repo),
+                git_ref: None,
+                path: None,
+            });
+        }
+    }
+
+    // GitLab: https://gitlab.com/user/repo/-/tree/branch/path
+    if url.starts_with("https://gitlab.com/") {
+        let path = url.strip_prefix("https://gitlab.com/")?;
+
+        // Check for /-/tree/ or /-/blob/ pattern
+        if let Some(tree_pos) = path.find("/-/tree/").or_else(|| path.find("/-/blob/")) {
+            let repo_path = &path[..tree_pos];
+            let after_tree = &path[tree_pos + 8..]; // Skip "/-/tree/" or "/-/blob/"
+
+            let rest_parts: Vec<&str> = after_tree.splitn(2, '/').collect();
+            let (branch, skill_path) = if rest_parts.len() == 2 {
+                (rest_parts[0], Some(rest_parts[1].to_string()))
+            } else {
+                (rest_parts[0], None)
+            };
+
+            return Some(GitUrlParts {
+                url: format!("https://gitlab.com/{}.git", repo_path),
+                git_ref: Some(branch.to_string()),
+                path: skill_path,
+            });
+        }
+    }
+
+    None
+}
+
+/// Parse URL fragment for ref and path parameters
+/// Supports: #ref=v1.0.0&path=skills/my-skill
+fn parse_url_fragment(fragment: &str) -> (Option<String>, Option<String>) {
+    let mut git_ref = None;
+    let mut path = None;
+
+    for part in fragment.split('&') {
+        if let Some(value) = part.strip_prefix("ref=") {
+            git_ref = Some(value.to_string());
+        } else if let Some(value) = part.strip_prefix("tag=") {
+            git_ref = Some(value.to_string());
+        } else if let Some(value) = part.strip_prefix("branch=") {
+            git_ref = Some(value.to_string());
+        } else if let Some(value) = part.strip_prefix("path=") {
+            path = Some(value.to_string());
+        }
+    }
+
+    (git_ref, path)
+}
+
+/// Extract path from URL after .git suffix
+/// Supports: https://github.com/user/repo.git/path/to/skill
+fn extract_path_after_git_suffix(url: &str) -> (String, Option<String>) {
+    if let Some(git_pos) = url.find(".git") {
+        let after_git = &url[git_pos + 4..];
+        if after_git.starts_with('/') && after_git.len() > 1 {
+            let path = after_git[1..].to_string(); // Skip the leading '/'
+            let base_url = url[..git_pos + 4].to_string();
+            return (base_url, Some(path));
+        }
+    }
+    (url.to_string(), None)
+}
+
+/// Split URL into base and fragment parts
+fn split_url_fragment(url: &str) -> (String, Option<&str>) {
+    if let Some(hash_pos) = url.find('#') {
+        (url[..hash_pos].to_string(), Some(&url[hash_pos + 1..]))
     } else {
-        (url.to_string(), None, None)
+        (url.to_string(), None)
+    }
+}
+
+/// Parse git URL for ref and path fragments
+/// Supports:
+/// - Fragment syntax: url#ref=v1.0.0&path=skills/my-skill
+/// - URL path syntax: https://github.com/user/repo.git/path/to/skill
+/// - URL path syntax: git@github.com:user/repo.git/path/to/skill
+fn parse_git_url(url: &str) -> (String, Option<String>, Option<String>) {
+    let parts = parse_git_url_parts(url);
+    (parts.url, parts.git_ref, parts.path)
+}
+
+/// Parse git URL into structured components
+fn parse_git_url_parts(url: &str) -> GitUrlParts {
+    // First, try to convert web URLs (GitHub/GitLab browser URLs)
+    if let Some(parts) = convert_web_url_to_git(url) {
+        return parts;
+    }
+
+    // Split off any URL fragment
+    let (url_without_fragment, fragment) = split_url_fragment(url);
+
+    // Parse fragment if present
+    let (fragment_ref, fragment_path) = fragment.map(parse_url_fragment).unwrap_or((None, None));
+
+    // Fragment path takes precedence
+    if fragment_path.is_some() {
+        return GitUrlParts {
+            url: url_without_fragment,
+            git_ref: fragment_ref,
+            path: fragment_path,
+        };
+    }
+
+    // Otherwise, check for path after .git in the URL
+    let (base_url, url_path) = extract_path_after_git_suffix(&url_without_fragment);
+
+    GitUrlParts {
+        url: base_url,
+        git_ref: fragment_ref,
+        path: url_path,
     }
 }
 
@@ -646,15 +794,232 @@ mod tests {
 
     #[test]
     fn test_parse_git_url() {
+        // Fragment syntax with ref and path
         let (url, git_ref, path) =
             parse_git_url("https://github.com/user/repo.git#ref=v1.0.0&path=skills/my-skill");
         assert_eq!(url, "https://github.com/user/repo.git");
         assert_eq!(git_ref, Some("v1.0.0".to_string()));
         assert_eq!(path, Some("skills/my-skill".to_string()));
 
+        // Plain URL without fragments
         let (url2, git_ref2, path2) = parse_git_url("https://github.com/user/repo.git");
         assert_eq!(url2, "https://github.com/user/repo.git");
         assert!(git_ref2.is_none());
         assert!(path2.is_none());
+
+        // URL path syntax: path after .git
+        let (url3, git_ref3, path3) =
+            parse_git_url("https://github.com/user/repo.git/skills/my-skill");
+        assert_eq!(url3, "https://github.com/user/repo.git");
+        assert!(git_ref3.is_none());
+        assert_eq!(path3, Some("skills/my-skill".to_string()));
+
+        // URL path syntax with nested path
+        let (url4, git_ref4, path4) =
+            parse_git_url("https://github.com/user/repo.git/path/to/deep/skill");
+        assert_eq!(url4, "https://github.com/user/repo.git");
+        assert!(git_ref4.is_none());
+        assert_eq!(path4, Some("path/to/deep/skill".to_string()));
+
+        // URL path syntax combined with ref fragment
+        let (url5, git_ref5, path5) =
+            parse_git_url("https://github.com/user/repo.git/skills/my-skill#ref=v2.0.0");
+        assert_eq!(url5, "https://github.com/user/repo.git");
+        assert_eq!(git_ref5, Some("v2.0.0".to_string()));
+        assert_eq!(path5, Some("skills/my-skill".to_string()));
+
+        // SSH URL with path after .git
+        let (url6, git_ref6, path6) = parse_git_url("git@github.com:user/repo.git/skills/my-skill");
+        assert_eq!(url6, "git@github.com:user/repo.git");
+        assert!(git_ref6.is_none());
+        assert_eq!(path6, Some("skills/my-skill".to_string()));
+
+        // Fragment path takes precedence over URL path
+        let (url7, git_ref7, path7) =
+            parse_git_url("https://github.com/user/repo.git/ignored#path=fragment-path");
+        assert_eq!(url7, "https://github.com/user/repo.git/ignored");
+        assert!(git_ref7.is_none());
+        assert_eq!(path7, Some("fragment-path".to_string()));
+    }
+
+    #[test]
+    fn test_split_url_fragment() {
+        // URL with fragment
+        let (base, fragment) = split_url_fragment("https://example.com#fragment");
+        assert_eq!(base, "https://example.com");
+        assert_eq!(fragment, Some("fragment"));
+
+        // URL without fragment
+        let (base2, fragment2) = split_url_fragment("https://example.com/path");
+        assert_eq!(base2, "https://example.com/path");
+        assert!(fragment2.is_none());
+
+        // Empty fragment
+        let (base3, fragment3) = split_url_fragment("https://example.com#");
+        assert_eq!(base3, "https://example.com");
+        assert_eq!(fragment3, Some(""));
+
+        // Multiple hash symbols (only first is fragment delimiter)
+        let (base4, fragment4) = split_url_fragment("https://example.com#first#second");
+        assert_eq!(base4, "https://example.com");
+        assert_eq!(fragment4, Some("first#second"));
+    }
+
+    #[test]
+    fn test_parse_url_fragment() {
+        // All parameters
+        let (git_ref, path) = parse_url_fragment("ref=v1.0.0&path=skills/my-skill");
+        assert_eq!(git_ref, Some("v1.0.0".to_string()));
+        assert_eq!(path, Some("skills/my-skill".to_string()));
+
+        // Only ref
+        let (git_ref2, path2) = parse_url_fragment("ref=main");
+        assert_eq!(git_ref2, Some("main".to_string()));
+        assert!(path2.is_none());
+
+        // Only path
+        let (git_ref3, path3) = parse_url_fragment("path=some/path");
+        assert!(git_ref3.is_none());
+        assert_eq!(path3, Some("some/path".to_string()));
+
+        // Tag syntax
+        let (git_ref4, path4) = parse_url_fragment("tag=v2.0.0");
+        assert_eq!(git_ref4, Some("v2.0.0".to_string()));
+        assert!(path4.is_none());
+
+        // Branch syntax
+        let (git_ref5, path5) = parse_url_fragment("branch=feature/new");
+        assert_eq!(git_ref5, Some("feature/new".to_string()));
+        assert!(path5.is_none());
+
+        // Empty fragment
+        let (git_ref6, path6) = parse_url_fragment("");
+        assert!(git_ref6.is_none());
+        assert!(path6.is_none());
+
+        // Unknown parameters are ignored
+        let (git_ref7, path7) = parse_url_fragment("unknown=value&ref=v1.0.0");
+        assert_eq!(git_ref7, Some("v1.0.0".to_string()));
+        assert!(path7.is_none());
+    }
+
+    #[test]
+    fn test_extract_path_after_git_suffix() {
+        // Path after .git
+        let (url, path) = extract_path_after_git_suffix("https://github.com/user/repo.git/skills");
+        assert_eq!(url, "https://github.com/user/repo.git");
+        assert_eq!(path, Some("skills".to_string()));
+
+        // Nested path after .git
+        let (url2, path2) =
+            extract_path_after_git_suffix("https://github.com/user/repo.git/path/to/skill");
+        assert_eq!(url2, "https://github.com/user/repo.git");
+        assert_eq!(path2, Some("path/to/skill".to_string()));
+
+        // No path after .git
+        let (url3, path3) = extract_path_after_git_suffix("https://github.com/user/repo.git");
+        assert_eq!(url3, "https://github.com/user/repo.git");
+        assert!(path3.is_none());
+
+        // Only trailing slash (no actual path) - URL returned as-is
+        let (url4, path4) = extract_path_after_git_suffix("https://github.com/user/repo.git/");
+        assert_eq!(url4, "https://github.com/user/repo.git/");
+        assert!(path4.is_none());
+
+        // SSH URL with path
+        let (url5, path5) =
+            extract_path_after_git_suffix("git@github.com:user/repo.git/skills/my-skill");
+        assert_eq!(url5, "git@github.com:user/repo.git");
+        assert_eq!(path5, Some("skills/my-skill".to_string()));
+
+        // URL without .git suffix
+        let (url6, path6) = extract_path_after_git_suffix("https://github.com/user/repo/path");
+        assert_eq!(url6, "https://github.com/user/repo/path");
+        assert!(path6.is_none());
+    }
+
+    #[test]
+    fn test_convert_web_url_to_git() {
+        // GitHub tree URL with branch and path
+        let parts = convert_web_url_to_git(
+            "https://github.com/wshobson/agents/tree/main/plugins/accessibility-compliance/skills/screen-reader-testing",
+        )
+        .unwrap();
+        assert_eq!(parts.url, "https://github.com/wshobson/agents.git");
+        assert_eq!(parts.git_ref, Some("main".to_string()));
+        assert_eq!(
+            parts.path,
+            Some("plugins/accessibility-compliance/skills/screen-reader-testing".to_string())
+        );
+
+        // GitHub tree URL with only branch (no path)
+        let parts2 = convert_web_url_to_git("https://github.com/user/repo/tree/develop").unwrap();
+        assert_eq!(parts2.url, "https://github.com/user/repo.git");
+        assert_eq!(parts2.git_ref, Some("develop".to_string()));
+        assert!(parts2.path.is_none());
+
+        // GitHub blob URL
+        let parts3 =
+            convert_web_url_to_git("https://github.com/user/repo/blob/main/path/to/file").unwrap();
+        assert_eq!(parts3.url, "https://github.com/user/repo.git");
+        assert_eq!(parts3.git_ref, Some("main".to_string()));
+        assert_eq!(parts3.path, Some("path/to/file".to_string()));
+
+        // Simple GitHub repo URL
+        let parts4 = convert_web_url_to_git("https://github.com/user/repo").unwrap();
+        assert_eq!(parts4.url, "https://github.com/user/repo.git");
+        assert!(parts4.git_ref.is_none());
+        assert!(parts4.path.is_none());
+
+        // GitLab tree URL
+        let parts5 =
+            convert_web_url_to_git("https://gitlab.com/group/project/-/tree/main/path/to/skill")
+                .unwrap();
+        assert_eq!(parts5.url, "https://gitlab.com/group/project.git");
+        assert_eq!(parts5.git_ref, Some("main".to_string()));
+        assert_eq!(parts5.path, Some("path/to/skill".to_string()));
+
+        // URL with .git should return None (not a web URL)
+        assert!(convert_web_url_to_git("https://github.com/user/repo.git").is_none());
+        assert!(convert_web_url_to_git("https://github.com/user/repo.git/path/to/skill").is_none());
+
+        // Non-GitHub/GitLab URLs should return None
+        assert!(convert_web_url_to_git("https://bitbucket.org/user/repo").is_none());
+    }
+
+    #[test]
+    fn test_parse_git_url_parts() {
+        // Full URL with fragment ref and path
+        let parts =
+            parse_git_url_parts("https://github.com/user/repo.git#ref=v1.0.0&path=skills/my-skill");
+        assert_eq!(parts.url, "https://github.com/user/repo.git");
+        assert_eq!(parts.git_ref, Some("v1.0.0".to_string()));
+        assert_eq!(parts.path, Some("skills/my-skill".to_string()));
+
+        // URL path syntax
+        let parts2 = parse_git_url_parts("https://github.com/user/repo.git/skills/my-skill");
+        assert_eq!(parts2.url, "https://github.com/user/repo.git");
+        assert!(parts2.git_ref.is_none());
+        assert_eq!(parts2.path, Some("skills/my-skill".to_string()));
+
+        // URL path with ref fragment
+        let parts3 =
+            parse_git_url_parts("https://github.com/user/repo.git/skills/my-skill#ref=v2.0.0");
+        assert_eq!(parts3.url, "https://github.com/user/repo.git");
+        assert_eq!(parts3.git_ref, Some("v2.0.0".to_string()));
+        assert_eq!(parts3.path, Some("skills/my-skill".to_string()));
+
+        // Fragment path takes precedence over URL path
+        let parts4 =
+            parse_git_url_parts("https://github.com/user/repo.git/url-path#path=fragment-path");
+        assert_eq!(parts4.url, "https://github.com/user/repo.git/url-path");
+        assert!(parts4.git_ref.is_none());
+        assert_eq!(parts4.path, Some("fragment-path".to_string()));
+
+        // Plain URL
+        let parts5 = parse_git_url_parts("https://github.com/user/repo.git");
+        assert_eq!(parts5.url, "https://github.com/user/repo.git");
+        assert!(parts5.git_ref.is_none());
+        assert!(parts5.path.is_none());
     }
 }

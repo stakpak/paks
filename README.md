@@ -160,8 +160,8 @@ paks install kubernetes-deploy
 # Install for a specific agent
 paks install kubernetes-deploy --agent claude-code
 
-# Install from git
-paks install https://github.com/user/skill-repo.git
+# Install from GitHub (just paste the URL from your browser)
+paks install https://github.com/user/repo/tree/main/path/to/skill
 
 # Install specific version
 paks install kubernetes-deploy --version 1.2.0
@@ -248,8 +248,8 @@ paks install terraform-best-practices
 # Install for Claude Code
 paks install terraform-best-practices --agent claude-code
 
-# Install from GitHub
-paks install https://github.com/org/skill-repo.git
+# Install from GitHub/GitLab (just paste the browser URL)
+paks install https://github.com/org/repo/tree/main/skills/my-skill
 
 # Install to custom directory
 paks install my-skill --dir ~/custom/skills
