@@ -201,7 +201,9 @@ fn convert_web_url_to_git(url: &str) -> Option<GitUrlParts> {
         }
 
         // Simple repo URL: https://github.com/user/repo
-        if parts.len() >= 2 && (parts.len() == 2 || (parts.len() > 2 && parts[2] != "tree" && parts[2] != "blob")) {
+        if parts.len() >= 2
+            && (parts.len() == 2 || (parts.len() > 2 && parts[2] != "tree" && parts[2] != "blob"))
+        {
             let user = parts[0];
             let repo = parts[1];
             return Some(GitUrlParts {
@@ -304,9 +306,7 @@ fn parse_git_url_parts(url: &str) -> GitUrlParts {
     let (url_without_fragment, fragment) = split_url_fragment(url);
 
     // Parse fragment if present
-    let (fragment_ref, fragment_path) = fragment
-        .map(parse_url_fragment)
-        .unwrap_or((None, None));
+    let (fragment_ref, fragment_path) = fragment.map(parse_url_fragment).unwrap_or((None, None));
 
     // Fragment path takes precedence
     if fragment_path.is_some() {
@@ -829,8 +829,7 @@ mod tests {
         assert_eq!(path5, Some("skills/my-skill".to_string()));
 
         // SSH URL with path after .git
-        let (url6, git_ref6, path6) =
-            parse_git_url("git@github.com:user/repo.git/skills/my-skill");
+        let (url6, git_ref6, path6) = parse_git_url("git@github.com:user/repo.git/skills/my-skill");
         assert_eq!(url6, "git@github.com:user/repo.git");
         assert!(git_ref6.is_none());
         assert_eq!(path6, Some("skills/my-skill".to_string()));
@@ -954,16 +953,14 @@ mod tests {
         );
 
         // GitHub tree URL with only branch (no path)
-        let parts2 =
-            convert_web_url_to_git("https://github.com/user/repo/tree/develop").unwrap();
+        let parts2 = convert_web_url_to_git("https://github.com/user/repo/tree/develop").unwrap();
         assert_eq!(parts2.url, "https://github.com/user/repo.git");
         assert_eq!(parts2.git_ref, Some("develop".to_string()));
         assert!(parts2.path.is_none());
 
         // GitHub blob URL
         let parts3 =
-            convert_web_url_to_git("https://github.com/user/repo/blob/main/path/to/file")
-                .unwrap();
+            convert_web_url_to_git("https://github.com/user/repo/blob/main/path/to/file").unwrap();
         assert_eq!(parts3.url, "https://github.com/user/repo.git");
         assert_eq!(parts3.git_ref, Some("main".to_string()));
         assert_eq!(parts3.path, Some("path/to/file".to_string()));
@@ -975,19 +972,16 @@ mod tests {
         assert!(parts4.path.is_none());
 
         // GitLab tree URL
-        let parts5 = convert_web_url_to_git(
-            "https://gitlab.com/group/project/-/tree/main/path/to/skill",
-        )
-        .unwrap();
+        let parts5 =
+            convert_web_url_to_git("https://gitlab.com/group/project/-/tree/main/path/to/skill")
+                .unwrap();
         assert_eq!(parts5.url, "https://gitlab.com/group/project.git");
         assert_eq!(parts5.git_ref, Some("main".to_string()));
         assert_eq!(parts5.path, Some("path/to/skill".to_string()));
 
         // URL with .git should return None (not a web URL)
         assert!(convert_web_url_to_git("https://github.com/user/repo.git").is_none());
-        assert!(
-            convert_web_url_to_git("https://github.com/user/repo.git/path/to/skill").is_none()
-        );
+        assert!(convert_web_url_to_git("https://github.com/user/repo.git/path/to/skill").is_none());
 
         // Non-GitHub/GitLab URLs should return None
         assert!(convert_web_url_to_git("https://bitbucket.org/user/repo").is_none());
