@@ -304,7 +304,7 @@ export function Hero() {
 
         {/* Stats Row */}
         <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 py-6 border-t-2 border-dashed border-border/30">
-          <StatItem icon={<Package className="w-4 h-4" />} value="50+" label="Skills" />
+          <StatItem icon={<Package className="w-4 h-4" />} value="200+" label="Skills" />
           <StatItem icon={<Download className="w-4 h-4" />} value="100+" label="Downloads" />
           <StatItem icon={<Upload className="w-4 h-4" />} value="10+" label="Publishers" />
           <StatItem icon={<Zap className="w-4 h-4" />} value="8" label="AGENTS" />
