@@ -47,7 +47,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
       { property: "og:title", content: DEFAULT_TITLE },
       { property: "og:description", content: DEFAULT_DESCRIPTION },
       { property: "og:url", content: SITE_URL },
-      { property: "og:image", content: `${SITE_URL}/og-image.png` },
+      { property: "og:image", content: `${SITE_URL}/meta-img.jpg` },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
       { property: "og:image:alt", content: "Paks - AI Agent Skills Package Manager" },
@@ -59,7 +59,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
       { name: "twitter:creator", content: "@stakpak" },
       { name: "twitter:title", content: DEFAULT_TITLE },
       { name: "twitter:description", content: DEFAULT_DESCRIPTION },
-      { name: "twitter:image", content: `${SITE_URL}/og-image.png` },
+      { name: "twitter:image", content: `${SITE_URL}/meta-img.jpg` },
       { name: "twitter:image:alt", content: "Paks - AI Agent Skills Package Manager" },
       
       // Microsoft/Windows

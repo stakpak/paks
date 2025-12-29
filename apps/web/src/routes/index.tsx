@@ -15,6 +15,8 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "Paks - AI Agent Skills Package Manager" },
       { name: "description", content: "Create, install, publish, and share reusable skills for AI coding agents like Claude Code, Cursor, and GitHub Copilot. The npm for AI agent capabilities." },
+      { property: "og:image", content: "https://paks.stakpak.dev/meta-img.jpg" },
+      { name: "twitter:image", content: "https://paks.stakpak.dev/meta-img.jpg" },
     ],
     links: [
       { rel: "canonical", href: "https://paks.stakpak.dev/" },

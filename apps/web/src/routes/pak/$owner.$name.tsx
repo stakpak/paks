@@ -217,10 +217,12 @@ export const Route = createFileRoute("/pak/$owner/$name")({
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },
         { property: "og:url", content: `https://paks.dev/pak/${pak.owner_name}/${pak.name}` },
+        { property: "og:image", content: "https://paks.stakpak.dev/meta-img.jpg" },
         // Twitter
-        { name: "twitter:card", content: "summary" },
+        { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
+        { name: "twitter:image", content: "https://paks.stakpak.dev/meta-img.jpg" },
         // Package specific
         { name: "pak:name", content: `${pak.owner_name}/${pak.name}` },
         { name: "pak:version", content: version },
