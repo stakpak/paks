@@ -14,6 +14,7 @@ import { Route as SearchRouteImport } from './routes/search'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PakOwnerNameRouteImport } from './routes/pak/$owner.$name'
 import { Route as ApiSitemapXmlRouteImport } from './routes/api/sitemap.xml'
+import { Route as ApiOgOwnerNamePngRouteImport } from './routes/api/og.$owner.$name.png'
 
 const TrendingRoute = TrendingRouteImport.update({
   id: '/trending',
@@ -40,6 +41,11 @@ const ApiSitemapXmlRoute = ApiSitemapXmlRouteImport.update({
   path: '/api/sitemap/xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiOgOwnerNamePngRoute = ApiOgOwnerNamePngRouteImport.update({
+  id: '/api/og/$owner/$name/png',
+  path: '/api/og/$owner/$name/png',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/trending': typeof TrendingRoute
   '/api/sitemap/xml': typeof ApiSitemapXmlRoute
   '/pak/$owner/$name': typeof PakOwnerNameRoute
+  '/api/og/$owner/$name/png': typeof ApiOgOwnerNamePngRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/trending': typeof TrendingRoute
   '/api/sitemap/xml': typeof ApiSitemapXmlRoute
   '/pak/$owner/$name': typeof PakOwnerNameRoute
+  '/api/og/$owner/$name/png': typeof ApiOgOwnerNamePngRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,6 +70,7 @@ export interface FileRoutesById {
   '/trending': typeof TrendingRoute
   '/api/sitemap/xml': typeof ApiSitemapXmlRoute
   '/pak/$owner/$name': typeof PakOwnerNameRoute
+  '/api/og/$owner/$name/png': typeof ApiOgOwnerNamePngRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -71,8 +80,15 @@ export interface FileRouteTypes {
     | '/trending'
     | '/api/sitemap/xml'
     | '/pak/$owner/$name'
+    | '/api/og/$owner/$name/png'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/search' | '/trending' | '/api/sitemap/xml' | '/pak/$owner/$name'
+  to:
+    | '/'
+    | '/search'
+    | '/trending'
+    | '/api/sitemap/xml'
+    | '/pak/$owner/$name'
+    | '/api/og/$owner/$name/png'
   id:
     | '__root__'
     | '/'
@@ -80,6 +96,7 @@ export interface FileRouteTypes {
     | '/trending'
     | '/api/sitemap/xml'
     | '/pak/$owner/$name'
+    | '/api/og/$owner/$name/png'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -88,6 +105,7 @@ export interface RootRouteChildren {
   TrendingRoute: typeof TrendingRoute
   ApiSitemapXmlRoute: typeof ApiSitemapXmlRoute
   PakOwnerNameRoute: typeof PakOwnerNameRoute
+  ApiOgOwnerNamePngRoute: typeof ApiOgOwnerNamePngRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -127,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSitemapXmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/og/$owner/$name/png': {
+      id: '/api/og/$owner/$name/png'
+      path: '/api/og/$owner/$name/png'
+      fullPath: '/api/og/$owner/$name/png'
+      preLoaderRoute: typeof ApiOgOwnerNamePngRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -136,6 +161,7 @@ const rootRouteChildren: RootRouteChildren = {
   TrendingRoute: TrendingRoute,
   ApiSitemapXmlRoute: ApiSitemapXmlRoute,
   PakOwnerNameRoute: PakOwnerNameRoute,
+  ApiOgOwnerNamePngRoute: ApiOgOwnerNamePngRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
