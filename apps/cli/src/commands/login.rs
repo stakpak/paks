@@ -36,7 +36,7 @@ pub async fn run_login(args: LoginArgs) -> Result<()> {
     let token = if let Some(t) = args.token {
         t
     } else {
-        println!("Get your API token from: https://stakpak.dev/settings/tokens");
+        println!("Get your API token from: https://stakpak.dev/generate-api-key");
         println!();
         Input::new().with_prompt("API Token").interact_text()?
     };
