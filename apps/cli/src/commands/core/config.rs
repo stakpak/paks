@@ -178,8 +178,8 @@ impl Config {
             AgentConfig {
                 name: "OpenCode".to_string(),
                 skills_dir: dirs::config_dir()
-                    .map(|c| c.join("opencode").join("skills"))
-                    .unwrap_or_else(|| PathBuf::from("~/.config/opencode/skills")),
+                    .map(|c| c.join("opencode").join("skill"))
+                    .unwrap_or_else(|| PathBuf::from("~/.config/opencode/skill")),
                 description: Some("OpenCode AI agent".to_string()),
             },
         );
