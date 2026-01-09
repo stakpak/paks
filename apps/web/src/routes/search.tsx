@@ -36,6 +36,8 @@ export const Route = createFileRoute("/search")({
         { property: "og:type", content: "website" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
+        { property: "og:image", content: "https://paks.stakpak.dev/meta-img.jpg" },
+        { name: "twitter:image", content: "https://paks.stakpak.dev/meta-img.jpg" },
       ],
     };
   },

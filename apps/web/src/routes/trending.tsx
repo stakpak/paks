@@ -33,6 +33,8 @@ export const Route = createFileRoute("/trending")({
         { property: "og:url", content: "https://paks.stakpak.dev/trending" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
+        { property: "og:image", content: "https://paks.stakpak.dev/meta-img.jpg" },
+        { name: "twitter:image", content: "https://paks.stakpak.dev/meta-img.jpg" },
       ],
       links: [
         { rel: "canonical", href: "https://paks.stakpak.dev/trending" },
