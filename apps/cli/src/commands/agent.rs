@@ -7,10 +7,20 @@ use super::core::config::{AgentConfig, Config};
 
 pub enum AgentCommand {
     List,
-    Add { name: String, dir: String },
-    Remove { name: String },
-    Default { name: String },
-    Show { name: Option<String> },
+    Add {
+        name: String,
+        dir: String,
+        project_dir: Option<String>,
+    },
+    Remove {
+        name: String,
+    },
+    Default {
+        name: String,
+    },
+    Show {
+        name: Option<String>,
+    },
 }
 
 pub async fn run(cmd: AgentCommand) -> Result<()> {
@@ -29,7 +39,10 @@ pub async fn run(cmd: AgentCommand) -> Result<()> {
                 };
                 println!("  {}{}", id, default_marker);
                 println!("    Name: {}", agent.name);
-                println!("    Directory: {}", agent.skills_dir.display());
+                println!("    Global directory: {}", agent.skills_dir.display());
+                if let Some(proj_dir) = &agent.project_skills_dir {
+                    println!("    Project directory: {}", proj_dir.display());
+                }
                 if let Some(desc) = &agent.description {
                     println!("    Description: {}", desc);
                 }
@@ -37,7 +50,11 @@ pub async fn run(cmd: AgentCommand) -> Result<()> {
             }
         }
 
-        AgentCommand::Add { name, dir } => {
+        AgentCommand::Add {
+            name,
+            dir,
+            project_dir,
+        } => {
             // Validate name
             if name.is_empty() {
                 bail!("Agent name cannot be empty");
@@ -51,13 +68,17 @@ pub async fn run(cmd: AgentCommand) -> Result<()> {
                 );
             }
 
-            // Expand path
+            // Expand path for global skills dir
             let skills_dir: PathBuf = shellexpand::tilde(&dir).to_string().into();
+
+            // Project skills dir is a relative path (no expansion needed)
+            let project_skills_dir = project_dir.map(PathBuf::from);
 
             // Create the agent config
             let agent_config = AgentConfig {
                 name: name.clone(),
                 skills_dir: skills_dir.clone(),
+                project_skills_dir: project_skills_dir.clone(),
                 description: None,
             };
 
@@ -65,9 +86,12 @@ pub async fn run(cmd: AgentCommand) -> Result<()> {
             config.save()?;
 
             println!("✓ Added agent '{}'", name);
-            println!("  Directory: {}", skills_dir.display());
+            println!("  Global directory: {}", skills_dir.display());
+            if let Some(proj_dir) = &project_skills_dir {
+                println!("  Project directory: {}", proj_dir.display());
+            }
 
-            // Create directory if it doesn't exist
+            // Create global directory if it doesn't exist
             if !skills_dir.exists() {
                 std::fs::create_dir_all(&skills_dir)?;
                 println!("  Created directory: {}", skills_dir.display());
@@ -130,7 +154,10 @@ pub async fn run(cmd: AgentCommand) -> Result<()> {
                         if is_default { " (default)" } else { "" }
                     );
                     println!("  Name: {}", agent.name);
-                    println!("  Directory: {}", agent.skills_dir.display());
+                    println!("  Global directory: {}", agent.skills_dir.display());
+                    if let Some(proj_dir) = &agent.project_skills_dir {
+                        println!("  Project directory: {}", proj_dir.display());
+                    }
                     if let Some(desc) = &agent.description {
                         println!("  Description: {}", desc);
                     }
@@ -141,10 +168,10 @@ pub async fn run(cmd: AgentCommand) -> Result<()> {
                             let count = entries
                                 .filter(|e| e.as_ref().map(|e| e.path().is_dir()).unwrap_or(false))
                                 .count();
-                            println!("  Skills installed: {}", count);
+                            println!("  Global skills installed: {}", count);
                         }
                     } else {
-                        println!("  Directory: (not created)");
+                        println!("  Global directory: (not created)");
                     }
                 } else {
                     bail!("Agent '{}' not found", agent_name);
@@ -155,7 +182,10 @@ pub async fn run(cmd: AgentCommand) -> Result<()> {
                     let is_default = config.default_agent.as_ref() == Some(id);
                     println!("{}{}:", id, if is_default { " (default)" } else { "" });
                     println!("  Name: {}", agent.name);
-                    println!("  Directory: {}", agent.skills_dir.display());
+                    println!("  Global directory: {}", agent.skills_dir.display());
+                    if let Some(proj_dir) = &agent.project_skills_dir {
+                        println!("  Project directory: {}", proj_dir.display());
+                    }
                     if let Some(desc) = &agent.description {
                         println!("  Description: {}", desc);
                     }

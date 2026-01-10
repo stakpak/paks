@@ -160,6 +160,9 @@ paks install kubernetes-deploy
 # Install for a specific agent
 paks install kubernetes-deploy --agent claude-code
 
+# Install to project directory (instead of global)
+paks install kubernetes-deploy --scope project
+
 # Install from GitHub (just paste the URL from your browser)
 paks install https://github.com/user/repo/tree/main/path/to/skill
 
@@ -234,19 +237,27 @@ paks install <source> [OPTIONS]
 
 Options:
   -a, --agent <AGENT>      Target agent (stakpak, claude-code, cursor, vscode, copilot, goose, opencode)
-  -d, --dir <PATH>         Custom install directory
+  -s, --scope <SCOPE>      Installation scope: global or project
+  -d, --dir <PATH>         Custom install directory (overrides agent and scope)
   -v, --version <VERSION>  Specific version to install
   -f, --force              Force reinstall if exists
 ```
 
+**Scope:**
+- `global` (default): Installs to user directory (e.g., `~/.claude/skills`)
+- `project`: Installs to project directory (e.g., `./.claude/skills`)
+
 **Examples:**
 
 ```bash
-# Install from registry
+# Install from registry (global scope by default)
 paks install terraform-best-practices
 
 # Install for Claude Code
 paks install terraform-best-practices --agent claude-code
+
+# Install to project directory (scope: project)
+paks install terraform-best-practices --scope project
 
 # Install from GitHub/GitLab (just paste the browser URL)
 paks install https://github.com/org/repo/tree/main/skills/my-skill
@@ -289,6 +300,7 @@ paks list [OPTIONS]
 
 Options:
   -a, --agent <AGENT>      List skills for specific agent
+  -s, --scope <SCOPE>      Scope to list from: global or project
       --all                List skills from all agents
   -f, --format <FORMAT>    Output format: table, json, yaml
 ```
@@ -296,8 +308,11 @@ Options:
 **Examples:**
 
 ```bash
-# List skills for default agent
+# List skills for default agent (global scope by default)
 paks list
+
+# List project-scoped skills
+paks list --scope project
 
 # List all skills across all agents
 paks list --all
@@ -313,7 +328,7 @@ paks list --agent cursor
 
 ```bash
 paks agent list              # List configured agents
-paks agent add <name> -d <dir>  # Add custom agent
+paks agent add <name> -d <dir> [-p <project-dir>]  # Add custom agent
 paks agent remove <name>     # Remove custom agent
 paks agent default <name>    # Set default agent
 paks agent show [name]       # Show agent details
@@ -321,21 +336,21 @@ paks agent show [name]       # Show agent details
 
 **Built-in Agents:**
 
-| Agent | Skills Directory |
-|-------|-----------------|
-| `stakpak` | `~/.stakpak/skills` |
-| `claude-code` | `~/.claude/skills` |
-| `cursor` | `~/.cursor/skills` |
-| `vscode` | `~/.vscode/skills` |
-| `copilot` | `~/.copilot/skills` |
-| `goose` | `~/.config/goose/skills` |
-| `opencode` | `~/.config/opencode/skills` |
+| Agent | Global Directory | Project Directory |
+|-------|-----------------|-------------------|
+| `stakpak` | `~/.stakpak/skills` | `.stakpak/skills` |
+| `claude-code` | `~/.claude/skills` | `.claude/skills` |
+| `cursor` | `~/.cursor/skills` | `.cursor/skills` |
+| `vscode` | `~/.vscode/skills` | `.vscode/skills` |
+| `copilot` | `~/.copilot/skills` | `.copilot/skills` |
+| `goose` | `~/.config/goose/skills` | `.goose/skills` |
+| `opencode` | `~/.config/opencode/skill` | `.opencode/skill` |
 
 **Examples:**
 
 ```bash
-# Add a custom agent
-paks agent add my-agent --dir ~/my-agent/skills
+# Add a custom agent with both global and project directories
+paks agent add my-agent --dir ~/my-agent/skills --project-dir .my-agent/skills
 
 # Set as default
 paks agent default my-agent
@@ -441,22 +456,46 @@ GET /api/skills/:name/:version
 
 ## Configuration
 
-Paks stores configuration at `~/.paks/config.toml`:
+### Global Configuration
+
+Paks stores global configuration at `~/.paks/config.toml`:
 
 ```toml
 # Default agent when --agent is not specified
 default_agent = "stakpak"
 
+# Default installation scope: "global" or "project"
+default_scope = "global"
+
 # Custom agents
 [agents.my-custom-agent]
 name = "My Custom Agent"
 skills_dir = "/path/to/skills"
+project_skills_dir = ".my-agent/skills"  # Relative to project root
 description = "Custom agent for my workflow"
 
 # Registry configuration
 [registries.default]
 url = "https://registry.paks.dev"
 ```
+
+### Project Configuration
+
+You can also create a project-level configuration at `.paks/config.toml` in your project root:
+
+```toml
+# Project-level config overrides global config
+default_scope = "project"  # Make project scope the default for this project
+default_agent = "claude-code"
+```
+
+**Configuration priority (highest to lowest):**
+1. CLI flags (`--scope`, `--agent`, `--dir`)
+2. Project config (`.paks/config.toml`)
+3. Global config (`~/.paks/config.toml`)
+4. Built-in defaults
+
+This allows teams to standardize skill installations across all developers by committing `.paks/config.toml` to version control.
 
 ---
 

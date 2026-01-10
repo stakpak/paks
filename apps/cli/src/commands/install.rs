@@ -1,6 +1,6 @@
 //! Install command - install a skill to an agent's skills directory
 
-use super::core::config::Config;
+use super::core::config::{Config, Scope};
 use super::core::skill::Skill;
 use anyhow::{Context, Result, bail};
 use paks_api::{ApiError, PaksClient};
@@ -10,6 +10,7 @@ use std::process::Command;
 pub struct InstallArgs {
     pub source: String,
     pub agent: Option<String>,
+    pub scope: Option<Scope>,
     pub dir: Option<String>,
     pub force: bool,
 }
@@ -328,23 +329,20 @@ fn parse_git_url_parts(url: &str) -> GitUrlParts {
 }
 
 pub async fn run(args: InstallArgs) -> Result<()> {
-    // Determine install directory
-    let install_dir = if let Some(dir) = &args.dir {
-        PathBuf::from(shellexpand::tilde(dir).as_ref())
-    } else {
-        let config = Config::load()?;
-        let agent_name = args.agent.as_ref().or(config.default_agent.as_ref());
+    // Load config and resolve install directory using scope-aware resolution
+    let (_config, install_dir, scope) =
+        Config::load_and_resolve(args.scope, args.agent.as_deref(), args.dir.as_deref())?;
 
-        if let Some(name) = agent_name {
-            config
-                .get_agent(name)
-                .map(|a| a.skills_dir.clone())
-                .unwrap_or_else(Config::default_skills_dir)
-        } else {
-            // No agent specified and no default - use ~/.paks/skills
-            Config::default_skills_dir()
-        }
+    // Show where we're installing to
+    let scope_label = match scope {
+        Scope::Global => "global",
+        Scope::Project => "project",
     };
+    println!(
+        "Installing to {} (scope: {})",
+        install_dir.display(),
+        scope_label
+    );
 
     // Detect source type
     let source_type = detect_source_type(&args.source);

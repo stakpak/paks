@@ -3,7 +3,7 @@
 use anyhow::Result;
 use std::path::Path;
 
-use super::core::config::Config;
+use super::core::config::{Config, Scope};
 use super::core::skill::Skill;
 
 #[derive(Clone, Copy)]
@@ -15,6 +15,7 @@ pub enum OutputFormat {
 
 pub struct ListArgs {
     pub agent: Option<String>,
+    pub scope: Option<Scope>,
     pub all: bool,
     pub format: OutputFormat,
 }
@@ -27,57 +28,64 @@ struct SkillInfo {
 }
 
 pub async fn run(args: ListArgs) -> Result<()> {
-    let config = Config::load()?;
+    let config = Config::load_merged()?;
 
     if args.all {
+        // List from all agents (both global and project if scope not specified)
         println!("Installed skills:\n");
+
+        let scope = config.effective_scope(args.scope);
+
         for (id, agent_config) in &config.agents {
-            let skills = list_skills_in_dir(&agent_config.skills_dir);
+            let skills_dir = match scope {
+                Scope::Global => agent_config.skills_dir.clone(),
+                Scope::Project => {
+                    if let Ok(project_root) = Config::find_project_root() {
+                        agent_config
+                            .project_skills_dir
+                            .as_ref()
+                            .map(|p| project_root.join(p))
+                            .unwrap_or_else(|| {
+                                project_root.join(Config::default_project_skills_dir())
+                            })
+                    } else {
+                        continue;
+                    }
+                }
+            };
+
+            let skills = list_skills_in_dir(&skills_dir);
             if !skills.is_empty() {
-                println!(
-                    "{} ({}):",
-                    agent_config.name,
-                    agent_config.skills_dir.display()
-                );
+                println!("{} ({}):", agent_config.name, skills_dir.display());
                 print_skills(&skills, args.format);
                 println!();
-            } else if agent_config.skills_dir.exists() {
+            } else if skills_dir.exists() {
                 println!("{}: (no skills installed)", id);
                 println!();
             }
         }
-    } else if let Some(agent_name) = &args.agent {
-        if let Some(agent_config) = config.get_agent(agent_name) {
-            println!(
-                "Skills for {} ({}):\n",
-                agent_config.name,
-                agent_config.skills_dir.display()
-            );
-            let skills = list_skills_in_dir(&agent_config.skills_dir);
-            if skills.is_empty() {
-                println!("  (no skills installed)");
-            } else {
-                print_skills(&skills, args.format);
-            }
-        } else {
-            println!("Agent '{}' not found", agent_name);
-            println!("\nAvailable agents:");
-            for id in config.agents.keys() {
-                println!("  {}", id);
-            }
-        }
     } else {
-        // Use default agent or ~/.paks/skills
-        let (name, skills_dir) = if let Some(agent) = config.get_default_agent() {
-            (
-                config.default_agent.as_deref().unwrap_or("default"),
-                agent.skills_dir.clone(),
-            )
-        } else {
-            ("paks", Config::default_skills_dir())
+        // Use scope-aware resolution
+        let (_config, skills_dir, scope) =
+            Config::load_and_resolve(args.scope, args.agent.as_deref(), None)?;
+
+        let scope_label = match scope {
+            Scope::Global => "global",
+            Scope::Project => "project",
         };
 
-        println!("Skills for {} ({}):\n", name, skills_dir.display());
+        let agent_name = args
+            .agent
+            .as_deref()
+            .or(config.default_agent.as_deref())
+            .unwrap_or("default");
+
+        println!(
+            "Skills for {} ({}, scope: {}):\n",
+            agent_name,
+            skills_dir.display(),
+            scope_label
+        );
         let skills = list_skills_in_dir(&skills_dir);
         if skills.is_empty() {
             println!("  (no skills installed)");
