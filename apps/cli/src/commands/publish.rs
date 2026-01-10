@@ -300,9 +300,9 @@ pub async fn run(args: PublishArgs) -> Result<()> {
     let needs_version_sync = skill_version_opt.is_some_and(|v| v != tag_version);
 
     // Case C: Using existing tag with version mismatch - fail with error
-    if !needs_create && needs_version_sync {
-        // Safe to unwrap: needs_version_sync is only true when skill_version_opt is Some
-        let skill_version = skill_version_opt.unwrap();
+    if let (false, true, Some(skill_version)) =
+        (needs_create, needs_version_sync, skill_version_opt)
+    {
         println!();
         println!("  Error: SKILL.md version mismatch");
         println!();
@@ -325,9 +325,8 @@ pub async fn run(args: PublishArgs) -> Result<()> {
     }
 
     // Case B: Creating new tag with version mismatch - need to sync
-    if needs_create && needs_version_sync {
-        // Safe to unwrap: needs_version_sync is only true when skill_version_opt is Some
-        let skill_version = skill_version_opt.unwrap();
+    if let (true, true, Some(skill_version)) = (needs_create, needs_version_sync, skill_version_opt)
+    {
         println!();
         if !args.yes {
             // Interactive mode: prompt for confirmation
@@ -352,9 +351,9 @@ pub async fn run(args: PublishArgs) -> Result<()> {
         println!("  Branch: {}", branch);
         println!("  Path: {}", pak_path_in_repo);
         println!("  Tag: {}", tag);
-        if needs_version_sync && needs_create {
-            // Safe to unwrap: needs_version_sync is only true when skill_version_opt is Some
-            let skill_version = skill_version_opt.unwrap();
+        if let (true, true, Some(skill_version)) =
+            (needs_version_sync, needs_create, skill_version_opt)
+        {
             println!(
                 "  Version sync: Update SKILL.md ({} -> {}), commit, push",
                 skill_version, tag_version
@@ -383,9 +382,8 @@ pub async fn run(args: PublishArgs) -> Result<()> {
     println!();
 
     // Sync version if needed (update SKILL.md, commit, push)
-    if needs_create && needs_version_sync {
-        // Safe to unwrap: needs_version_sync is only true when skill_version_opt is Some
-        let skill_version = skill_version_opt.unwrap();
+    if let (true, true, Some(skill_version)) = (needs_create, needs_version_sync, skill_version_opt)
+    {
         print!(
             "  Updating SKILL.md version ({} -> {})... ",
             skill_version, tag_version
