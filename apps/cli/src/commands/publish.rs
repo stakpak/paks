@@ -178,11 +178,40 @@ fn parse_version(version: &str) -> Result<(u32, u32, u32)> {
     Ok((major, minor, patch))
 }
 
+/// Extract version string from tag (strips 'v' prefix if present)
+fn tag_to_version(tag: &str) -> String {
+    tag.strip_prefix('v').unwrap_or(tag).to_string()
+}
+
+/// Prompt for confirmation to update SKILL.md version before publishing
+fn prompt_version_sync(current_version: &str, new_version: &str, branch: &str) -> Result<bool> {
+    println!("  Version mismatch detected:");
+    println!("    SKILL.md version: {}", current_version);
+    println!("    Selected version: {}", new_version);
+    println!();
+    println!("  The following changes will be made before tagging:");
+    println!(
+        "    1. Update SKILL.md: metadata.version {} -> {}",
+        current_version, new_version
+    );
+    println!("    2. Commit: \"chore: bump version to {}\"", new_version);
+    println!("    3. Push to origin/{}", branch);
+    println!();
+    // Flush stdout to ensure output is visible before prompt
+    io::stdout().flush()?;
+
+    Confirm::new()
+        .with_prompt("Proceed with version update?")
+        .default(true)
+        .interact()
+        .map_err(Into::into)
+}
+
 pub async fn run(args: PublishArgs) -> Result<()> {
     let skill_path = Path::new(&args.path).canonicalize()?;
 
     // Step 1: Load and validate the skill
-    let skill = Skill::load(&skill_path)?;
+    let mut skill = Skill::load(&skill_path)?;
     println!("Publishing skill: {}", skill.name());
 
     // Validate unless skipped
@@ -263,6 +292,58 @@ pub async fn run(args: PublishArgs) -> Result<()> {
         }
     };
 
+    // Step 4.5: Version synchronization
+    // Check if SKILL.md version matches the selected tag version
+    // Only sync if SKILL.md explicitly has a version field (it's optional)
+    let tag_version = tag_to_version(&tag);
+    let skill_version_opt = skill.version_opt();
+    let needs_version_sync = skill_version_opt.is_some_and(|v| v != tag_version);
+
+    // Case C: Using existing tag with version mismatch - fail with error
+    if !needs_create && needs_version_sync {
+        // Safe to unwrap: needs_version_sync is only true when skill_version_opt is Some
+        let skill_version = skill_version_opt.unwrap();
+        println!();
+        println!("  Error: SKILL.md version mismatch");
+        println!();
+        println!("    Tag version:      {}", tag);
+        println!("    SKILL.md version: {}", skill_version);
+        println!();
+        println!("  The registry requires SKILL.md metadata.version to match the tag.");
+        println!("  Since tag {} already exists, you have two options:", tag);
+        println!();
+        println!("    1. Delete the tag and republish:");
+        println!("       git tag -d {}", tag);
+        println!("       git push origin :refs/tags/{}", tag);
+        println!("       paks publish");
+        println!();
+        println!("    2. Create a new tag with the correct version:");
+        println!("       # First update SKILL.md to the desired version");
+        println!("       # Then run: paks publish");
+        println!();
+        bail!("Cannot publish: SKILL.md version doesn't match existing tag");
+    }
+
+    // Case B: Creating new tag with version mismatch - need to sync
+    if needs_create && needs_version_sync {
+        // Safe to unwrap: needs_version_sync is only true when skill_version_opt is Some
+        let skill_version = skill_version_opt.unwrap();
+        println!();
+        if !args.yes {
+            // Interactive mode: prompt for confirmation
+            if !prompt_version_sync(skill_version, &tag_version, &branch)? {
+                println!("Aborted.");
+                return Ok(());
+            }
+        } else {
+            // Non-interactive mode: show what we're doing
+            println!(
+                "  Version mismatch: SKILL.md ({}) -> {}",
+                skill_version, tag_version
+            );
+        }
+    }
+
     // Dry run output
     if args.dry_run {
         println!();
@@ -271,6 +352,14 @@ pub async fn run(args: PublishArgs) -> Result<()> {
         println!("  Branch: {}", branch);
         println!("  Path: {}", pak_path_in_repo);
         println!("  Tag: {}", tag);
+        if needs_version_sync && needs_create {
+            // Safe to unwrap: needs_version_sync is only true when skill_version_opt is Some
+            let skill_version = skill_version_opt.unwrap();
+            println!(
+                "  Version sync: Update SKILL.md ({} -> {}), commit, push",
+                skill_version, tag_version
+            );
+        }
         if needs_create {
             println!("  Action: Create and push new tag, then register with registry");
         } else {
@@ -292,6 +381,32 @@ pub async fn run(args: PublishArgs) -> Result<()> {
 
     // Step 6: Execute
     println!();
+
+    // Sync version if needed (update SKILL.md, commit, push)
+    if needs_create && needs_version_sync {
+        // Safe to unwrap: needs_version_sync is only true when skill_version_opt is Some
+        let skill_version = skill_version_opt.unwrap();
+        print!(
+            "  Updating SKILL.md version ({} -> {})... ",
+            skill_version, tag_version
+        );
+        skill.set_version(&tag_version);
+        skill.save()?;
+        println!("✓");
+
+        print!("  Staging changes... ");
+        git::stage_file(&skill_path, "SKILL.md")?;
+        println!("✓");
+
+        print!("  Committing... ");
+        let commit_msg = format!("chore: bump version to {}", tag_version);
+        git::commit(&skill_path, &commit_msg)?;
+        println!("✓");
+
+        print!("  Pushing to origin/{}... ", branch);
+        git::push_branch(&skill_path, remote, &branch)?;
+        println!("✓");
+    }
 
     // Create and push tag if needed
     if needs_create {
@@ -342,4 +457,86 @@ pub async fn run(args: PublishArgs) -> Result<()> {
     );
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_tag_to_version_with_prefix() {
+        assert_eq!(tag_to_version("v1.0.0"), "1.0.0");
+        assert_eq!(tag_to_version("v0.1.0"), "0.1.0");
+        assert_eq!(tag_to_version("v10.20.30"), "10.20.30");
+    }
+
+    #[test]
+    fn test_tag_to_version_without_prefix() {
+        assert_eq!(tag_to_version("1.0.0"), "1.0.0");
+        assert_eq!(tag_to_version("0.1.0"), "0.1.0");
+    }
+
+    #[test]
+    fn test_parse_version_valid() {
+        assert_eq!(parse_version("v1.2.3").unwrap(), (1, 2, 3));
+        assert_eq!(parse_version("1.2.3").unwrap(), (1, 2, 3));
+        assert_eq!(parse_version("v0.0.0").unwrap(), (0, 0, 0));
+        assert_eq!(parse_version("v10.20.30").unwrap(), (10, 20, 30));
+    }
+
+    #[test]
+    fn test_parse_version_invalid() {
+        // Missing parts
+        assert!(parse_version("v1.2").is_err());
+        assert!(parse_version("v1").is_err());
+        assert!(parse_version("").is_err());
+
+        // Too many parts
+        assert!(parse_version("v1.2.3.4").is_err());
+
+        // Non-numeric
+        assert!(parse_version("v1.2.x").is_err());
+        assert!(parse_version("va.b.c").is_err());
+    }
+
+    #[test]
+    fn test_filter_semver_tags() {
+        let tags = vec![
+            "v1.0.0".to_string(),
+            "v0.1.0".to_string(),
+            "latest".to_string(),
+            "v2.0.0-beta".to_string(), // This will fail parse_version
+            "release-1".to_string(),
+            "v0.0.1".to_string(),
+        ];
+        let filtered = filter_semver_tags(&tags);
+        assert_eq!(filtered, vec!["v1.0.0", "v0.1.0", "v0.0.1"]);
+    }
+
+    #[test]
+    fn test_version_sync_needed() {
+        // Version sync is needed when skill has explicit version that differs from tag
+        let skill_version: Option<&str> = Some("0.1.0");
+        let tag_version = "0.2.0";
+        let needs_sync = skill_version.is_some_and(|v| v != tag_version);
+        assert!(needs_sync);
+    }
+
+    #[test]
+    fn test_version_sync_not_needed_when_match() {
+        // Version sync not needed when versions match
+        let skill_version: Option<&str> = Some("0.1.0");
+        let tag_version = "0.1.0";
+        let needs_sync = skill_version.is_some_and(|v| v != tag_version);
+        assert!(!needs_sync);
+    }
+
+    #[test]
+    fn test_version_sync_not_needed_when_no_version() {
+        // Version sync not needed when skill has no explicit version
+        let skill_version: Option<&str> = None;
+        let tag_version = "0.2.0";
+        let needs_sync = skill_version.is_some_and(|v| v != tag_version);
+        assert!(!needs_sync);
+    }
 }

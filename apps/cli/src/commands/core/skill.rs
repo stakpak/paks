@@ -263,6 +263,12 @@ impl Skill {
             .and_then(|m| m.get("version"))
             .map(|s| s.as_str())
     }
+
+    /// Set the skill version in metadata
+    pub fn set_version(&mut self, version: &str) {
+        let metadata = self.frontmatter.metadata.get_or_insert_with(HashMap::new);
+        metadata.insert("version".to_string(), version.to_string());
+    }
 }
 
 /// Parse SKILL.md content into frontmatter and body
@@ -348,5 +354,129 @@ Instructions go here.
         let (fm, body) = parse_skill_md(content).unwrap();
         assert_eq!(fm.name, "test-skill");
         assert!(body.contains("# Test Skill"));
+    }
+
+    #[test]
+    fn test_version_default() {
+        // When no metadata.version is set, version() should return "0.1.0"
+        let frontmatter = SkillFrontmatter {
+            name: "test-skill".to_string(),
+            description: "A test skill for unit testing".to_string(),
+            license: None,
+            compatibility: None,
+            metadata: None,
+            allowed_tools: None,
+            authors: Vec::new(),
+            repository: None,
+            homepage: None,
+            keywords: Vec::new(),
+            categories: Vec::new(),
+            dependencies: Vec::new(),
+        };
+        let skill = Skill {
+            path: std::path::PathBuf::from("/tmp/test"),
+            frontmatter,
+            instructions: "# Test".to_string(),
+        };
+        assert_eq!(skill.version(), "0.1.0");
+        assert!(skill.version_opt().is_none());
+    }
+
+    #[test]
+    fn test_version_explicit() {
+        // When metadata.version is set, version() should return it
+        let mut metadata = HashMap::new();
+        metadata.insert("version".to_string(), "1.2.3".to_string());
+        let frontmatter = SkillFrontmatter {
+            name: "test-skill".to_string(),
+            description: "A test skill for unit testing".to_string(),
+            license: None,
+            compatibility: None,
+            metadata: Some(metadata),
+            allowed_tools: None,
+            authors: Vec::new(),
+            repository: None,
+            homepage: None,
+            keywords: Vec::new(),
+            categories: Vec::new(),
+            dependencies: Vec::new(),
+        };
+        let skill = Skill {
+            path: std::path::PathBuf::from("/tmp/test"),
+            frontmatter,
+            instructions: "# Test".to_string(),
+        };
+        assert_eq!(skill.version(), "1.2.3");
+        assert_eq!(skill.version_opt(), Some("1.2.3"));
+    }
+
+    #[test]
+    fn test_set_version_creates_metadata() {
+        // When metadata is None, set_version should create it
+        let frontmatter = SkillFrontmatter {
+            name: "test-skill".to_string(),
+            description: "A test skill for unit testing".to_string(),
+            license: None,
+            compatibility: None,
+            metadata: None,
+            allowed_tools: None,
+            authors: Vec::new(),
+            repository: None,
+            homepage: None,
+            keywords: Vec::new(),
+            categories: Vec::new(),
+            dependencies: Vec::new(),
+        };
+        let mut skill = Skill {
+            path: std::path::PathBuf::from("/tmp/test"),
+            frontmatter,
+            instructions: "# Test".to_string(),
+        };
+
+        skill.set_version("2.0.0");
+
+        assert_eq!(skill.version(), "2.0.0");
+        assert_eq!(skill.version_opt(), Some("2.0.0"));
+    }
+
+    #[test]
+    fn test_set_version_updates_existing() {
+        // When metadata.version exists, set_version should update it
+        let mut metadata = HashMap::new();
+        metadata.insert("version".to_string(), "1.0.0".to_string());
+        metadata.insert("other_key".to_string(), "other_value".to_string());
+        let frontmatter = SkillFrontmatter {
+            name: "test-skill".to_string(),
+            description: "A test skill for unit testing".to_string(),
+            license: None,
+            compatibility: None,
+            metadata: Some(metadata),
+            allowed_tools: None,
+            authors: Vec::new(),
+            repository: None,
+            homepage: None,
+            keywords: Vec::new(),
+            categories: Vec::new(),
+            dependencies: Vec::new(),
+        };
+        let mut skill = Skill {
+            path: std::path::PathBuf::from("/tmp/test"),
+            frontmatter,
+            instructions: "# Test".to_string(),
+        };
+
+        skill.set_version("3.0.0");
+
+        assert_eq!(skill.version(), "3.0.0");
+        // Other metadata should be preserved
+        assert_eq!(
+            skill
+                .frontmatter
+                .metadata
+                .as_ref()
+                .unwrap()
+                .get("other_key"),
+            Some(&"other_value".to_string())
+        );
     }
 }
