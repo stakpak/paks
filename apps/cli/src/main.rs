@@ -4,6 +4,7 @@ mod commands;
 
 use commands::{
     agent::AgentCommand,
+    core::config::Scope,
     create::CreateArgs,
     info::InfoArgs,
     install::InstallArgs,
@@ -72,7 +73,13 @@ enum Commands {
         #[arg(short, long, value_enum)]
         agent: Option<CliAgent>,
 
-        /// Custom install directory (overrides agent default)
+        /// Installation scope (global or project)
+        /// Global: installs to user directory (e.g., ~/.claude/skills)
+        /// Project: installs to project directory (e.g., ./.claude/skills)
+        #[arg(short = 's', long, value_enum)]
+        scope: Option<Scope>,
+
+        /// Custom install directory (overrides agent and scope)
         #[arg(short, long)]
         dir: Option<String>,
 
@@ -110,6 +117,10 @@ enum Commands {
         #[arg(short, long, value_enum)]
         agent: Option<CliAgent>,
 
+        /// Installation scope to list from (global or project)
+        #[arg(short = 's', long, value_enum)]
+        scope: Option<Scope>,
+
         /// Show skills from all configured agents
         #[arg(long)]
         all: bool,
@@ -127,6 +138,10 @@ enum Commands {
         /// Target agent to remove from
         #[arg(short, long, value_enum)]
         agent: Option<CliAgent>,
+
+        /// Installation scope to remove from (global or project)
+        #[arg(short = 's', long, value_enum)]
+        scope: Option<Scope>,
 
         /// Remove from all agents
         #[arg(long)]
@@ -193,9 +208,13 @@ enum AgentCommands {
         /// Agent identifier
         name: String,
 
-        /// Skills directory path
+        /// Global skills directory path (e.g., ~/.myagent/skills)
         #[arg(short, long)]
         dir: String,
+
+        /// Project skills directory path relative to project root (e.g., .myagent/skills)
+        #[arg(short, long)]
+        project_dir: Option<String>,
     },
 
     /// Remove an agent configuration
@@ -294,12 +313,14 @@ async fn main() -> anyhow::Result<()> {
         Commands::Install {
             source,
             agent,
+            scope,
             dir,
             force,
         } => {
             commands::install::run(InstallArgs {
                 source,
                 agent: agent.map(|a| a.to_string()),
+                scope,
                 dir,
                 force,
             })
@@ -323,9 +344,15 @@ async fn main() -> anyhow::Result<()> {
             .await?;
         }
 
-        Commands::List { agent, all, format } => {
+        Commands::List {
+            agent,
+            scope,
+            all,
+            format,
+        } => {
             commands::list::run(ListArgs {
                 agent: agent.map(|a| a.to_string()),
+                scope,
                 all,
                 format: match format {
                     CliOutputFormat::Table => OutputFormat::Table,
@@ -339,12 +366,14 @@ async fn main() -> anyhow::Result<()> {
         Commands::Remove {
             name,
             agent,
+            scope,
             all,
             yes,
         } => {
             commands::remove::run(RemoveArgs {
                 name,
                 agent: agent.map(|a| a.to_string()),
+                scope,
                 all,
                 yes,
             })
@@ -374,7 +403,15 @@ async fn main() -> anyhow::Result<()> {
         Commands::Agent(cmd) => {
             let agent_cmd = match cmd {
                 AgentCommands::List => AgentCommand::List,
-                AgentCommands::Add { name, dir } => AgentCommand::Add { name, dir },
+                AgentCommands::Add {
+                    name,
+                    dir,
+                    project_dir,
+                } => AgentCommand::Add {
+                    name,
+                    dir,
+                    project_dir,
+                },
                 AgentCommands::Remove { name } => AgentCommand::Remove { name },
                 AgentCommands::Default { name } => AgentCommand::Default { name },
                 AgentCommands::Show { name } => AgentCommand::Show { name },
