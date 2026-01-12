@@ -8,7 +8,7 @@ use anyhow::{Context, Result};
 use clap::ValueEnum;
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::process::Command;
 
 /// Installation scope for skills
@@ -400,7 +400,7 @@ impl Config {
     /// Priority:
     /// 1. Explicit scope flag
     /// 2. Project config default_scope
-    /// 3. Global config default_scope  
+    /// 3. Global config default_scope
     /// 4. Hardcoded default: Global
     pub fn effective_scope(&self, explicit_scope: Option<Scope>) -> Scope {
         explicit_scope
