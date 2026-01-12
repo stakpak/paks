@@ -8,7 +8,7 @@ use anyhow::{Context, Result};
 use clap::ValueEnum;
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 /// Installation scope for skills
@@ -620,7 +620,7 @@ project_skills_dir = ".custom/skills"
         let result = config
             .resolve_skills_dir(Scope::Global, None, Some("~/custom/path"))
             .unwrap();
-        assert!(result.to_string_lossy().contains("custom/path"));
+        assert!(result.ends_with(Path::new("custom").join("path")));
 
         // Even with project scope, explicit dir wins
         let result = config
@@ -637,7 +637,7 @@ project_skills_dir = ".custom/skills"
         let result = config
             .resolve_skills_dir(Scope::Global, Some("claude-code"), None)
             .unwrap();
-        assert!(result.to_string_lossy().contains(".claude/skills"));
+        assert!(result.ends_with(Path::new(".claude").join("skills")));
     }
 
     #[test]
@@ -649,7 +649,7 @@ project_skills_dir = ".custom/skills"
         let result = config
             .resolve_skills_dir(Scope::Global, None, None)
             .unwrap();
-        assert!(result.to_string_lossy().contains(".cursor/skills"));
+        assert!(result.ends_with(Path::new(".cursor").join("skills")));
     }
 
     #[test]
@@ -660,7 +660,7 @@ project_skills_dir = ".custom/skills"
         let result = config
             .resolve_skills_dir(Scope::Global, None, None)
             .unwrap();
-        assert!(result.to_string_lossy().contains(".agents/skills"));
+        assert!(result.ends_with(Path::new(".agents").join("skills")));
     }
 
     #[test]
@@ -672,7 +672,7 @@ project_skills_dir = ".custom/skills"
     #[test]
     fn test_default_skills_dir() {
         let dir = Config::default_skills_dir();
-        assert!(dir.to_string_lossy().contains(".agents/skills"));
+        assert!(dir.ends_with(Path::new(".agents").join("skills")));
     }
 
     #[test]
