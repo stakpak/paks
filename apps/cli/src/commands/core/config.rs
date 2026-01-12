@@ -481,6 +481,7 @@ impl Config {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::path::Path;
 
     #[test]
     fn test_default_config_has_builtin_agents() {
