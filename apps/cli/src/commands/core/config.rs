@@ -400,7 +400,7 @@ impl Config {
     /// Priority:
     /// 1. Explicit scope flag
     /// 2. Project config default_scope
-    /// 3. Global config default_scope  
+    /// 3. Global config default_scope
     /// 4. Hardcoded default: Global
     pub fn effective_scope(&self, explicit_scope: Option<Scope>) -> Scope {
         explicit_scope
@@ -481,6 +481,7 @@ impl Config {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::path::Path;
 
     #[test]
     fn test_default_config_has_builtin_agents() {
@@ -620,7 +621,7 @@ project_skills_dir = ".custom/skills"
         let result = config
             .resolve_skills_dir(Scope::Global, None, Some("~/custom/path"))
             .unwrap();
-        assert!(result.to_string_lossy().contains("custom/path"));
+        assert!(result.ends_with(Path::new("custom").join("path")));
 
         // Even with project scope, explicit dir wins
         let result = config
@@ -637,7 +638,7 @@ project_skills_dir = ".custom/skills"
         let result = config
             .resolve_skills_dir(Scope::Global, Some("claude-code"), None)
             .unwrap();
-        assert!(result.to_string_lossy().contains(".claude/skills"));
+        assert!(result.ends_with(Path::new(".claude").join("skills")));
     }
 
     #[test]
@@ -649,7 +650,7 @@ project_skills_dir = ".custom/skills"
         let result = config
             .resolve_skills_dir(Scope::Global, None, None)
             .unwrap();
-        assert!(result.to_string_lossy().contains(".cursor/skills"));
+        assert!(result.ends_with(Path::new(".cursor").join("skills")));
     }
 
     #[test]
@@ -660,7 +661,7 @@ project_skills_dir = ".custom/skills"
         let result = config
             .resolve_skills_dir(Scope::Global, None, None)
             .unwrap();
-        assert!(result.to_string_lossy().contains(".agents/skills"));
+        assert!(result.ends_with(Path::new(".agents").join("skills")));
     }
 
     #[test]
@@ -672,7 +673,7 @@ project_skills_dir = ".custom/skills"
     #[test]
     fn test_default_skills_dir() {
         let dir = Config::default_skills_dir();
-        assert!(dir.to_string_lossy().contains(".agents/skills"));
+        assert!(dir.ends_with(Path::new(".agents").join("skills")));
     }
 
     #[test]
