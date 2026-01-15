@@ -64,6 +64,11 @@ fn filter_semver_tags(tags: &[String]) -> Vec<String> {
         .collect()
 }
 
+/// Get the latest semver version from a list of tags
+fn get_latest_version(tags: &[String]) -> Option<String> {
+    filter_semver_tags(tags).into_iter().next()
+}
+
 /// Prompt user to select version bump type, existing tag, or enter custom version
 fn prompt_tag_selection(existing_tags: &[String], current_version: &str) -> Result<TagSelection> {
     // Filter to only semver tags
@@ -255,7 +260,18 @@ pub async fn run(args: PublishArgs) -> Result<()> {
     }
 
     // Step 4: Determine which tag to use
+    // First, sync local tags with remote to ensure we have the latest state from GitHub
+    print!("  Syncing tags from origin... ");
+    match git::fetch_tags(&skill_path, remote) {
+        Ok(()) => println!("✓"),
+        Err(e) => println!("⚠ ({})", e),
+    }
+
+    // Now list local tags (which are synced with remote)
     let existing_tags = git::list_tags(&skill_path)?;
+
+    // Get the latest version from tags for bump calculations
+    let latest_version = get_latest_version(&existing_tags);
 
     let (tag, needs_create) = if let Some(explicit_tag) = args.tag.clone() {
         // User explicitly provided a tag via --tag flag - validate it's semver
@@ -271,8 +287,9 @@ pub async fn run(args: PublishArgs) -> Result<()> {
         }
         (tag_to_check, false)
     } else if args.yes {
-        // Non-interactive mode: create patch bump
-        let (major, minor, patch) = parse_version(current_version)?;
+        // Non-interactive mode: create patch bump based on latest tag version
+        let base_version = latest_version.as_deref().unwrap_or(current_version);
+        let (major, minor, patch) = parse_version(base_version)?;
         let new_tag = format!("v{}.{}.{}", major, minor, patch + 1);
         if git::tag_exists(&skill_path, &new_tag) {
             bail!("Tag {} already exists.", new_tag);
@@ -281,7 +298,8 @@ pub async fn run(args: PublishArgs) -> Result<()> {
     } else {
         // Interactive mode: let user choose bump type or existing tag
         println!();
-        match prompt_tag_selection(&existing_tags, current_version)? {
+        let base_version = latest_version.as_deref().unwrap_or(current_version);
+        match prompt_tag_selection(&existing_tags, base_version)? {
             TagSelection::New(tag) => {
                 if git::tag_exists(&skill_path, &tag) {
                     bail!("Tag {} already exists.", tag);

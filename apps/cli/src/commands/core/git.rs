@@ -47,6 +47,12 @@ pub fn tag_exists(path: &Path, tag: &str) -> bool {
         .unwrap_or(false)
 }
 
+/// Fetch tags from remote to sync local tags with remote
+pub fn fetch_tags(path: &Path, remote: &str) -> Result<()> {
+    git_cmd(&["fetch", remote, "--tags", "--force"], path)?;
+    Ok(())
+}
+
 /// List all tags sorted by version (newest first)
 pub fn list_tags(path: &Path) -> Result<Vec<String>> {
     let output = git_cmd(&["tag", "-l", "--sort=-v:refname"], path)?;
