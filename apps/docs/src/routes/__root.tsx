@@ -6,7 +6,7 @@ import { RootProvider } from "fumadocs-ui/provider/tanstack";
 const SITE_URL = "https://paks.stakpak.dev/docs";
 const SITE_NAME = "Paks Docs";
 const DEFAULT_TITLE = "Paks Documentation - AI Agent Skills Package Manager";
-const DEFAULT_DESCRIPTION = "Complete documentation for Paks CLI - create, install, publish, and manage skills for AI coding agents like Claude Code, Cursor, and GitHub Copilot.";
+const DEFAULT_DESCRIPTION = "Complete documentation for Paks CLI - create, install, publish, and manage skills for AI coding agents like Claude Code, Cursor, Codex, Copilot, Windsurf, Gemini CLI, and more.";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -15,7 +15,7 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: DEFAULT_TITLE },
       { name: "description", content: DEFAULT_DESCRIPTION },
-      { name: "keywords", content: "paks, cli, ai agents, skills, package manager, claude code, cursor, copilot, documentation" },
+      { name: "keywords", content: "paks, cli, ai agents, skills, package manager, claude code, cursor, codex, copilot, windsurf, gemini cli, amp, opencode, documentation" },
       { name: "author", content: "Stakpak" },
       { name: "robots", content: "index, follow" },
       

@@ -8,12 +8,20 @@ interface InstallCommandProps {
 const agents = [
   // { id: "stakpak", name: "Stakpak", flag: "stakpak" },
   { id: "claude-code", name: "Claude Code", flag: "claude-code" },
-  { id: "codex", name: "Codex", flag: "codex" },
   { id: "cursor", name: "Cursor", flag: "cursor" },
+  { id: "codex", name: "Codex", flag: "codex" },
   { id: "copilot", name: "Copilot", flag: "copilot" },
-  { id: "goose", name: "Goose", flag: "goose" },
   { id: "opencode", name: "OpenCode", flag: "opencode" },
-  { id: "amp", name: "AMP", flag: "amp" },
+  { id: "amp", name: "Amp", flag: "amp" },
+  { id: "goose", name: "Goose", flag: "goose" },
+  { id: "gemini", name: "Gemini CLI", flag: "gemini" },
+  { id: "windsurf", name: "Windsurf", flag: "windsurf" },
+  { id: "roo", name: "Roo Code", flag: "roo" },
+  { id: "kilocode", name: "Kilo Code", flag: "kilocode" },
+  { id: "antigravity", name: "Antigravity", flag: "antigravity" },
+  { id: "droid", name: "Droid", flag: "droid" },
+  { id: "clawdbot", name: "Clawdbot", flag: "clawdbot" },
+  { id: "vscode", name: "VS Code", flag: "vscode" },
 ] as const;
 
 type AgentId = typeof agents[number]["id"];

@@ -20,13 +20,13 @@ export const Route = createFileRoute("/trending")({
   },
   head: () => {
     const title = "Trending Paks - Most Popular AI Agent Skills";
-    const description = "Discover the most popular AI agent skills and packages. Browse trending tools for Claude Code, Cursor, GitHub Copilot and other coding agents.";
+    const description = "Discover the most popular AI agent skills and packages. Browse trending tools for Claude Code, Cursor, Codex, Copilot, Windsurf, Gemini CLI, and other coding agents.";
     
     return {
       meta: [
         { title },
         { name: "description", content: description },
-        { name: "keywords", content: "trending, popular, AI agents, coding agents, Claude Code, Cursor, GitHub Copilot, packages, skills" },
+        { name: "keywords", content: "trending, popular, AI agents, coding agents, Claude Code, Cursor, Codex, Copilot, Windsurf, Gemini CLI, Amp, packages, skills" },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },

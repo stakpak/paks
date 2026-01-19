@@ -9,7 +9,7 @@ const features = [
   {
     icon: Download,
     title: "Install Anywhere",
-    description: "Works with Claude Code, Cursor, VS Code, GitHub Copilot, Goose, and more AI agents.",
+    description: "Works with Claude Code, Cursor, Codex, Copilot, Windsurf, Gemini CLI, Amp, and 10+ more AI agents.",
   },
   {
     icon: Search,

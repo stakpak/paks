@@ -3,19 +3,28 @@ title: Agent Configuration
 description: Configure target AI agents for skill installation
 ---
 
-Paks supports multiple AI coding agents out of the box. Each agent has a designated skills directory where skills are installed.
+Paks supports multiple AI coding agents out of the box. Each agent has designated skills directories for both global and project-level installation.
 
 ## Built-in Agents
 
-| Agent | Skills Directory | Description |
-| ----- | ---------------- | ----------- |
-| `stakpak` | `~/.stakpak/skills` | Stakpak AI agent (default) |
-| `claude-code` | `~/.claude/skills` | Anthropic Claude Code |
-| `cursor` | `~/.cursor/skills` | Cursor IDE |
-| `vscode` | `~/.vscode/skills` | VS Code with AI extensions |
-| `copilot` | `~/.copilot/skills` | GitHub Copilot |
-| `goose` | `~/.goose/skills` | Goose AI agent |
-| `opencode` | `~/.opencode/skills` | OpenCode agent |
+| Agent | Global Directory | Project Directory | Description |
+| ----- | ---------------- | ----------------- | ----------- |
+| `stakpak` | `~/.stakpak/skills` | `.stakpak/skills` | Stakpak AI agent |
+| `claude-code` | `~/.claude/skills` | `.claude/skills` | Anthropic Claude Code |
+| `cursor` | `~/.cursor/skills` | `.cursor/skills` | Cursor IDE |
+| `codex` | `~/.codex/skills` | `.codex/skills` | OpenAI Codex |
+| `copilot` | `~/.copilot/skills` | `.github/skills` | GitHub Copilot |
+| `opencode` | `~/.config/opencode/skill` | `.opencode/skill` | OpenCode agent |
+| `amp` | `~/.config/agents/skills` | `.agents/skills` | Sourcegraph Amp |
+| `goose` | `~/.config/goose/skills` | `.goose/skills` | Block's Goose agent |
+| `gemini` | `~/.gemini/skills` | `.gemini/skills` | Google Gemini CLI |
+| `windsurf` | `~/.codeium/windsurf/skills` | `.windsurf/skills` | Codeium Windsurf |
+| `roo` | `~/.roo/skills` | `.roo/skills` | Roo Code |
+| `kilocode` | `~/.kilocode/skills` | `.kilocode/skills` | Kilo Code |
+| `antigravity` | `~/.gemini/antigravity/skills` | `.agent/skills` | Google Antigravity |
+| `droid` | `~/.factory/skills` | `.factory/skills` | Droid |
+| `clawdbot` | `~/.clawdbot/skills` | `skills` | Clawdbot |
+| `vscode` | `~/.vscode/skills` | `.vscode/skills` | VS Code with AI extensions |
 
 ## Managing Agents
 

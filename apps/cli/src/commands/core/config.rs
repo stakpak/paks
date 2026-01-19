@@ -277,7 +277,7 @@ impl Config {
                 skills_dir: dirs::home_dir()
                     .map(|h| h.join(".copilot").join("skills"))
                     .unwrap_or_else(|| PathBuf::from("~/.copilot/skills")),
-                project_skills_dir: Some(PathBuf::from(".copilot/skills")),
+                project_skills_dir: Some(PathBuf::from(".github/skills")),
                 description: Some("GitHub Copilot CLI".to_string()),
             },
         );
@@ -327,6 +327,90 @@ impl Config {
                     .unwrap_or_else(|| PathBuf::from("~/.codex/skills")),
                 project_skills_dir: Some(PathBuf::from(".codex/skills")),
                 description: Some("OpenAI's Codex coding agent".to_string()),
+            },
+        );
+
+        agents.insert(
+            "kilocode".to_string(),
+            AgentConfig {
+                name: "Kilo Code".to_string(),
+                skills_dir: dirs::home_dir()
+                    .map(|h| h.join(".kilocode").join("skills"))
+                    .unwrap_or_else(|| PathBuf::from("~/.kilocode/skills")),
+                project_skills_dir: Some(PathBuf::from(".kilocode/skills")),
+                description: Some("Kilo Code AI agent".to_string()),
+            },
+        );
+
+        agents.insert(
+            "roo".to_string(),
+            AgentConfig {
+                name: "Roo Code".to_string(),
+                skills_dir: dirs::home_dir()
+                    .map(|h| h.join(".roo").join("skills"))
+                    .unwrap_or_else(|| PathBuf::from("~/.roo/skills")),
+                project_skills_dir: Some(PathBuf::from(".roo/skills")),
+                description: Some("Roo Code AI agent".to_string()),
+            },
+        );
+
+        agents.insert(
+            "gemini".to_string(),
+            AgentConfig {
+                name: "Gemini CLI".to_string(),
+                skills_dir: dirs::home_dir()
+                    .map(|h| h.join(".gemini").join("skills"))
+                    .unwrap_or_else(|| PathBuf::from("~/.gemini/skills")),
+                project_skills_dir: Some(PathBuf::from(".gemini/skills")),
+                description: Some("Google's Gemini CLI agent".to_string()),
+            },
+        );
+
+        agents.insert(
+            "antigravity".to_string(),
+            AgentConfig {
+                name: "Antigravity".to_string(),
+                skills_dir: dirs::home_dir()
+                    .map(|h| h.join(".gemini").join("antigravity").join("skills"))
+                    .unwrap_or_else(|| PathBuf::from("~/.gemini/antigravity/skills")),
+                project_skills_dir: Some(PathBuf::from(".agent/skills")),
+                description: Some("Google's Antigravity agent".to_string()),
+            },
+        );
+
+        agents.insert(
+            "clawdbot".to_string(),
+            AgentConfig {
+                name: "Clawdbot".to_string(),
+                skills_dir: dirs::home_dir()
+                    .map(|h| h.join(".clawdbot").join("skills"))
+                    .unwrap_or_else(|| PathBuf::from("~/.clawdbot/skills")),
+                project_skills_dir: Some(PathBuf::from("skills")),
+                description: Some("Clawdbot AI agent".to_string()),
+            },
+        );
+
+        agents.insert(
+            "droid".to_string(),
+            AgentConfig {
+                name: "Droid".to_string(),
+                skills_dir: dirs::home_dir()
+                    .map(|h| h.join(".factory").join("skills"))
+                    .unwrap_or_else(|| PathBuf::from("~/.factory/skills")),
+                project_skills_dir: Some(PathBuf::from(".factory/skills")),
+                description: Some("Droid AI agent".to_string()),
+            },
+        );
+
+        agents.insert(
+            "windsurf".to_string(),
+            AgentConfig {
+                name: "Windsurf".to_string(),
+                skills_dir: dirs::home_dir()
+                    .map(|h| h.join(".codeium").join("windsurf").join("skills"))
+                    .unwrap_or_else(|| PathBuf::from("~/.codeium/windsurf/skills")),
+                project_skills_dir: Some(PathBuf::from(".windsurf/skills")),
+                description: Some("Codeium's Windsurf AI editor".to_string()),
             },
         );
 
@@ -752,5 +836,313 @@ project_skills_dir = ".custom/skills"
         // We can't guarantee the result since it depends on the environment
         // but we can at least verify the function doesn't panic
         let _ = result;
+    }
+
+    #[test]
+    fn test_all_builtin_agents_exist() {
+        let config = Config::default_with_builtin_agents();
+
+        // All 16 builtin agents should exist
+        let expected_agents = [
+            "stakpak",
+            "claude-code",
+            "cursor",
+            "vscode",
+            "copilot",
+            "goose",
+            "opencode",
+            "amp",
+            "codex",
+            "kilocode",
+            "roo",
+            "gemini",
+            "antigravity",
+            "clawdbot",
+            "droid",
+            "windsurf",
+        ];
+
+        assert_eq!(
+            config.agents.len(),
+            expected_agents.len(),
+            "Expected {} agents, found {}",
+            expected_agents.len(),
+            config.agents.len()
+        );
+
+        for agent_id in expected_agents {
+            assert!(
+                config.agents.contains_key(agent_id),
+                "Missing builtin agent: {}",
+                agent_id
+            );
+        }
+    }
+
+    #[test]
+    fn test_stakpak_is_first_agent() {
+        let config = Config::default_with_builtin_agents();
+
+        // stakpak should always be the first agent (insertion order preserved)
+        let first_agent = config.agents.keys().next();
+        assert_eq!(first_agent, Some(&"stakpak".to_string()));
+    }
+
+    #[test]
+    fn test_new_agents_project_skills_dir() {
+        let config = Config::default_with_builtin_agents();
+
+        // Kilo Code
+        let kilocode = config.get_agent("kilocode").unwrap();
+        assert_eq!(
+            kilocode.project_skills_dir,
+            Some(PathBuf::from(".kilocode/skills"))
+        );
+
+        // Roo Code
+        let roo = config.get_agent("roo").unwrap();
+        assert_eq!(roo.project_skills_dir, Some(PathBuf::from(".roo/skills")));
+
+        // Gemini CLI
+        let gemini = config.get_agent("gemini").unwrap();
+        assert_eq!(
+            gemini.project_skills_dir,
+            Some(PathBuf::from(".gemini/skills"))
+        );
+
+        // Antigravity
+        let antigravity = config.get_agent("antigravity").unwrap();
+        assert_eq!(
+            antigravity.project_skills_dir,
+            Some(PathBuf::from(".agent/skills"))
+        );
+
+        // Clawdbot
+        let clawdbot = config.get_agent("clawdbot").unwrap();
+        assert_eq!(clawdbot.project_skills_dir, Some(PathBuf::from("skills")));
+
+        // Droid
+        let droid = config.get_agent("droid").unwrap();
+        assert_eq!(
+            droid.project_skills_dir,
+            Some(PathBuf::from(".factory/skills"))
+        );
+
+        // Windsurf
+        let windsurf = config.get_agent("windsurf").unwrap();
+        assert_eq!(
+            windsurf.project_skills_dir,
+            Some(PathBuf::from(".windsurf/skills"))
+        );
+    }
+
+    #[test]
+    fn test_new_agents_global_skills_dir() {
+        let config = Config::default_with_builtin_agents();
+
+        // Kilo Code - ~/.kilocode/skills
+        let kilocode = config.get_agent("kilocode").unwrap();
+        assert!(
+            kilocode
+                .skills_dir
+                .to_string_lossy()
+                .ends_with(".kilocode/skills"),
+            "kilocode skills_dir should end with .kilocode/skills, got: {}",
+            kilocode.skills_dir.display()
+        );
+
+        // Roo Code - ~/.roo/skills
+        let roo = config.get_agent("roo").unwrap();
+        assert!(
+            roo.skills_dir.to_string_lossy().ends_with(".roo/skills"),
+            "roo skills_dir should end with .roo/skills, got: {}",
+            roo.skills_dir.display()
+        );
+
+        // Gemini CLI - ~/.gemini/skills
+        let gemini = config.get_agent("gemini").unwrap();
+        assert!(
+            gemini
+                .skills_dir
+                .to_string_lossy()
+                .ends_with(".gemini/skills"),
+            "gemini skills_dir should end with .gemini/skills, got: {}",
+            gemini.skills_dir.display()
+        );
+
+        // Antigravity - ~/.gemini/antigravity/skills
+        let antigravity = config.get_agent("antigravity").unwrap();
+        assert!(
+            antigravity
+                .skills_dir
+                .to_string_lossy()
+                .ends_with(".gemini/antigravity/skills"),
+            "antigravity skills_dir should end with .gemini/antigravity/skills, got: {}",
+            antigravity.skills_dir.display()
+        );
+
+        // Clawdbot - ~/.clawdbot/skills
+        let clawdbot = config.get_agent("clawdbot").unwrap();
+        assert!(
+            clawdbot
+                .skills_dir
+                .to_string_lossy()
+                .ends_with(".clawdbot/skills"),
+            "clawdbot skills_dir should end with .clawdbot/skills, got: {}",
+            clawdbot.skills_dir.display()
+        );
+
+        // Droid - ~/.factory/skills
+        let droid = config.get_agent("droid").unwrap();
+        assert!(
+            droid
+                .skills_dir
+                .to_string_lossy()
+                .ends_with(".factory/skills"),
+            "droid skills_dir should end with .factory/skills, got: {}",
+            droid.skills_dir.display()
+        );
+
+        // Windsurf - ~/.codeium/windsurf/skills
+        let windsurf = config.get_agent("windsurf").unwrap();
+        assert!(
+            windsurf
+                .skills_dir
+                .to_string_lossy()
+                .ends_with(".codeium/windsurf/skills"),
+            "windsurf skills_dir should end with .codeium/windsurf/skills, got: {}",
+            windsurf.skills_dir.display()
+        );
+    }
+
+    #[test]
+    fn test_github_copilot_uses_github_project_dir() {
+        let config = Config::default_with_builtin_agents();
+
+        // GitHub Copilot should use .github/skills for project dir (not .copilot/skills)
+        let copilot = config.get_agent("copilot").unwrap();
+        assert_eq!(
+            copilot.project_skills_dir,
+            Some(PathBuf::from(".github/skills")),
+            "GitHub Copilot should use .github/skills for project_skills_dir"
+        );
+
+        // Global dir should still be ~/.copilot/skills
+        assert!(
+            copilot
+                .skills_dir
+                .to_string_lossy()
+                .ends_with(".copilot/skills"),
+            "copilot global skills_dir should end with .copilot/skills, got: {}",
+            copilot.skills_dir.display()
+        );
+    }
+
+    #[test]
+    fn test_opencode_uses_skill_not_skills() {
+        let config = Config::default_with_builtin_agents();
+
+        // OpenCode uses "skill" (singular) not "skills"
+        let opencode = config.get_agent("opencode").unwrap();
+        assert_eq!(
+            opencode.project_skills_dir,
+            Some(PathBuf::from(".opencode/skill")),
+            "OpenCode should use .opencode/skill (singular)"
+        );
+
+        assert!(
+            opencode
+                .skills_dir
+                .to_string_lossy()
+                .contains("opencode/skill"),
+            "opencode global skills_dir should contain opencode/skill, got: {}",
+            opencode.skills_dir.display()
+        );
+    }
+
+    #[test]
+    fn test_all_agents_have_descriptions() {
+        let config = Config::default_with_builtin_agents();
+
+        for (id, agent) in &config.agents {
+            assert!(
+                agent.description.is_some(),
+                "Agent '{}' should have a description",
+                id
+            );
+            assert!(
+                !agent.description.as_ref().unwrap().is_empty(),
+                "Agent '{}' description should not be empty",
+                id
+            );
+        }
+    }
+
+    #[test]
+    fn test_all_agents_have_display_names() {
+        let config = Config::default_with_builtin_agents();
+
+        for (id, agent) in &config.agents {
+            assert!(!agent.name.is_empty(), "Agent '{}' should have a name", id);
+        }
+    }
+
+    #[test]
+    fn test_resolve_skills_dir_for_new_agents() {
+        let config = Config::default_with_builtin_agents();
+
+        // Test global scope resolution for new agents
+        let new_agents = [
+            ("kilocode", ".kilocode/skills"),
+            ("roo", ".roo/skills"),
+            ("gemini", ".gemini/skills"),
+            ("windsurf", ".codeium/windsurf/skills"),
+        ];
+
+        for (agent_id, expected_suffix) in new_agents {
+            let result = config
+                .resolve_skills_dir(Scope::Global, Some(agent_id), None)
+                .unwrap();
+            assert!(
+                result.to_string_lossy().ends_with(expected_suffix),
+                "Agent '{}' global dir should end with '{}', got: {}",
+                agent_id,
+                expected_suffix,
+                result.display()
+            );
+        }
+    }
+
+    #[test]
+    fn test_resolve_skills_dir_project_scope_for_new_agents() {
+        let config = Config::default_with_builtin_agents();
+
+        // Test project scope resolution for new agents
+        let new_agents = [
+            ("kilocode", ".kilocode/skills"),
+            ("roo", ".roo/skills"),
+            ("gemini", ".gemini/skills"),
+            ("antigravity", ".agent/skills"),
+            ("clawdbot", "skills"),
+            ("droid", ".factory/skills"),
+            ("windsurf", ".windsurf/skills"),
+        ];
+
+        for (agent_id, expected_suffix) in new_agents {
+            let result = config.resolve_skills_dir(Scope::Project, Some(agent_id), None);
+            assert!(
+                result.is_ok(),
+                "Failed to resolve project dir for {}",
+                agent_id
+            );
+            let path = result.unwrap();
+            assert!(
+                path.to_string_lossy().ends_with(expected_suffix),
+                "Agent '{}' project dir should end with '{}', got: {}",
+                agent_id,
+                expected_suffix,
+                path.display()
+            );
+        }
     }
 }
