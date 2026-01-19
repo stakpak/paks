@@ -110,6 +110,13 @@ pub async fn run(cmd: AgentCommand) -> Result<()> {
                 "opencode",
                 "amp",
                 "codex",
+                "kilocode",
+                "roo",
+                "gemini",
+                "antigravity",
+                "clawdbot",
+                "droid",
+                "windsurf",
             ];
             if builtins.contains(&name.as_str()) {
                 bail!(

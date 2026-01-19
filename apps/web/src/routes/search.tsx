@@ -24,7 +24,7 @@ export const Route = createFileRoute("/search")({
   head: () => {
     // Static SEO for search page - dynamic content handled client-side
     const title = "Search Packages - Paks";
-    const description = "Search and discover AI agent skills and packages. Find the perfect tools for Claude Code, Cursor, GitHub Copilot and other coding agents.";
+    const description = "Search and discover AI agent skills and packages. Find the perfect tools for Claude Code, Cursor, Codex, Copilot, Windsurf, Gemini CLI, and other coding agents.";
     
     return {
       meta: [

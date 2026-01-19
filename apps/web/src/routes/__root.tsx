@@ -25,8 +25,8 @@ export interface RouterAppContext {}
 const SITE_URL = "https://paks.stakpak.dev";
 const SITE_NAME = "Paks";
 const DEFAULT_TITLE = "Paks - AI Agent Skills Package Manager";
-const DEFAULT_DESCRIPTION = "Create, install, publish, and share reusable skills for AI coding agents like Claude Code, Cursor, and GitHub Copilot. The npm for AI agent capabilities.";
-const DEFAULT_KEYWORDS = "AI agents, coding agents, Claude Code, Cursor, GitHub Copilot, package manager, skills, rulebooks, AI tools, developer tools, automation";
+const DEFAULT_DESCRIPTION = "Create, install, publish, and share reusable skills for AI coding agents like Claude Code, Cursor, Codex, Copilot, Windsurf, Gemini CLI, and more. The npm for AI agent capabilities.";
+const DEFAULT_KEYWORDS = "AI agents, coding agents, Claude Code, Cursor, Codex, GitHub Copilot, Windsurf, Gemini CLI, Amp, OpenCode, package manager, skills, rulebooks, AI tools, developer tools, automation";
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
   head: () => ({
