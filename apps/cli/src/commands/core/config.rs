@@ -943,10 +943,7 @@ project_skills_dir = ".custom/skills"
         // Kilo Code - ~/.kilocode/skills
         let kilocode = config.get_agent("kilocode").unwrap();
         assert!(
-            kilocode
-                .skills_dir
-                .to_string_lossy()
-                .ends_with(".kilocode/skills"),
+            kilocode.skills_dir.ends_with(".kilocode/skills"),
             "kilocode skills_dir should end with .kilocode/skills, got: {}",
             kilocode.skills_dir.display()
         );
@@ -954,7 +951,7 @@ project_skills_dir = ".custom/skills"
         // Roo Code - ~/.roo/skills
         let roo = config.get_agent("roo").unwrap();
         assert!(
-            roo.skills_dir.to_string_lossy().ends_with(".roo/skills"),
+            roo.skills_dir.ends_with(".roo/skills"),
             "roo skills_dir should end with .roo/skills, got: {}",
             roo.skills_dir.display()
         );
@@ -962,10 +959,7 @@ project_skills_dir = ".custom/skills"
         // Gemini CLI - ~/.gemini/skills
         let gemini = config.get_agent("gemini").unwrap();
         assert!(
-            gemini
-                .skills_dir
-                .to_string_lossy()
-                .ends_with(".gemini/skills"),
+            gemini.skills_dir.ends_with(".gemini/skills"),
             "gemini skills_dir should end with .gemini/skills, got: {}",
             gemini.skills_dir.display()
         );
@@ -973,10 +967,7 @@ project_skills_dir = ".custom/skills"
         // Antigravity - ~/.gemini/antigravity/skills
         let antigravity = config.get_agent("antigravity").unwrap();
         assert!(
-            antigravity
-                .skills_dir
-                .to_string_lossy()
-                .ends_with(".gemini/antigravity/skills"),
+            antigravity.skills_dir.ends_with(".gemini/antigravity/skills"),
             "antigravity skills_dir should end with .gemini/antigravity/skills, got: {}",
             antigravity.skills_dir.display()
         );
@@ -984,10 +975,7 @@ project_skills_dir = ".custom/skills"
         // Clawdbot - ~/.clawdbot/skills
         let clawdbot = config.get_agent("clawdbot").unwrap();
         assert!(
-            clawdbot
-                .skills_dir
-                .to_string_lossy()
-                .ends_with(".clawdbot/skills"),
+            clawdbot.skills_dir.ends_with(".clawdbot/skills"),
             "clawdbot skills_dir should end with .clawdbot/skills, got: {}",
             clawdbot.skills_dir.display()
         );
@@ -995,10 +983,7 @@ project_skills_dir = ".custom/skills"
         // Droid - ~/.factory/skills
         let droid = config.get_agent("droid").unwrap();
         assert!(
-            droid
-                .skills_dir
-                .to_string_lossy()
-                .ends_with(".factory/skills"),
+            droid.skills_dir.ends_with(".factory/skills"),
             "droid skills_dir should end with .factory/skills, got: {}",
             droid.skills_dir.display()
         );
@@ -1006,10 +991,7 @@ project_skills_dir = ".custom/skills"
         // Windsurf - ~/.codeium/windsurf/skills
         let windsurf = config.get_agent("windsurf").unwrap();
         assert!(
-            windsurf
-                .skills_dir
-                .to_string_lossy()
-                .ends_with(".codeium/windsurf/skills"),
+            windsurf.skills_dir.ends_with(".codeium/windsurf/skills"),
             "windsurf skills_dir should end with .codeium/windsurf/skills, got: {}",
             windsurf.skills_dir.display()
         );
@@ -1029,10 +1011,7 @@ project_skills_dir = ".custom/skills"
 
         // Global dir should still be ~/.copilot/skills
         assert!(
-            copilot
-                .skills_dir
-                .to_string_lossy()
-                .ends_with(".copilot/skills"),
+            copilot.skills_dir.ends_with(".copilot/skills"),
             "copilot global skills_dir should end with .copilot/skills, got: {}",
             copilot.skills_dir.display()
         );
@@ -1051,11 +1030,8 @@ project_skills_dir = ".custom/skills"
         );
 
         assert!(
-            opencode
-                .skills_dir
-                .to_string_lossy()
-                .contains("opencode/skill"),
-            "opencode global skills_dir should contain opencode/skill, got: {}",
+            opencode.skills_dir.ends_with("opencode/skill"),
+            "opencode global skills_dir should end with opencode/skill, got: {}",
             opencode.skills_dir.display()
         );
     }
@@ -1104,7 +1080,7 @@ project_skills_dir = ".custom/skills"
                 .resolve_skills_dir(Scope::Global, Some(agent_id), None)
                 .unwrap();
             assert!(
-                result.to_string_lossy().ends_with(expected_suffix),
+                result.ends_with(expected_suffix),
                 "Agent '{}' global dir should end with '{}', got: {}",
                 agent_id,
                 expected_suffix,
